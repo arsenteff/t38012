@@ -1,0 +1,48 @@
+	.TITLE	LIB
+	.INCLUDE /DK:LIB.LIB/
+; *********************************************************
+; *	       €Š…’  ˆ‹ˆŽ’…—›•  Ž„Žƒ€ŒŒ 	  *
+; *		     Ž™…ƒŽ  €‡€—…ˆŸ 		  *
+; *********************************************************
+BUFLIB::.BLKB 81.
+BUFOCT:	.BLKB 7
+BUFHEX:	.BLKB 6
+BUFDEC:	.BLKB 7
+	.EVEN
+
+.MACRO	.FUNCTION NAME
+	.GLOBL NAME
+	.INCLUDE /DK:'NAME'.FUN/
+.ENDM	.FUNCTION
+
+;‘€‘…ˆ… …ƒˆ‘’Ž‚ Ž–…‘‘Ž€
+.FUNCTION SAVRON
+
+;…Ž€‡Ž‚€ˆ… „‚Žˆ—ŽƒŽ —ˆ‘‹€ ‚ ‚Ž‘œŒ…ˆ—›… ‘ˆŒ‚Ž‹›
+.FUNCTION BINOCT
+
+;…Ž€‡Ž‚€ˆ… „‚Žˆ—ŽƒŽ —ˆ‘‹€ ‚ „…‘Ÿ’ˆ—›… ‘ˆŒ‚Ž‹›
+.FUNCTION BINDEC
+
+;…Ž€‡Ž‚€ˆ… „‚Žˆ—ŽƒŽ —ˆ‘‹€ ‚ ˜…‘’€„–€’ˆˆ—›… ‘ˆŒ‚Ž‹›
+.FUNCTION BINHEX
+
+;…Ž€‡Ž‚€ˆ… ‘‹Ž‚€ RAD50 ‚ ASCII ŠŽ„
+;.FUNCTION R50ASC
+
+;Ž„€‚‹…ˆ… …‡€—€™ˆ• “‹…‰
+.FUNCTION NULCLR
+
+;‘‹ˆŸˆ… …‘ŠŽ‹œŠˆ• ‘’ŽŠ
+.FUNCTION STRSPL
+
+;ŠŽˆŽ‚€ˆ… ‘’ŽŠˆ ‚ “”…
+.FUNCTION STRCOP
+
+;ŠŽˆŽ‚€ˆ… ‘ŽŽ™…ˆŸ ‚ “”…
+.FUNCTION MSGCOP
+
+;…Ž€‡Ž‚€ˆ… ‘‹Ž‚€ RAD50 ‚ ASCII ŠŽ„
+.FUNCTION R50ASC
+
+.END

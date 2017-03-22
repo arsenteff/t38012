@@ -1,0 +1,427 @@
+	.TITLE TSTNOD.MDL
+
+
+NODGND = 1
+NODPWR = 2
+NODJMP = 3
+NODLOG = 4
+NODREG = 5
+NODANL = 6
+NODNOD = 7
+NODUNK = 8.
+
+;******************************
+.ITEM TSTLOW,,$NDGND,<>,<Ž‚…Š€ –……‰ ‡…Œ‹Ÿ € “Ž‚…œ "0">
+;******************************
+	.SAVRON
+	;Ž…„…‹…ˆ… –…ˆ SOST
+	MOV	R0,R1
+3$:
+	MOV	8.(R1),R0		;SOST?
+	BEQ	2$			;…’
+	CALL	VURGGET
+	TST	R0
+	BEQ	2$
+1$:
+	CALL	ERRORINC
+	MSG.TXT	#TSTLOW
+	MSG.ERR #ER$TLOW
+	MOV	R1,R0
+	CALL	ND$PR1
+	BCS	3$
+2$:	CLC
+	RETURN
+
+;******************************
+.ITEM TSTHIG,,$NDPWR,<>,<Ž‚…Š€ –……‰ ˆ’€ˆŸ € “Ž‚…œ "1">
+;******************************
+	.SAVRON
+	;Ž…„…‹…ˆ… –…ˆ SOST
+	MOV	R0,R1
+3$:
+	MOV	8.(R1),R0		;SOST?
+	BEQ	2$			;…’
+	CALL	VURGGET
+	TST	R0
+	BNE	2$
+1$:
+	CALL	ERRORINC
+	MSG.TXT	#TSTHIG
+	MSG.ERR #ER$THIG
+	MOV	R1,R0
+	CALL	ND$PR1
+	BCS	3$
+2$:	CLC
+	RETURN
+
+;***********************************
+.ITEM TSTJM0,,$NDJMP,<>,<Ž‚…Š€ ‘Š‚Ž‡›• –……‰ € “Ž‚…œ "0">
+;***********************************
+	.SAVRON
+	MOV	R0,R1
+10$:
+	CMP	@R1,#NODJMP		;’ˆ –…ˆ ……Œ›—Š€?
+	BNE	3$			;…’
+
+	CMP	12(R1),#1
+	BNE	3$			;„€›… Ž ‘‚Ÿ‡€Ž‰ –…ˆ “ ……Œ›—Šˆ
+	MOV	16(R1),R3
+		
+	;Ž…„…‹…ˆ… –…ˆ UPR ˆ‹ˆ SOST
+	MOV	8.(R1),R2		;SOST?
+	BEQ	1$			;…’
+	MOV	6.(R3),R0		;UPR
+	CALL	VURGS0
+	MOV	R1,R0			;SOST
+	BR	4$
+1$:
+	MOV	6.(R1),R2		;UPR?
+	BEQ	3$			;…’
+	MOV	R2,R0			;UPR
+	CALL	VURGS0
+	MOV	R3,R0			;SOST
+4$:
+	;Ž‚…Š€ “Ž‚Ÿ “‹Ÿ
+	TST	R0
+	BEQ	7$
+	MOV	8.(R0),R0		;SOST?
+	BEQ	7$			;…’
+	CALL	NDZADR
+	CALL	VURGGET
+	TST	R0
+	BEQ	7$
+
+	CALL	ERRORINC
+
+	;‘ŽŽ™…ˆ… Ž Ž˜ˆŠ…
+	MSG.TXT	#TSTJM0
+	MSG.ERR #ER$TLOW
+	MOV	R1,R0
+	CALL	ND$PR1			;‚›‚Ž„ „€›• Ž –…ˆ
+	BCS	10$
+;;;	BIC	#FMOERR,FMLSTS
+7$:
+	;“‘’€Ž‚Š€ ‘ˆƒ€‹€ ‚ ‘Ž‘’ŽŸˆ… "1"
+	TST	8.(R1)			;SOST?
+	BEQ	5$			;…’
+	MOV	6.(R3),R0		;UPR
+	BR	6$
+5$:	MOV	R2,R0			;UPR
+6$:	CALL	VURGS1
+3$:
+	CLC
+	RETURN
+
+;***********************************
+.ITEM TSTJM1,,$NDJMP,<>,<Ž‚…Š€ ‘Š‚Ž‡›• –……‰ € “Ž‚…œ "1">
+;***********************************
+	.SAVRON
+	MOV	R0,R1
+
+	CMP	@R1,#NODJMP		;’ˆ –…ˆ ……Œ›—Š€?
+	BNE	3$			;…’
+
+	CMP	12(R1),#1
+	BNE	3$			;„€›… Ž ‘‚Ÿ‡€Ž‰ –…ˆ “ ……Œ›—Šˆ
+10$:
+	MOV	16(R1),R3
+		
+	;Ž…„…‹…ˆ… –…ˆ UPR ˆ‹ˆ SOST
+	MOV	8.(R1),R2		;SOST?
+	BEQ	1$			;…’
+	MOV	6.(R3),R0		;UPR
+	CALL	VURGS1
+	MOV	R1,R0			;SOST
+	BR	4$
+1$:
+	MOV	6.(R1),R2		;UPR?
+	BEQ	3$			;…’
+	MOV	R2,R0			;UPR
+	CALL	VURGS1
+	MOV	R3,R0			;SOST
+4$:
+	;Ž‚…Š€ “Ž‚Ÿ “‹Ÿ
+	TST	R0
+	BEQ	7$
+	MOV	8.(R0),R0		;SOST?
+	BEQ	7$			;…’
+	CALL	NDZADR
+	CALL	VURGGET
+	TST	R0
+	BNE	7$
+
+	CALL	ERRORINC
+
+	;‘ŽŽ™…ˆ… Ž Ž˜ˆŠ…
+	MSG.TXT	#TSTJM1
+	MSG.ERR #ER$THIG
+	MOV	R1,R0
+	CALL	ND$PR1			;‚›‚Ž„ „€›• Ž –…ˆ
+	BCS	10$
+;;;	BIC	#FMOERR,FMLSTS
+7$:
+3$:	CLC
+	RETURN
+
+;********************************
+.ITEM TSTLG0,,$NDLOG,<>,<Ž‚…Š€ …ƒˆ‘’Ž‚ …ƒ“™ˆ‰ "0">
+;********************************
+	.SAVRON
+	MOV	R0,R1
+
+	CMP	@R1,#NODLOG		;’ˆ –…ˆ ‹ŽƒˆŠ€?
+	BNE	3$			;…’
+
+	CMP	12(R1),#2		;…ƒˆ‘’ ‡€„€?
+	BNE	3$			;…’
+
+	CALL	ZAHVAT
+
+	MOV	14(R1),R2
+
+	CMP	@R2,#3			;…ƒˆ‘’ ‚‚Ž„€-‚›‚Ž„€?
+	BNE	6$			;…’
+	CLR	DANNY
+	MOV	2(R2),ADRES
+	CALL	OUTPUT
+	BR	8$
+6$:
+	CMP	@R2,#1			;…ƒˆ‘’ ‚‚Ž„€?
+	BNE	5$			;…’
+8$:
+	MOV	6.(R1),R3		;UPR?
+	BEQ	3$			;…’
+10$:
+	ITM.FML	R2,R5
+	FML.LST R5,#NODS.1
+	
+	MOV	R1,R0
+	CALL	NODS.0
+
+	CALL	NDZADR
+
+	MOV	2(R2),ADRES
+	CALL	INPUT
+
+	MOV	#1,R0
+	MOVB	16(R1),R4
+	ASH	R4,R0
+
+	BIT	R0,DANNY
+	BEQ	1$
+
+	CALL	ERRORINC
+
+	;‘ŽŽ™…ˆ… Ž Ž˜ˆŠ…
+	MSG.TXT	#TSTLG0
+	MSG.ERR #ER$THIG
+	MOV	R1,R0
+	CALL	ND$PR1			;‚›‚Ž„ „€›• Ž –…ˆ
+	BCS	10$
+	BR	1$
+5$:
+	CMP	@R2,#2			;…ƒˆ‘’ ‚‚Ž„€?
+	BNE	1$			;…’
+
+	MOV	8.(R1),R3		;SOST?
+	BEQ	3$			;…’
+20$:
+	MOV	#1,R0
+	MOVB	16(R1),R4
+	ASH	R4,R0
+	MOV	R0,DANNY
+
+	MOV	2(R2),ADRES
+	CALL	OUTPUT
+	MOV	R3,R0
+	CALL	VURGGET
+
+	CMP	R1,#X0111		;ˆ‘Š‹ž—…ˆ… –…œ XP1˜:11 - ˆ‚…‘ˆŸ ‘ˆƒ€‹€ ‚ ‚-1096
+	BEQ	4$
+
+	TSTB	17(R1)			;‘ˆƒ€‹ –…ˆ ˆ‚…‘›‰?
+	BNE	4$			;„€
+	TST	R0
+	BEQ	1$
+	BR	2$
+4$:
+	TST	R0
+	BNE	1$
+2$:
+	CALL	ERRORINC
+
+	;‘ŽŽ™…ˆ… Ž Ž˜ˆŠ…
+	MSG.TXT	#TSTLG0
+	MSG.ERR #ER$TLOW
+	MOV	R1,R0
+	CALL	ND$PR1			;‚›‚Ž„ „€›• Ž –…ˆ
+	BCS	20$
+
+1$:
+	CLC
+	RETURN
+3$:
+	SEC
+	RETURN
+
+NODS.1:
+	TSTB	17(R0)			;‘ˆƒ€‹ –…ˆ ˆ‚…‘›‰?
+	BNE	NODS0			;„€
+NODS1:
+	MOV	6.(R0),R0		;UPR?
+	BEQ	1$			;…’
+	CALL	VURGS1
+1$:
+	CLC
+	RETURN
+
+NODS.0:
+	TSTB	17(R0)			;‘ˆƒ€‹ –…ˆ ˆ‚…‘›‰?
+	BNE	NODS1			;„€
+NODS0:
+	MOV	6.(R0),R0		;UPR?
+	BEQ	1$			;…’
+	CALL	VURGS0
+1$:
+	CLC
+	RETURN
+
+;********************************
+.ITEM TSTLG1,,$NDLOG,<>,<Ž‚…Š€ …ƒˆ‘’Ž‚ …ƒ“™€Ÿ "1">
+;********************************
+	.SAVRON
+	MOV	R0,R1
+
+	CMP	@R1,#NODLOG		;’ˆ –…ˆ ……Œ›—Š€?
+	BNE	3$			;…’
+
+	CMP	12(R1),#2		;…ƒˆ‘’ ‡€„€?
+	BNE	3$			;…’
+
+	CALL	ZAHVAT
+
+	MOV	14(R1),R2
+
+	CMP	@R2,#3			;…ƒˆ‘’ ‚‚Ž„€-‚›‚Ž„€?
+	BNE	6$			;…’
+	CLR	DANNY
+	MOV	2(R2),ADRES
+	CALL	OUTPUT
+	BR	8$
+6$:
+	CMP	@R2,#1			;…ƒˆ‘’ ‚‚Ž„€?
+	BNE	5$			;…’
+8$:
+	MOV	6.(R1),R3		;UPR?
+	BEQ	3$			;…’
+10$:
+	ITM.FML	R2,R5
+	FML.LST R5,#NODS.0
+	
+	MOV	R1,R0
+	CALL	NODS.1
+
+	CALL	NDZADR
+
+	MOV	2(R2),ADRES
+	CALL	INPUT
+
+	MOV	#1,R0
+	MOVB	16(R1),R4
+	ASH	R4,R0
+
+	BIT	R0,DANNY
+	BNE	5$
+
+	CALL	ERRORINC
+
+	;‘ŽŽ™…ˆ… Ž Ž˜ˆŠ…
+	MSG.TXT	#TSTLG1
+	MSG.ERR #ER$TLOW
+	MOV	R1,R0
+	CALL	ND$PR1			;‚›‚Ž„ „€›• Ž –…ˆ
+	BCS	10$
+
+5$:
+	CMP	@R2,#2			;…ƒˆ‘’ ‚‚Ž„€?
+	BNE	1$			;…’
+
+	MOV	8.(R1),R3		;SOST?
+	BEQ	3$			;…’
+20$:
+	MOV	#1,R0
+	MOVB	16(R1),R4
+	ASH	R4,R0
+	COM	R0
+	MOV	R0,DANNY
+
+	MOV	2(R2),ADRES
+	CALL	OUTPUT
+	MOV	R3,R0
+	CALL	VURGGET
+
+	CMP	R1,#X0111		;ˆ‘Š‹ž—…ˆ… –…œ XP1˜:11 - ˆ‚…‘ˆŸ ‘ˆƒ€‹€ ‚ ‚-1096
+	BEQ	4$
+
+	TSTB	17(R1)			;‘ˆƒ€‹ –…ˆ ˆ‚…‘›‰?
+	BNE	4$			;„€
+	TST	R0
+	BNE	1$
+	BR	2$
+4$:
+	TST	R0
+	BEQ	1$
+2$:
+	CALL	ERRORINC
+
+	;‘ŽŽ™…ˆ… Ž Ž˜ˆŠ…
+	MSG.TXT	#TSTLG1
+	MSG.ERR #ER$THIG
+	MOV	R1,R0
+	CALL	ND$PR1			;‚›‚Ž„ „€›• Ž –…ˆ
+	BCS	20$
+
+1$:
+	CLC
+	RETURN
+3$:
+	SEC
+	RETURN
+
+NO = 0
+YES = 1
+DMAISA = NO
+
+;‡€„…†Š€ „‹Ÿ ‡€Ÿ„€ ŠŽ„…‘€’ŽŽ‚
+NDZADR:
+	CMP	R1,#X0135
+	BEQ	1$
+	CMP	R1,#X0501A
+	BEQ	1$
+
+	CMP	R1,#X0146
+	BEQ	1$
+	CMP	R1,#X0304B
+	BEQ	1$
+
+	CMP	R1,#X0131
+	BEQ	1$
+	CMP	R1,#X0132
+	BNE	2$
+1$:
+
+.IF	EQ DMAISA-YES
+.IFT
+	MOV	#50000,R4
+	SOB	R4,.
+.IFF
+	MOV	R5,-(SP)
+	MOV	#13.,R5
+3$:	MOV	#50000,R4
+	SOB	R4,.
+	SOB	R5,3$
+	MOV	(SP)+,R5
+.ENDC
+
+2$:	RETURN
+

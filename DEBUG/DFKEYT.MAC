@@ -1,0 +1,37 @@
+
+;
+;   *************************************************************
+;   *		 / ‡€“‘Š€ Ž’„…‹œŽƒŽ ’…‘’€			*
+;   *************************************************************
+;
+F$T:
+	BIC	#OPN,STATUS 	;ˆ’ Ž’Š›’ˆŸ Ÿ—…‰Šˆ
+	BIT	#NBR,STATUS 	;€€‹ˆ‡ ˆ‡€Š€ '€Ž'
+	BEQ	NOWW
+	BIT	#17,NABOR
+	BNE	INTT
+NOWW:	.PRINT	#NETIN
+	JMP	DIALOG
+INTT:	BIS	#BUSDLG,STATUS
+	BIS	#D$FAST,STATS2	;„‹Ÿ Ž„Ž€‡Ž‚ŽƒŽ ‚›Ž‹…ˆŸ ’…‘’€
+	MOV	NABOR,R0
+	BIC	#177760,R0		;ŠŽ„ ’…‘’€
+	ASL	R0
+1$:	MOV	R0,-(SP)
+	CALL	@TBT-2(R0)
+	CALL	TTINDB		;„‹Ÿ ‚›•Ž„€ ˆ‡ ‡€–ˆŠ‹…ŽƒŽ ’…‘’€
+	MOV	(SP)+,R0
+	BR	1$
+TBT:	.WORD	T$TKOM,T$TKRA,T$TINT,T$TEXT,T$PAMD,TSTOZU,T$PZU
+	.WORD	AD$,UPR$,TEHOZD,T$TARN,T$TACP,T$TPSK,TSTZAM,T$TKOM
+;
+NETIN:	.ASCII	<16><11>/   ŠŽ„ ’…‘’€ … ‚‚…„…/<17><12><15>
+	.ASCII	<11>/1T -- TKOM  /<11>/   10T -- AD/<12><15>
+	.ASCII	<11>/2T -- TKRA  /<11>/   11T -- UPR/<12><15>
+	.ASCII	<11>/3T -- TINT  /<11>/   12T -- TEHOZD/<12><15>
+	.ASCII	<11>/4T -- TEXT  /<11>/   13T -- TARINC/<12><15>
+	.ASCII	<11>/5T -- TPAM  /<11>/   14T -- TACP/<12><15>
+	.ASCII	<11>/6T -- TSTOZU/<11>/   15T -- TPUSK/<12><15>
+	.ASCIZ	<11>/7T -- TPZU  /<11>/   16T -- TZAMK/<12><15>
+	.EVEN
+

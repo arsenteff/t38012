@@ -1,0 +1,28 @@
+
+;-----------------------------------------------------
+;    / €€‹ˆ‡€ ‘ˆƒ€‹€ 'ŽŒ…' Š€€‹€ Ž–…‘‘Ž€   !
+;-----------------------------------------------------
+T$TPSK::
+	MOV	#TS$PSK,R0
+	CALL	TITLEPRINT
+3$:
+	CALL	CLRBUS
+	CALL	ZAHVAT
+	CALL	CLRZPR
+	CALL	CLRPZU
+	CALL	PUSK2
+
+	MOV	#177777,R0
+1$:	BIT	#$SQSIA,@RG$RGD		;€€‹ˆ‡ ‘ˆƒ€‹€ 'ŽŒ…'
+	BEQ	2$
+	SOB	R0,1$
+
+	CALL	ERRORINC
+
+	BIS	#100200,FLER
+
+	MOV	#TS$PSK,R0
+	CALL	TERROUT
+	BCS	3$
+2$:
+	RETURN

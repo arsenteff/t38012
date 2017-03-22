@@ -1,0 +1,124 @@
+DLINA = 80.
+
+NABOR:	.WORD	0		;–ˆ”Ž‚Ž‰ ŠŽ„ ‚ …†ˆŒ… Ž’‹€„Šˆ
+STROKA:	.BLKB	DLINA		;‘’ŽŠ€ ’…Œˆ€‹€
+	.BYTE	0		;ŠŽ…– ‘’ŽŠˆ ’…Œˆ€‹€
+	.EVEN
+
+F$HELP:
+	JMP	DBGBGN
+;   *************************************************************
+;   * Ž„Žƒ€ŒŒ€  Ž€Ž’Šˆ  "‘"  (Ž’Š›’œ ‘‹…„“ž™“ž Ÿ—…‰Š“) *
+;   *************************************************************
+;
+F$LF:
+	CALL	ANLNBR
+	ADD	#2,ADRES	;‘‹…„“ž™ˆ‰ €„…‘ € Q-˜ˆ…
+LF$NBR: MOV	#5015,STROKA	;‘ˆŒ‚Ž‹› <‚Š><‘>
+	MOV	ADRES,R1
+	MOV	#STROKA+2,R2
+	CALL	OCTASC
+	MOVB	#'/,STROKA+10
+	MOVB	#200,STROKA+11	;ˆ‡€Š ŠŽ–€ ‘’ŽŠˆ
+	.PRINT	#STROKA 	;…—€’œ Ž‚ŽƒŽ €„…‘€
+	CALL	ND		;Ž„ƒŽ’Ž‚Š€ „‹Ÿ …—€’ˆ
+	CALL	F$OPEN		;…—€’œ ˆ”ŽŒ€–ˆˆ ˆ‡ Ÿ—…‰Šˆ
+	RETURN
+;
+;   *************************************************************
+;   *		   Ž„Žƒ€ŒŒ€  Ž’Š›’ˆŸ  Ÿ—…‰Šˆ		*
+;   *************************************************************
+;
+F$OPEN: BIT	#NBR,STATUS	;€€‹ˆ‡ ˆ‡€Š€ €Ž€ ˆ”ŽŒ€–ˆˆ
+	BEQ	1$
+	MOV	NABOR,ADRES
+	CALL	ND
+1$:	CALL	INPUT
+	BIS	#OPN,STATUS	;“‘’€Ž‚Š€ ˆ‡€Š€ Ž’Š›’ˆŸ Ÿ—…‰Šˆ
+	MOV	DANNY,R1
+	MOV	#STROKA,R2
+	CALL	OCTASC
+	MOV	#100040,STROKA+6;ˆ‡€Š ŠŽ–€ ‘’ŽŠˆ
+	.PRINT	#STROKA 	;…—€’œ „€›•
+	RETURN
+;
+;   *************************************************************
+;   *	      Ž„Žƒ€ŒŒ€  €‰’Ž‚ŽƒŽ  Ž’Š›’ˆŸ  Ÿ—…‰Šˆ 	*
+;   *************************************************************
+;
+F$BYTE: CALL	ANLNBR		;€€‹ˆ‡ ˆ‡€Š€ €Ž€ ˆ”ŽŒ€–ˆˆ
+	CALL	INPUT
+	MOV	DANNY,R1
+	BIC	#377,R1 	;‚›„…‹…ˆ… ‘’€˜…ƒŽ €‰’€
+	SWAB	R1
+	MOV	#STROKA,R2
+	CALL	OCTASC		;6-‘ˆŒ‚Ž‹œŽ… …Ž€‡Ž‚€ˆ… €‰’€
+	MOVB	#40,STROKA+2
+	MOV	#200,STROKA+6	;ˆ‡€Š ŠŽ–€ ‘’ŽŠˆ
+	.PRINT	#STROKA+2
+	MOV	DANNY,R1
+	BIC	#177400,R1	;‚›„…‹…ˆ… Œ‹€„˜…ƒŽ €‰’€
+	MOV	#STROKA,R2
+	CALL	OCTASC		;6-‘ˆŒ‚Ž‹œŽ… …Ž€‡Ž‚€ˆ… €‰’€
+	MOVB	#40,STROKA+2
+	MOV	#100040,STROKA+6;ˆ‡€Š ŠŽ–€ ‘’ŽŠˆ
+	.PRINT	#STROKA+2
+	RETURN
+;
+;   *************************************************************
+;   *	       Ž„Žƒ€ŒŒ€  ‡€ŽŸ  –ˆ”›  €  Š€…		*
+;   *************************************************************
+;
+F$DEL:	BIT	#NBR,STATUS
+	BEQ	1$
+	CLC
+	ROR	NABOR
+	CLC
+	ROR	NABOR
+	CLC
+	ROR	NABOR		;€Ž ‘„‚ˆ“’ € ‘ˆŒ‚Ž‹
+	.PRINT	#ZABOJ
+1$:	.PRINT	#ZABOJ
+	RETURN
+ZABOJ:	.BYTE	10,40,10,200	;‘’ŽŠ€ ‡€ŽŸ ‘ˆŒ‚Ž‹€ € Š€…
+	.EVEN
+
+;
+;   *************************************************************
+;   *		Ž„Žƒ€ŒŒ€  ‚‚Ž„€  €€Ž‰ –ˆ”›		*
+;   *************************************************************
+;
+F$DGT:	BIT	#NBR,STATUS	;€€‹ˆ‡ ˆ‡€Š€ €Ž€
+	BNE	1$
+	CLR	NABOR
+	BIS	#NBR,STATUS	;“‘’€Ž‚Š€ ˆ‡€Š€ €Ž€
+1$:	BIC	#177770,R0	;‚›„…‹…ˆ… ŠŽ„€ –ˆ”›
+	ASL	NABOR
+	ASL	NABOR
+	ASL	NABOR
+	BIS	R0,NABOR	;–ˆ”€ ‚‚…„…€
+	RETURN
+;
+;   *************************************************************
+;   *	Ž„Žƒ€ŒŒ€  €€‹ˆ‡€  ˆ‡€ŠŽ‚  €Ž€  ˆ  Ž’Š›’ˆŸ	*
+;   *************************************************************
+;
+ANLNBR: BIT	#OPN,STATUS	;€€‹ˆ‡ ˆ‡€Š€ Ž’Š›’ˆŸ Ÿ—…‰Šˆ
+	BNE	1$
+	JMP	DIALOG
+1$:	BIT	#NBR,STATUS	;€€‹ˆ‡ ˆ‡€Š€ €Ž€ ˆ”ŽŒ€–ˆˆ
+	BEQ	2$
+	MOV	NABOR,DANNY
+	CALL	OUTPUT		;‚›‚Ž„ „€›•
+	CALL	ND
+2$:	RETURN
+;
+;   *************************************************************
+;   *		   Ž„Žƒ€ŒŒ€  Ž—ˆ‘’Šˆ  €Ž€		*
+;   *************************************************************
+;
+ND:	CLR	NABOR
+	BIC	#NBR,STATUS
+	RETURN
+;
+

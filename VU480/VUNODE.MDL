@@ -1,0 +1,159 @@
+        .TITLE  VUNODE.MDL
+
+        .GLOBL  VURGINIT,VURGS1,VURGS0,VURGSTATE,VURGGET
+
+TBLARG: ;’€‹ˆ–€ €„…‘Ž‚ …ƒˆ‘’Ž‚ ‚“
+        .WORD   160272,160312,160332,160352,160372
+TBLMUX: ;’€‹ˆ–€ MUX
+        .WORD   0,20000,40000,60000,100000,120000,140000,160000
+
+; ***************
+; IN    :       -
+; OUT   :       -
+; ***************
+VURGINIT:
+	.SAVRON
+	CLR     R1
+	ITM.FML #VU$RG,R2
+1$:	FML.ITM R2,R1,R0
+	ASL	R1
+	MOV     4(R0),2(R0)	;Ž€‡ ƒ ‚›‚Ž„€ ‚“
+	MOV	2(R0),@(R0) 	;‡€ˆ‘œ ‚ ƒ ‚“
+	ASR	R1
+        INC	R1
+	CMP	R1,#5
+	BLT	1$
+	RETURN
+
+; ***************
+; IN    :       -
+; OUT   :       -
+; ***************
+VURGTEST:
+	.SAVRON
+	BIC	#TRPCALL!TRPOERROR,TRPSTS
+	CLR     R1
+	ITM.FML #VU$RG,R2
+1$:	FML.ITM R2,R1,R0
+	ASL	R1
+;;;	BIC	#TRPOERROR,TRPSTS
+	MOV	2(R0),@(R0) 	;Ž‚…Š€ - ‡€ˆ‘œ ‚ …ƒˆ‘’ Ž•Ž„ˆ’?
+	BIC	#TRPOERROR,TRPSTS
+	MOV	@(R0),R3	;Ž‚…Š€ - —ˆ’€…’‘Ÿ ‹ˆ …ƒˆ‘’?
+	ASR	R1
+        INC	R1
+	CMP	R1,#5
+	BLT	1$
+	CLC
+	BIT	#TRPCALL,TRPSTS
+	BEQ	2$
+	SEC
+2$:	RETURN
+
+; *************************************************************
+; IN    :       R0 (‘‘›‹Š€ € €„…‘ –…ˆ ‚“-480 ’ˆ€ UPR)
+; OUT   :       R0 (‘‘›‹Š€ € ‘ŽŽ™…ˆ… Ž Ž˜ˆŠ…)
+; *************************************************************
+
+VURGS1:	.SAVRON
+   	MOV     #-1,R2          ;“‘’€Ž‚Š€ ˆ’€
+        BR      VURGSET
+VURGS0:	.SAVRON
+   	CLR     R2              ;‘Ž‘ ˆ’€
+VURGSET:
+        MOVB    8.(R0),R1        ;ŽŒ… €‡Ÿ„€ <0?
+        BMI     VUBDERR            ;„€
+        CMP     R1,#16.		;ŽŒ… €‡Ÿ„€ > 16 (ŠŽ‹-‚Ž €‡Ÿ„Ž‚ ƒ ‚“)?
+        BGE     VUBDERR            ;„€
+        MOV     #1,R3
+        ASH     R1,R3           ;ˆ’ „€›• ƒ ‚“
+
+	MOV	6(R0),R4
+
+	BIC     R3,2(R4)	;‘Ž‘ ˆ’€ ‚ Ž€‡… ƒ ‚“
+        TST     R2              ;“‘’€Ž‚Š€ ˆ’€?
+        BEQ     2$              ;…’
+	BIS     R3,2(R4)	;“‘’€Ž‚Š€ ˆ’€ ‚ Ž€‡… ƒ ‚“
+2$:
+        ;……‘›‹Š€ Ž€‡€ ƒ ‚“ ‚ ƒ ‚“
+	MOV	2(R4),@(R4) 	;‡€ˆ‘œ ‚ ƒ ‚“
+        CLC              	;Ž˜ˆŽŠ …’
+3$:     RETURN
+
+
+VUBDERR:
+        MOV     #M$1000,R0
+        CALL    PRINT
+	SEC
+	RETURN
+
+
+; *************************************************************
+; IN    :       R0 (‘‘›‹Š€ € €„…‘ –…ˆ “‘’€Ž‚Šˆ ’ˆ€ UPR)
+; OUT   :       R0 (=0 - ˆ‡Šˆ‰ “Ž‚…œ, <>0 - ‚›‘ŽŠˆ‰ “Ž‚…œ)
+; *************************************************************
+
+VURGSTATE:
+	.SAVRON
+
+        MOVB    8.(R0),R1        ;ŽŒ… €‡Ÿ„€ <0?
+        BMI     VUBDERR            ;„€
+        CMP     R1,#16.        ;ŽŒ… €‡Ÿ„€ > 16 (ŠŽ‹-‚Ž €‡Ÿ„Ž‚ ƒ ‚“)?
+        BGE     VUBDERR            ;„€
+        MOV     #1,R3
+        ASH     R1,R3           ;ˆ’ „€›• ƒ ‚“
+
+	MOV	6(R0),R4
+
+	CLR	R0
+        BIT     R3,2(R4)	;ˆ’ ‘Ž˜…?
+	BEQ	3$		;„€
+	COM	R0
+3$:
+	CLC
+	RETURN
+
+
+; *************************************************************
+; IN    :       R0 (‘‘›‹Š€ € €„…‘ –…ˆ “‘’€Ž‚Šˆ ’ˆ€ SOST)
+; OUT   :       R0 (=0 - ˆ‡Šˆ‰ “Ž‚…œ, <>0 - ‚›‘ŽŠˆ‰ “Ž‚…œ)
+; *************************************************************
+
+VURGGET:
+	.SAVRON
+
+        MOVB    8.(R0),R1        ;ŽŒ… €‡Ÿ„€ <0?
+        BMI     VUBDERR            ;„€
+        CMP     R1,#16.        ;ŽŒ… €‡Ÿ„€ > 16 (ŠŽ‹-‚Ž €‡Ÿ„Ž‚ ƒ ‚“)?
+        BGE     VUBDERR        ;„€
+        MOV     #1,R3
+        ASH     R1,R3           ;ˆ’ „€›• ƒ ‚“
+
+	MOV	6(R0),R4
+
+        MOVB    9.(R0),R5
+	CMP	R5,#-1		;……Š‹ž—…ˆ… MUX “†Ž?
+        BEQ     2$              ;…’
+        CMP     R5,#8.          ;ŠŽ‹-‚Ž ‚•Ž„Ž‚ MUX > 8?
+        BGT     VUBDERR            ;„€
+        ASL     R5
+
+        ;“‘’€Ž‚Š€ ŠŽ„€ € MUX
+        BIC     #160000,2(R4)	;‡€ˆ‘œ ‚ Ž€‡ ‚›‚Ž„€ ƒ 160332
+        BIS     TBLMUX(R5),2(R4)
+        MOV     2(R4),@(R4)
+2$:
+	MOV	@(R4),R2	;‘—ˆ’€’œ ‘Ž‘’ŽŸˆ… …ƒˆ‘’€
+	CLR	R0
+        BIT     R3,R2		;ˆ’ ‘Ž˜…?
+	BEQ	3$		;„€
+	COM	R0
+3$:
+	CLC
+	RETURN
+
+M$1000: .ASCII  <12><15><11><16>/Ž˜ˆŠ€ ‚ „ –……‰ ‚“"/<0>
+
+PRINT:  .PRINT
+        RETURN
+

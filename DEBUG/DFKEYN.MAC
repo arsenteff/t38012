@@ -1,0 +1,41 @@
+
+;   *************************************************************
+;   *		  /  ‡€ƒ“‡Šˆ ‘‹…„“ž™…ƒŽ ’…‘’€		*
+;   *************************************************************
+;
+F$N:	BIS	#D$TEST,STATS2		;ˆ’ ‡€ƒ“†€…ŒŽƒŽ ’…‘’€
+;;;	BIC	#OTLAD,STATUS
+	TST	FILINP			;…‘’œ ˆŒŸ ’…‘’€?
+	BEQ	10$			;…‘‹ˆ …’
+	MOV	N$TEST,R1
+	ADD	#2,R1
+	CMP	R1,#<TPAM-TKOM>/5	;ŠŽ‹ˆ—…‘’‚Ž ’…‘’Ž‚
+	BLE	15$
+10$:	MOV	#2,R1
+15$:	MOV	T$TEST-2(R1),R0
+	MOV	R1,N$TEST
+	.CSISPC #FILCSI,#EXTCSI,R0
+	TST	(SP)+			;Ž—ˆ‘’ˆ’œ ‘’…Š Ž‘‹… .CSISPC
+	CALL	CLRBUS			;‚Ž‘‘’€Ž‚‹…ˆ… ‘ˆƒ€‹Ž‚ ˆ’…”…‰‘€
+	BIC	#32000,STATUS		;‘Ÿ’œ ˆ’› PDP,ZPRT,PEREM
+	CALL	S$LOAD
+	BIC	#D$TEST,STATS2		;‘Ÿ’œ ˆ’ ‡€ƒ“†€…ŒŽƒŽ ’…‘’€
+	BIS	#OTLAD,STATUS
+	.PRINT	#MSG15
+	MOV	N$TEST,R1
+	MOV	T$TEST-2(R1),R0
+	ADD	#3,R0
+	.PRINT	R0
+BR$D1:	JMP	DIALOG
+;
+N$TEST:	.WORD	0			;ŽŒ… ’…‘’€
+T$TEST:	.WORD	TKOM,TKRA,TINT,TEXT,TPAM,TACP,TARN
+TKOM:	.ASCIZ	/DK:TKOM32.SAV/
+TKRA:	.ASCIZ	/DK:TKRA32.SAV/
+TINT:	.ASCIZ	/DK:TINT32.SAV/
+TEXT:	.ASCIZ	/DK:TEXT32.SAV/
+TPAM:	.ASCIZ	/DK:TPAM32.SAV/
+TACP:	.ASCIZ	/DK:TADC32.SAV/
+TARN:	.ASCIZ	/DK:TARN32.SAV/
+MSG15:	.ASCII	<11><16>/‡€ƒ“†… ’…‘’	/<17><200>
+	.EVEN

@@ -1,0 +1,112 @@
+;*****************************************************************
+;           ’…‘’  ‚…˜ˆ•  …›‚€ˆ‰  Ž–…‘‘Ž€                *
+;*****************************************************************
+T$TEXT::
+	JSR	R5,SAVRG
+	MOVB	#8.,STATS3
+;;;	.PRINT	#MSG410
+
+	MOV	#TS$EXT,R0
+	CALL	TITLEPRINT
+
+	CALL	INTENABL
+EXT:
+	CLR	ERROR
+	CALL	CLRBUS		;Ž—ˆ‘’Š€ Š€€‹€
+;;;	BIC	#32000,STATUS	;‘Ÿ’œ ˆ’› PDP,ZPRT,PEREM
+
+	MOV	#3,CHCIKL	;‘—…’—ˆŠ –ˆŠ‹Ž‚ ’…‘’€
+1$:	BIS	#4000,STATS2; ˆ‡€Š ŽŸ„Š€ …›‚€ˆŸ
+	.CSISPC	#FILCSI,#EXTCSI,#TEXT
+	TST	(SP)+      	;Ž—ˆ‘’ˆ’œ ‘’…Š Ž‘‹… .CSISPC
+	CALL	S$LOAD		;‡€ƒ“‡Š€ ’…‘’€
+	CALL	ZAPRET
+	CALL	PUSK2
+	CALL	TTINDB		;***„‹Ÿ …†. DBG - ‚›•Ž„ ˆ‡ ‡€–ˆŠ‹. € „ˆ€‹Žƒ 
+	MOV	#2,R5		;‘—…’—ˆŠ —ˆ‘‹€ ’ˆŽ‚ …›‚€ˆ‰
+2$:
+	MOV	#7,R4		;‘—…’—ˆŠ —ˆ‘‹€ Ž„Ž’ˆ›• …›‚€ˆ‰
+3$:
+;;;	CALL	Z10MS
+	MOV	R5,R3
+	ASL	R3
+	CALL	CLRZPR
+	CALL	Z0.5MS
+	CALL	ZAPRET
+
+;;;	CALL	@TABEX1-2(R3)	;…›‚€ˆ…
+;;;	CALL	EXTTMR
+	MOV	R5,R3
+	ASL	R3
+
+;;;	CALL	ANLOBM
+	CALL	TTINDB
+	SOB	R4,3$
+;;;	SOB	R5,2$
+
+
+	DEC	R5
+	MOV	#7,R4		;‘—…’—ˆŠ —ˆ‘‹€ Ž„Ž’ˆ›• …›‚€ˆ‰
+13$:
+	CALL	Z10MS
+	CALL	EXTAIP
+	MOV	R5,R3
+	ASL	R3
+;;;	CALL	ANLOBM
+;;;	CALL	TTINDB
+	SOB	R4,13$
+
+	CALL	FAST
+	CALL	ANLTST
+;;;	CALL	TTINDB
+	TST	ERROR
+	BEQ	4$
+
+	MOV	#TS$EXT,R0
+	CALL	TERROUT
+	BCC	10$
+
+	BR	EXT
+4$:	DEC	CHCIKL
+	BNE	1$
+	;;;CALL	CLRZPR		;‚Ž‘‘’€Ž‚‹…ˆ… €ŠŽ‚ ‚ Œ‹. €„…‘€•
+10$:	RETURN
+TABEX1: .WORD EXTAIP,EXTTMR
+;;;MSG410: .ASCIZ <16>/   ’…‘’ ‚…˜ˆ• …›‚€ˆ‰ Ž–…‘‘Ž€/<17>
+
+
+;   *************************************************************
+;   *     / ”ŽŒˆŽ‚€ˆŸ …›‚€ˆŸ Ž ’€‰Œ…“ (‚…Š’. 100)    *
+;   *************************************************************
+;
+EXTTMR:
+;;;	BIC	#B$T,UPRBUS
+;;;	MOV	UPRBUS,R$UPR
+;;;	BIS	#B$T,UPRBUS
+;;;	MOV	UPRBUS,R$UPR
+	RETURN
+
+;   *************************************************************
+;   *     / ”ŽŒˆŽ‚€ˆŸ …›‚€ˆŸ Ž  €ˆ  (‚…Š’. 24)       *
+;   *************************************************************
+EXTAIP:
+	JSR	R5,SAVRG
+
+	MOV	RG$RGD+2,R0
+	BIC	#$SQASP,R0
+	MOV	R0,R1
+	BIS	#$SQASP,R1
+
+	MOV	#160372,R2
+
+	MOV	R0,@R2
+	MOV	R1,@R2
+
+	RETURN
+
+
+;   €„…‘€  “€‚‹Ÿž™ˆ• …ƒˆ‘’Ž‚  ‚“-0480
+        R$AD    ==   160352
+        R$UPR   ==   160372
+
+

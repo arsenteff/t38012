@@ -1,0 +1,204 @@
+
+;---------------------------------------------------------
+;    / €€‹ˆ‡€ €Ž’› ’…‘’€ ˆ €‘…—€’Šˆ …‡“‹œ’€’€	 !
+;---------------------------------------------------------
+ANLTST:	CALL ANLPDP
+	MOV #402,R5	;€„…‘ ŽŒ…€ ’…‘’€ ‚ Ž–…‘‘Ž…
+	MOV #NFATAL,R4
+	MOV #3,R3	;„‹ˆ€ ‘—ˆ’›‚€…ŒŽƒŽ “”…€
+	CALL TEHBLK
+	MOV #MSG201,R2	;
+	MOV NPROHD,R1
+	CALL OCTASC
+	MOV #MSG203,R2	;
+	MOV NTEST,R1
+	CALL OCTASC
+	MOV #MSG205,R2	;
+	MOV NFATAL,R1
+	CALL OCTASC
+	.PRINT	#MSG200 ;…—€’œ —ˆ‘‹€ Ž•Ž„Ž‚ ˆ ’…‘’Ž‚
+
+	TST	@#NPROHD
+	BNE	21$
+	INC	@#ERROR
+21$:
+	TST	@#NFATAL
+	BEQ	20$
+	INC	@#ERROR
+
+;     ‘—ˆ’›‚€ˆ… ‘’€’“‘ŽƒŽ “”…€ Ž–…‘‘Ž€
+20$:	MOV #17722,R5	;€„…‘ “”…€ R0-RS
+	MOV #INTPRC,R4
+	MOV #23.,R3
+	CALL TEHBLK
+;     €€‹ˆ‡ €„…‘€ Ž‹€‘’ˆ ‘’…Š€ Ž–…‘‘Ž€
+	MOV STPRC+14,R5 ;€„…‘ “Š€‡€’…‹Ÿ ‘’…Š€ Ž Ž˜ˆŠ… Ž–…‘‘Ž€
+	BLT 1$
+	CMP R5,#17760	;€€‹ˆ‡ ‚›•Ž„€ ‡€ …„…‹› ’…•. Ž‡“
+	BLE 2$
+	MOV #17760,R5
+	BR  2$
+1$:	CLR R5
+2$:	MOV #STPRC+22,R4
+	MOV #8.,R3	;„‹ˆ€ “”…€ ‘’…Š€
+	CALL TEHBLK
+;     ‘—ˆ’›‚€ˆ… ”€ƒŒ…’€ Ž‡“ ’…‘’€
+	MOV STPRC+16,R5
+	ADD #4,R5	;€—€’œ ‘—ˆ’›‚€ˆ… ‘ €„…‘€ PC+4
+	BLT 10$
+	CMP R5,#42
+	BGE 12$
+	MOV #42,R5
+	BR  11$
+12$:	CMP R5,#20000
+	BLT 11$
+10$:	MOV #20000,R5
+11$:	SUB #42,R5
+	MOV #FRGMNT,R4
+	MOV #17.,R3
+	CALL TEHBLK
+;     €€‹ˆ‡ Ž•Ž†„…ˆŸ ’…‘’€ ‚ Ž–…‘‘Ž…
+	MOV #23.,R5
+	MOV #INTPRC,R3
+3$:	TST (R3)+
+	BNE 4$
+	SOB R5,3$
+	RETURN
+4$:	INC ERROR
+	BIS #100200,FLER
+	.PRINT	#MSG210 	;…—€’œ ‡€ƒŽ‹Ž‚Š€ ‘’€’“‘€ Ž˜ˆŠˆ
+	CLR R5
+6$:	MOV R5,R4
+	ASL R4
+	MOV STPRC(R4),R1;‘Ž„…†ˆŒŽ… …ƒˆ‘’€ ˆ‹ˆ ‘’…Š€ ˆ Ž˜ˆŠ…
+	MOV #MSG212,R2
+	CALL OCTASC
+	MOV #MSG215,R2	;‡€ˆ‘œ €„…‘€ ”€ƒŒ…’€ Ž‡“
+	MOV STPRC+16,R1
+	ADD #4,R1
+	BLT 8$
+	CMP R1,#42
+	BGE 7$
+	MOV #42,R1
+	BR  9$
+7$:	CMP R1,#20000
+	BLT 9$
+8$:	MOV #20000,R1
+9$:	ADD R4,R1
+	SUB #42,R1
+	CALL OCTASC
+	MOV #MSG216,R2	;‡€ˆ‘œ ‘Ž„…†ˆŒŽƒŽ ”€ƒŒ…’€ Ž‡“
+	MOV FRGMNT(R4),R1
+	CALL OCTASC
+;  €—€‹œŽ… Ž“‹…ˆ… ‡Ž› ‘ŽŽ™…ˆŸ Ž …›‚€ˆˆ
+	MOV #17.,R0
+	MOV #MSG217,R1
+15$:	CLRB (R1)+
+	SOB R0,15$
+	CMP R5,#13.	;ˆ‘—…€› ‚‘… ‘—…’—ˆŠˆ ‚…Š’ŽŽ‚ -?
+	BGT 19$
+;   ‡€…‘…ˆ… ‚…Š’Ž€
+	MOV #9.,R0
+	MOV #VEK,R1
+	MOV #MSG217,R2
+16$:	MOVB (R1)+,(R2)+
+	SOB R0,16$
+	MOV #3,R0
+	MOV TABV(R4),R1
+17$:	MOVB (R1)+,(R2)+
+	SOB R0,17$
+	MOVB #':,(R2)+
+	MOV INTPRC(R4),R1
+	CALL OCTASC
+19$:	MOV TABREG(R4),R0;…—€’œ ‘’ŽŠˆ ’€‹ˆ–› ‘’€’“‘€ Ž˜ˆŠˆ
+	.PRINT
+	.PRINT #MSG211
+	INC R5
+	CMP R5,#16.
+	BLE 6$
+5$:	RETURN
+MSG200: .ASCII <16>/	  Ž•Ž„:/
+MSG201: .BLKB 6
+	.ASCII /	   ’…‘’:/
+MSG203: .BLKB 6
+	.ASCII /	   Ž˜ˆŠ€:/
+MSG205: .BLKB 6
+	.ASCIZ <15><17>
+MSG210: .ASCII <15><12><16>/	‘’€’“‘ Ž˜ˆŠˆ		 ”€ƒŒ…’ Ž‡“/
+	.ASCIZ /	       …›‚€ˆŸ/<17>
+MSG211: .ASCII !/!
+MSG212: .BLKB 6
+	.ASCII !	    !
+MSG215: .BLKB 6
+	.ASCII !/!
+MSG216: .BLKB 6
+	.ASCII /	    /
+MSG217: .BLKB 19.
+	.ASCIZ //
+MSG220: .ASCII /       R0 /<200>
+MSG221: .ASCII /       R1 /<200>
+MSG222: .ASCII /       R2 /<200>
+MSG223: .ASCII /       R3 /<200>
+MSG224: .ASCII /       R4 /<200>
+MSG225: .ASCII /       R5 /<200>
+MSG226: .ASCII /       SP /<200>
+MSG227: .ASCII /       PC /<200>
+MSG228: .ASCII /       RS /<200>
+MSG229: .ASCII /     0(SP)/<200>
+MSG230: .ASCII /     2(SP)/<200>
+MSG231: .ASCII /     4(SP)/<200>
+MSG232: .ASCII /     6(SP)/<200>
+MSG233: .ASCII /    10(SP)/<200>
+MSG234: .ASCII /    12(SP)/<200>
+MSG235: .ASCII /    14(SP)/<200>
+MSG236: .ASCII /    16(SP)/<200>
+V0:	.ASCII /  0/
+V4:	.ASCII /  4/
+V10:	.ASCII / 10/
+V14:	.ASCII / 14/
+V20:	.ASCII / 20/
+V24:	.ASCII / 24/
+V30:	.ASCII / 30/
+V34:	.ASCII / 34/
+V100:	.ASCII /100/
+V170:	.ASCII /170/
+V174:	.ASCII /174/
+V250:	.ASCII /250/
+V274:	.ASCII /274/
+VXXX:	.ASCII /???/
+VEK:	.ASCII <16>/‚…Š’Ž /<17>
+	.EVEN
+TABREG: .WORD MSG220,MSG221,MSG222,MSG223,MSG224,MSG225,MSG226
+	.WORD MSG227,MSG228,MSG229,MSG230,MSG231,MSG232,MSG233
+	.WORD MSG234,MSG235,MSG236
+TABV:	.WORD V0,V4,V10,V14,V20,V24,V30,V34,V100
+	.WORD V170,V174,V250,V274,VXXX
+
+;---------------------------------------------------------
+;    / ‘—ˆ’›‚€ˆŸ ‹ŽŠ€ ‘‹Ž‚ ˆ‡ ’…•Ž‹Žƒˆ—…‘ŠŽƒŽ Ž‡“	 !
+;---------------------------------------------------------
+;   <R5> -- €—€‹œ›‰ €„…‘ ‚ ’…•Ž‹Žƒˆ—…‘ŠŽŒ Ž‡“
+;   <R4> -- €—€‹œ›‰ €„…‘ “”…€ ‚ Žƒ€ŒŒ…
+;   <R3> -- ‘—…’—ˆŠ ŠŽ‹ˆ—…‘’‚€ ‘‹Ž‚
+TEHBLK::TST R5
+	BLT 2$
+	CMP R5,#20000	;€€‹ˆ‡ ‚›•Ž„€ ‡€ …„…‹› ’…•. Ž‡“
+	BGE 2$
+;    ‡„…‘œ ‡€•‚€’ ˜ˆ› Ž–…‘‘Ž€
+	MOV R5,ADRES
+	CALL INPUT
+	ADD #2,R5
+	MOV DANNY,(R4)+ ;……Ž‘ ’…Š“™…‰ ˆ”ŽŒ€–ˆˆ
+	SOB R3,TEHBLK
+;    ‡„…‘œ €€‹ˆ‡ Ž‘‚ŽŽ†„…ˆŸ ˜ˆ› Ž–…‘‘Ž€
+2$:	RETURN
+;
+NFATAL:	.WORD	0	;ŽŒ… Ž˜ˆŠˆ
+NTEST:	.WORD	0	;ŽŒ… ’…Š“™…ƒŽ ’…‘’€ ‚ Ž–…‘‘Ž…
+NPROHD: .WORD	0	;ŽŒ… ’…Š“™…ƒŽ Ž•Ž„€ ’…‘’€
+SPROHD: .WORD	0	; ?????
+INTPRC: .BLKW	14.	;“”… ‘—…’—ˆŠŽ‚ …›‚€ˆ‰ Ž–…‘‘Ž€
+STPRC:	.BLKW	17.	;“”… ‘’€’“‘€ Ž•Ž†„…ˆŸ ’…‘’€ Ž–…‘‘Ž€
+FRGMNT: .BLKW	17.	;“”… ”€ƒŒ…’€ Ž‡“ ’…‘’€ Ž–…‘‘Ž€
+
+

@@ -1,0 +1,49 @@
+
+;   *************************************************************
+;   *		  /  ‡€ƒ“‡Šˆ  ’…‘’€				*
+;   *************************************************************
+;	 ‡€ƒ“†€…’‘Ÿ ’…‘’, ‡€„€›‰ ‚ FILINP;
+;	 …‘‹ˆ FILINP=0, ‡€ƒ“†€…’‘Ÿ TKOM
+;
+F$L:	TST	FILINP
+	BNE	10$
+	MOV	#^RSAV,R3
+	MOV	R3,EXTCSI
+	MOV	R3,EXTCSI+2
+	MOV	R3,EXTCSI+4
+	MOV	R3,EXTCSI+6
+	MOV	#2,N$TEST
+	.CSISPC #FILCSI,#EXTCSI,#TKOM
+	BCC	10$
+	.PRINT	#MSG14
+	BR	11$
+10$:	TST	(SP)+		;Ž—ˆ‘’ˆ’œ ‘’…Š Ž‘‹… .CSISPC
+	CALL	CLRBUS
+	BIC	#32000,STATUS	;‘Ÿ’œ ˆ’› PDP,ZPRT,PEREM
+	CALL	F$LO
+11$:	JMP	DIALOG
+
+;
+;   *************************************************************
+;   *		  /  ‡€ƒ“‡Šˆ  ’…‘’€				*
+;   *************************************************************
+;
+F$LO:	BIC	#OTLAD,STATUS
+	BIS	#D$TEST,STATS2	;ˆ’ ‡€ƒ“†€…ŒŽƒŽ ’…‘’€
+	CALL	S$LOAD
+	BIC	#D$TEST,STATS2	;ˆ’ ‡€ƒ“†€…ŒŽƒŽ ’…‘’€
+	BIS	#OTLAD,STATUS
+	MOV	#F$NAM,R3
+	MOV	#F$NAML,R5
+	MOV	#13.,R2
+12$:	MOVB	(R3)+,(R5)+
+	SOB	R2,12$
+	.PRINT	#MSG16
+	RETURN
+MSG14:	.ASCIZ	<11><16>/Ž˜ˆŠ€ /<17>/.CSISPC/
+MSG16:	.ASCII	<11><16>/‡€ƒ“†…€ Žƒ€ŒŒ€  /<17>
+
+F$NAM::	.BLKB	14.
+F$NAML: .BLKB	13.
+	.BYTE	0
+	.EVEN

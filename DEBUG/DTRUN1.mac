@@ -1,0 +1,23 @@
+;------------------------------------------------------
+;	  ’…‘’    "…ƒ“™€Ÿ    …„ˆˆ–€"		      !
+;------------------------------------------------------
+RUN1:	MOV BGNRAM,ADRES;€—€‹œ›‰ €„…‘ Ž‡“
+1$:	MOV #16.,R4	;‘—…’—ˆŠ ˆ’ ‚ ‘‹Ž‚…
+	MOV #1,R5	;"…ƒ“™€Ÿ 1"
+2$:	MOV R5,DANNY
+	CALL OUTPUT
+	CALL INPUT
+	CMP DANNY,R5
+	BEQ 3$
+	MOV R5,R1
+	CALL ERRWRD	;…—€’œ ‘ŽŽ™…ˆŸ Ž Ž˜ˆŠ…
+3$:	ASL R5 		;‘„‚ˆƒ "…ƒ“™…‰ 1"
+	SOB R4,2$
+       CALL  TTINDB	;***„‹Ÿ …†. DBG - ‚›•Ž„ ˆ‡ ‡€–ˆŠ‹. € „ˆ€‹Žƒ 
+	ADD #2,ADRES	;”ŽŒˆŽ‚€ˆ… €„…‘€ ‘‹…„“ž™…‰ Ÿ—…‰Šˆ Ž‡“
+	CMP ADRES,ENDRAM;€€‹ˆ‡ ŠŽ–€ ’…‘’€
+	BLO 1$
+	RETURN
+MSG30:	.ASCIZ <16>/        ’…‘’  "…ƒ“™€Ÿ  …„ˆˆ–€"/<17>
+	.EVEN
+

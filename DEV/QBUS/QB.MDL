@@ -1,0 +1,548 @@
+	.TITLE	QB.MDL
+	.MCALL	.TTINR
+
+;************************************
+.ITEM QBUSCYCLE,,,<>,<áÄñàäãàíú éÅêÄôÖçàÖ ä äÄçÄãì>
+;************************************
+	MOV	R1,-(SP)
+	MOV	R0,R1
+1$:
+	STR.OUT
+	STR.OUT #QADRESS
+	MOV	QADRESS,R0
+	COM	R0
+	.BINOCT	R0
+	.NULCLR R0
+	.PRINT R0
+	STR.OUT
+
+	STR.OUT	#QDATOUT
+	MOV	QDATOUT,R0
+	COM	R0
+	.BINOCT	R0
+	.NULCLR R0
+	.PRINT R0
+	STR.OUT
+
+	BIC	#QSTSOERROR,QBUSSTATUS
+	MOV	R1,R0
+	CALL	QBUSPROC
+
+	.TTINR
+	.TTINR
+	BCS	1$
+
+	MOV	(SP)+,R1
+	RETURN
+
+;************************************
+.GLOBL QBUSPROC
+.ITEM  QBUSPROC,,,<>,<éÑàçéóçéÖ éÅêÄôÖçàÖ ä äÄçÄãì>
+;************************************
+	BIC	#QSTSERROR,QBUSSTATUS
+	FML.LST R0
+	CLC
+	BIT	#QSTSERROR,QBUSSTATUS
+	BEQ	1$
+	SEC
+1$:	RETURN
+
+
+QSTSERROR == 1
+QSTSOERROR == 2
+QBUSSTATUS:: .WORD
+;************************************
+.ITEM QBPRUN,,,<>,<Çõèéãçàíú òÄÉ èêéñÖÑìêõ òàçõ åèà>
+;************************************
+	MOV	R1,-(SP)
+	MOV	R0,R1
+	CALL	@R0
+	BCC	1$
+	BIS	#QSTSERROR,QBUSSTATUS
+	BIT	#QSTSOERROR,QBUSSTATUS
+	BEQ	1$
+	MSG.ERR	R1
+	.PAUSE
+1$:	MOV	(SP)+,R1
+	RETURN
+
+
+;***< QBC$ >***
+.ITEM QBC$,,,<.TYPE QBUSCYCLE>,<>	;èêéñÖÑìêõ òàçõ åèà
+
+;************************************
+.ITEM QBP$,,,<.TYPE QBPRUN>	,<>	;èêéñÖÑìêÄ òàçõ åèà
+;************************************
+
+.GLOBL QBOUT,QBINP,QBOUTB,QBIO,QBIOB,QBPUSK
+.GLOBL QBPOUT
+.GLOBL QBZAHV,QBOSVB
+.GLOBL QBPZUNO,QBPZUYES
+.GLOBL QBZAPYES,QBZAPNO
+.GLOBL QBCLEAR
+
+;************************************
+.ITEM QBOUT,,QBOUT,<>,<èêéñÖÑìêÄ "ÇõÇéÑ">
+.FAMIL QBP$,<$QSTART,$QBYTSET,$QADRSET,$QSIASET,$QBYTRESET,$QADOUT,$QOUTSET,$QSIPLOW,$QOUTRESET,$QSIPHIG,$QADRESET,$QEND>
+;************************************
+
+;************************************
+.ITEM QBPOUT,,QBPOUT,<>,<èêéñÖÑìêÄ "ÇõÇéÑ" Ñãü èêéÉê.>
+.FAMIL QBP$,<$QSTART,$QBYTSET,$QADRSET,$QSIASET,$QBYTRESET,$QADOUT,$QOUTSET,$QPRZAD,$QOUTRESET,$QSIPHIG,$QADRESET,$QEND>
+;************************************
+
+;************************************
+.ITEM QBINP,,QBINP,<>,<èêéñÖÑìêÄ "ÇÇéÑ">
+.FAMIL QBP$,<$QSTART,$QADRSET,$QSIASET,$QADRESET,$QINPSET,$QSIPLOW,$QADINPUT,$QINPRESET,$QSIPHIG,$QSIARESET,$QEND>;
+;************************************
+;*******************************************
+.ITEM QBOUTB,,QBOUTB,<>,<èêéñÖÑìêÄ "ÇõÇéÑ ÅÄâíÄ">
+.FAMIL QBP$,<$QSTART,$QBYTSET,$QADRSET,$QSIASET,$QADOUT,$QOUTSET,$QSIPLOW,$QOUTRESET,$QSIPHIG,$QAD2RESET,$QEND>
+;*******************************************
+
+;************************************
+.ITEM QBIO,,QBIO,<>,<èêéñÖÑìêÄ "ÇÇéÑ-èÄìáÄ-ÇõÇéÑ">
+.FAMIL QBP$,<$QSTAR,$QADRS,$QSIAS,$QADRE,$QINPS,$QSIPL,$QADIN,$QINPR,$QSIPH,$QADOU,$QOUTS,$QSIPL,$QOUTR,$QAD2R,$QSIAR,$QEND>
+;************************************
+
+;************************************
+.ITEM QBIOB,,QBIOB,<>,<èêéñÖÑìêÄ "ÇÇéÑ-èÄìáÄ-ÇõÇéÑ ÅÄâíÄ">
+.FAMIL QBP$,<$QSTAR,$QADRS,$QSIAS,$QBYTS,$QADRE,$QINPS,$QSIPL,$QADIN,$QINPR,$QSIPH,$QADOU,$QOUTS,$QSIPL,$QOUTR,$QAD2R,$QSIAR,$QEND>
+;************************************
+
+;**********************************************
+.ITEM QBPUSK,,QBPUSK,<>,<èêéñÖÑìêÄ "èìëä èêéñÖëëéêÄ">
+.FAMIL QBP$,<$QASPSET,$QAIPSET,$QPAU40,$QAIPRESET,$QPAU70,$QASPRESET>
+;**********************************************
+
+;**********************************************
+.ITEM QBZAHV,,QBZAHV,<>,<èêéñÖÑìêÄ "áÄïÇÄí åÄÉàëíêÄãà">
+.FAMIL QBP$,<$QPZMRESET,$QZMSET,$QRZMLOW,$QPZMSET,$QZMRESET,$QRZMHIG>
+;**********************************************
+
+;**********************************************
+.ITEM QBOSVB,,QBOSVB,<>,<èêéñÖÑìêÄ "éëÇéÅéÜÑÖçàÖ åÄÉàëíêÄãà">
+.FAMIL QBP$,<$QPZMRESET>
+;**********************************************
+
+;**********************************************
+.ITEM QBPZUNO,,QBPZUNO,<>,<"èÖêÖåÖôÖçàÖ áì">
+.FAMIL QBP$,<$QPZUSET>
+;**********************************************
+
+;**********************************************
+.ITEM QBPZUYES,,QBPZUYES,<>,<éíåÖçàíú èÖêÖåÖôÖçàÖ áì>
+.FAMIL QBP$,<$QPZURESET>
+;**********************************************
+
+;**********************************************
+.ITEM QBZAPYES,,QBZAPYES,<>,<áÄèêÖí èêÖêõÇÄçàâ>
+.FAMIL QBP$,<$QZAPSET>
+;**********************************************
+
+;**********************************************
+.ITEM QBZAPNO,,QBZAPNO,<>,<êÄáêÖòàíú èêÖêõÇÄçàü>
+.FAMIL QBP$,<$QZAPRESET>
+;**********************************************
+
+;**********************************************
+.ITEM QBCLEAR,,QBCLEAR,<>,<ëÅêéë ÇëÖï ëàÉçÄãéÇ äÄçÄãÄ>
+.FAMIL QBP$,<$QPZMSET,$QADCLEAR,$QCNRCLEAR>
+;**********************************************
+
+.MACRO Q.ADOUT DATA
+	MOV	DATA,RG$RGG+2
+	MOV	RG$RGG+2,@RG$RGG
+.ENDM Q.ADOUT
+
+.MACRO Q.CNROUT DATA
+	MOV	DATA,RG$RGD+2
+	MOV	RG$RGD+2,@RG$RGD
+.ENDM Q.CNROUT
+
+.MACRO Q.BIC DATA
+	BIC	DATA,RG$RGD+2
+	MOV	RG$RGD+2,@RG$RGD
+.ENDM Q.BIC
+
+.MACRO Q.BIS DATA
+	BIS	DATA,RG$RGD+2
+	MOV	RG$RGD+2,@RG$RGD
+.ENDM Q.BIS
+
+QBTEMP:	.WORD
+
+.MACRO Q.TSTAD DATA
+	MOV	@RG$RGG,QBTEMP
+	CMP	DATA,QBTEMP
+	BEQ	.+6
+	SEC
+	BR	.+4
+	CLC
+.ENDM Q.TSTAD
+
+.MACRO Q.TSTLOW DATA
+	MOV	@RG$RGD,QBTEMP
+	CLC
+	BIT	DATA,QBTEMP
+	BEQ	.+4
+	SEC
+.ENDM Q.TSTLOW
+
+.MACRO Q.TSTHIG DATA
+	MOV	@RG$RGD,QBTEMP
+	CLC
+	BIT	DATA,QBTEMP
+	BNE	.+4
+	SEC
+.ENDM Q.TSTHIG
+
+.MACRO Q.INIT ADDAT,UPRDAT
+	MOV	ADDAT,RG$RGG+2
+	MOV	RG$RGG+2,@RG$RGG
+	BIS	UPRDAT,RG$RGD+2
+	MOV	RG$RGD+2,@RG$RGD
+.ENDM Q.INIT
+
+
+.ITEM $QADCLEAR,,,<>,<ëÅêéë òàçõ ÄÑ>
+	Q.ADOUT #177777
+	Q.TSTAD	#177777
+	RETURN
+.ITEM $QCNRCLEAR,,,<>,<ëÅêéë òàçõ ìèê>
+	Q.CNROUT #177777
+	CLC
+	RETURN
+
+
+.MACRO	Q.START IMAGE
+	Q.INIT #177777,#140377
+	Q.TSTAD #177777
+.ENDM	Q.START
+
+.ITEM $QSTART,,,<>,<àçàñàÄãàáÄñàü çéÇéÉé ñàäãÄ>
+	Q.START R0
+	RETURN
+
+
+.MACRO	Q.ADRSET
+	Q.ADOUT QADRESS
+	Q.TSTAD	QADRESS
+.ENDM	Q.ADRSET
+
+.ITEM $QADRSET,,,<>,<ìëíÄçéÇàíú ÄÑêÖë çÄ "ÄÑ">
+	Q.ADRSET
+	RETURN
+
+.MACRO	Q.BYTSET
+	Q.BIC	#$SQBYT
+	Q.TSTLOW #$SQBYT
+.ENDM	Q.BYTSET
+
+.ITEM $QBYTSET,,,<>,<ìëíÄçéÇàíú ëàÉçÄã "èáè">
+	Q.BYTSET
+	RETURN
+
+
+.MACRO	Q.BYTRESET
+	Q.BIS	#$SQBYT
+	Q.TSTHIG #$SQBYT
+.ENDM	Q.BYTRESET
+
+.ITEM $QBYTRESET,,,<>,<ëçüíú ëàÉçÄã "èáè">
+	Q.BYTRESET
+	RETURN
+
+
+.MACRO	Q.ADRESET
+	Q.ADOUT #177777
+	Q.TSTAD #177777
+.ENDM	Q.ADRESET
+
+.ITEM $QADRESET,,,<>,<ëÅêéë òàçõ "ÄÑ">
+	Q.ADRESET
+	RETURN
+
+
+.MACRO	Q.AD2RESET
+	Q.BIS	#$SQBYT
+	Q.ADOUT #177777
+	Q.TSTHIG #$SQBYT
+.ENDM	Q.AD2RESET
+
+.ITEM $QAD2RESET,,,<>,<ëÅêéë òàçõ "ÄÑ" à ëçüíàÖ ëàÉçÄãÄ "èáè">
+	Q.AD2RESET
+	RETURN
+
+
+.MACRO	Q.SIASET
+	Q.BIC	#$SQSIA
+	Q.TSTLOW #$SQSIA
+.ENDM	Q.SIASET
+
+.ITEM $QSIASET,,,<>,<ìëíÄçéÇàíú ëàÉçÄã "éÅå">
+	Q.SIASET
+	RETURN
+
+
+.MACRO	Q.SIARESET
+	Q.BIS	#$SQSIA
+	Q.TSTHIG #$SQSIA
+.ENDM	Q.SIARESET
+
+.ITEM $QSIARESET,,,<>,<ëçüíú ëàÉçÄã "éÅå">
+	Q.SIARESET
+	RETURN
+
+
+.MACRO	Q.INPSET
+	Q.BIC	#$SQIN
+	Q.TSTLOW #$SQIN
+.ENDM	Q.INPSET
+
+.ITEM $QINPSET,,,<>,<ìëíÄçéÇàíú ëàÉçÄã "Ñóí">
+	Q.INPSET
+	RETURN
+
+
+.MACRO	Q.INPRESET
+	Q.BIS	#$SQIN
+	Q.TSTHIG #$SQIN
+.ENDM	Q.INPRESET
+
+.ITEM $QINPRESET,,,<>,<ëçüíú ëàÉçÄã "Ñóí">
+	Q.INPRESET
+	RETURN
+
+
+.MACRO	Q.OUTSET
+	Q.BIC	#$SQOUT
+	Q.TSTLOW #$SQOUT
+.ENDM	Q.OUTSET
+
+.ITEM $QOUTSET,,,<>,<ìëíÄçéÇàíú ëàÉçÄã "Ñáè">
+	Q.OUTSET
+	RETURN
+
+
+.MACRO	Q.OUTRESET
+	Q.BIS	#$SQOUT
+	Q.TSTHIG #$SQOUT
+.ENDM	Q.OUTRESET
+
+.ITEM $QOUTRESET,,,<>,<ëçüíú ëàÉçÄã "Ñáè">
+	Q.OUTRESET
+	RETURN
+
+
+.MACRO	Q.SIPLOW
+	Q.TSTLOW #$SQSIP
+.ENDM	Q.SIPLOW
+
+.ITEM $QSIPLOW,,,<>,<ëàÉçÄã "éíÇ" ìëíêéâëíÇé ÇõëíÄÇàãé?>
+	Q.SIPLOW
+	RETURN
+
+
+.MACRO	Q.SIPHIG
+	Q.TSTHIG #$SQSIP
+.ENDM	Q.SIPHIG
+
+.ITEM $QSIPHIG,,,<>,<ëàÉçÄã "éíÇ" ìëíêéâëíÇé ëÅêéëàãé?>
+	Q.SIPHIG
+	RETURN
+
+
+.MACRO	Q.END
+	Q.INIT #177777,#140377
+	Q.TSTAD #177777
+.ENDM	Q.END
+
+.ITEM $QEND,,,<>,<îàçÄãàáÄñàü ñàäãÄ>
+	Q.END
+	RETURN
+
+
+.MACRO Q.ADINP
+	MOV	@RG$RGG,QDATINP
+.ENDM Q.ADINP
+
+.ITEM $QADINPUT,,,<>,<èéãìóàíú ÑÄççõÖ ë òàçõ ÄÑ>
+	Q.ADINP
+	RETURN
+
+
+.ITEM $QADOUTPUT,,,<>,<ìëíÄçéÇàíú ÑÄççõÖ çÄ òàçì ÄÑ>
+	Q.ADOUT QDATOUT
+	RETURN
+
+;**********************************
+.MACRO	Q.PAUSE TIMEMS
+	MOV	R0,-(SP)
+	MOV	#TIMEMS*300.,R0
+	SOB	R0,.
+	MOV	(SP)+,R0
+	CLC
+.ENDM	Q.PAUSE
+
+.MACRO	Q.ASPSET
+	Q.BIC	#$SQASP
+	Q.TSTLOW #$SQASP
+.ENDM	Q.ASPSET
+
+.MACRO	Q.ASPRESET
+	Q.BIS	#$SQASP
+	Q.TSTHIG #$SQASP
+.ENDM	Q.ASPRESET
+
+.MACRO	Q.AIPSET
+	Q.BIC	#$SQAIP
+	Q.TSTLOW #$SQAIP
+.ENDM	Q.AIPSET
+
+.MACRO	Q.AIPRESET
+	Q.BIS	#$SQAIP
+	Q.TSTHIG #$SQAIP
+.ENDM	Q.AIPRESET
+
+.ITEM $QAIPRESET,,,<>,<ëçüíú ëàÉçÄã "Äàè">
+	Q.AIPRESET
+	RETURN
+
+.ITEM $QAIPSET,,,<>,<ìëíÄçéÇàíú ëàÉçÄã "Äàè">
+	Q.AIPSET
+	RETURN
+
+.ITEM $QASPRESET,,,<>,<ëçüíú ëàÉçÄã "Äëè">
+	Q.ASPRESET
+	RETURN
+
+.ITEM $QASPSET,,,<>,<ìëíÄçéÇàíú ëàÉçÄã "Äëè">
+	Q.ASPSET
+	RETURN
+
+
+.ITEM $QPAU40,,,<>,<áÄÑÖêÜäÄ 40 åë>
+	Q.PAUSE 40
+	RETURN
+
+.ITEM $QPAU70,,,<>,<áÄÑÖêÜäÄ 70 åë>
+	Q.PAUSE 70
+	RETURN
+
+.ITEM $QPAUSE,,,<>,<áÄÑÖêÜäÄ áÄèàëà>
+	MOV	R3,-(SP)
+1$:	SOB     R3,1$		;èÄìáÄ èÖêÖåÖççÄü
+	MOV	(SP)+,R3
+	RETURN
+
+
+.MACRO	Q.ZMSET
+	Q.BIC	#$SQZM
+	Q.TSTLOW #$SQZM
+.ENDM	Q.ZMSET
+
+.ITEM $QZMSET,,,<>,<ìëíÄçéÇàíú ëàÉçÄã "áå">
+	Q.ZMSET
+	RETURN
+
+
+.MACRO	Q.ZMRESET
+	Q.BIS	#$SQZM
+	Q.TSTHIG #$SQZM
+.ENDM	Q.ZMRESET
+
+.ITEM $QZMRESET,,,<>,<ëçüíú ëàÉçÄã "áå">
+	Q.ZMRESET
+	RETURN
+
+
+.MACRO	Q.PZMSET
+	Q.BIC	#$SQPZM
+	Q.TSTLOW #$SQPZM
+.ENDM	Q.PZMSET
+
+.ITEM $QPZMSET,,,<>,<ìëíÄçéÇàíú ëàÉçÄã "èáå">
+	Q.PZMSET
+	RETURN
+
+
+.MACRO	Q.PZMRESET
+	Q.BIS	#$SQPZM
+	Q.TSTHIG #$SQPZM
+.ENDM	Q.PZMRESET
+
+.ITEM $QPZMRESET,,,<>,<ëçüíú ëàÉçÄã "èáå">
+	Q.PZMRESET
+	RETURN
+
+
+.MACRO	Q.RZMLOW
+	Q.TSTLOW #$SQRZM
+.ENDM	Q.RZMLOW
+
+.ITEM $QRZMLOW,,,<>,<ëàÉçÄã "êáå" èêéñÖëëéê ÇõëíÄÇàã?>
+	Q.RZMLOW
+	RETURN
+
+
+.MACRO	Q.RZMHIG
+	Q.TSTHIG #$SQRZM
+.ENDM	Q.RZMHIG
+
+.ITEM $QRZMHIG,,,<>,<ëàÉçÄã "êáå" èêéñÖëëéê ëÅêéëàã?>
+	Q.RZMHIG
+	RETURN
+
+
+.MACRO	Q.PZUSET
+	Q.BIC	#$SQPZU
+	Q.TSTLOW #$SQPZU
+.ENDM	Q.PZUSET
+
+.ITEM $QPZUSET,,,<>,<ìëíÄçéÇàíú ëàÉçÄã "èÖêÖåÖôÖçàÖ">
+	Q.PZUSET
+	RETURN
+
+
+.MACRO	Q.PZURESET
+	Q.BIS	#$SQPZU
+	Q.TSTHIG #$SQPZU
+.ENDM	Q.PZURESET
+
+.ITEM $QPZURESET,,,<>,<ëçüíú ëàÉçÄã "èÖêÖåÖôÖçàÖ">
+	Q.PZURESET
+	RETURN
+
+
+.MACRO	Q.ZAPSET
+	Q.BIC	#$SQZAP
+	Q.TSTLOW #$SQZAP
+.ENDM	Q.ZAPSET
+
+.ITEM $QZAPSET,,,<>,<ìëíÄçéÇàíú ëàÉçÄã "áÄèêÖí èêÖêõÇÄçàâ">
+	Q.ZAPSET
+	RETURN
+
+
+.MACRO	Q.ZAPRESET
+	Q.BIS	#$SQZAP
+	Q.TSTHIG #$SQZAP
+.ENDM	Q.ZAPRESET
+
+.ITEM $QZAPRESET,,,<>,<ëçüíú ëàÉçÄã "áÄèêÖí èêÖêõÇÄçàâ">
+	Q.ZAPRESET
+	RETURN
+
+
+.ITEM $QPRZAD,,,<>,<áÄÑÖêÜäÄ ëàÉçÄãÄ áÄèàëú>
+	BIC	#40000,RG$RGD+2
+	MOV	RG$RGD+2,@RG$RGD
+        MOV     R3,-(SP)
+	SOB     R3,.           ;èÄìáÄ èÖêÖåÖççÄü
+        MOV     (SP)+,R3
+	BIS	#40000,RG$RGD+2
+	MOV	RG$RGD+2,@RG$RGD
+	CLC
+	RETURN
+

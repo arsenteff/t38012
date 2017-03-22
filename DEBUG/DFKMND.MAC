@@ -1,0 +1,16 @@
+;
+;   *************************************************************
+;   *	   Ž„Žƒ€ŒŒ€  ……•Ž„€  Ž  ‘Œ…™…ˆž  ‚  ŠŽŒ€„…	*
+;   *************************************************************
+;
+F$KMND: CALL	ANLNBR		;€€‹ˆ‡ ˆ‡€Š€ Ž’Š›’ˆŸ Ÿ—…‰Šˆ
+	CALL	INPUT		;‘—ˆ’›‚€ˆ… ˆ‡ ’…Š“™…‰ Ÿ—…‰Šˆ Q-˜ˆ›
+	BIC	#177400,DANNY	;Ž‹Ž†ˆ’…‹œ›‰ ‡€Š ‘Œ…™…ˆŸ
+	BIT	#200,DANNY	;€€‹ˆ‡ ‡€Š€ ‘Œ…™…ˆŸ ŠŽŒ€„›
+	BEQ	1$
+	BIS	#177400,DANNY	;Ž’ˆ–€’…‹œ›‰ ‡€Š ‘Œ…™…ˆŸ
+1$:	ASL	DANNY		;‘‹Ž‚Ž… ‘Œ…™…ˆ…
+AD$2:	ADD	#2,DANNY
+	ADD	DANNY,ADRES	;ˆ‘’ˆ›‰ €„…‘
+	JMP	LF$NBR
+

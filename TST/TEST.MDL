@@ -1,0 +1,61 @@
+	.TITLE TEST.MDL
+
+;****************************************
+.ITEM TSTGRP,,,<>,<€—€’œ Ž‚…Š“>
+;****************************************
+	FML.LST R0
+	RETURN
+
+;**************************************
+.ITEM TSTFIN,,,<>,<’…‘’ ‡€‚…˜…>
+;**************************************
+	RETURN
+
+;*************************************
+.ITEM TSTERR,,,<>,<Ž˜ˆŠˆ ’…‘’€>
+;*************************************
+	RETURN
+
+;***************************************
+.ITEM TSTNAM,,,<>,<€‡‚€ˆ… ’…‘’€>
+;***************************************
+	ITM.NAM R0,R0
+	RETURN
+
+;***********************************
+.ITEM TSTNUM,,,<>,<ŽŒ… ’…‘’€>
+;***********************************
+	MOV	@R0,R0
+	RETURN
+
+;.ITEM MD$TST,TEST,MD$TST,<.FAMIL ,<MD$TMN,MD$TNOD>>,<’…‘’-ŒŽ„“‹ˆ>
+
+; ŒŽ„“‹ˆ ’…‘’€ ‘‹“†…›…
+;.ITEM MD$TMN,MD$TST,MD$TMN,<.FAMIL ,<TSTGRP,TSTRUN,TSTSEA,TSTNUM>>,<‘‹“†…›… ŒŽ„“‹ˆ>
+;.INCLUDE /DK:TSTMAC.MDL/
+.INCLUDE /DK:TSTRUN.MDL/
+.INCLUDE /DK:TSTSEA.MDL/
+.INCLUDE /DK:TSTALL.MDL/
+
+; ŒŽ„“‹ˆ ’…‘’€ –……‰
+.INCLUDE /DK:TSTNOD.MDL/
+;.ITEM MD$TNOD,MD$TST,MD$TNOD,<.FAMIL ,<TSTLOW,TSTHIG,TSTJM0,TSTJM1,TSTLG0,TSTLG1>>,<’…‘’-ŒŽ„“‹ˆ –……‰>
+
+; ŒŽ„“‹ˆ ’…‘’€ ˜ˆ› €„
+.INCLUDE /DK:TSTBUS.MDL/
+
+;ŒŽ„“‹œ ’…‘’€ ‡€Œ›Š€ˆŸ –……‰
+.INCLUDE /DK:TSTZAM.MDL/
+
+.INCLUDE /DK:TSTRG.MDL/
+.INCLUDE /DK:TSTANL.MDL/
+;;;.INCLUDE /DK:TSTDAC.MDL/
+
+TSTGND: .FAMIL ,<TSTLOW>
+TSTPWR: .FAMIL ,<TSTHIG>
+TSTJMP: .FAMIL ,<TSTJM0,TSTJM1>
+TSTLOG: .FAMIL ,<TSTLG0,TSTLG1>
+TSTANL: .FAMIL ,<TSTAN0>
+
+TSTADZ: .FAMIL ,<TADZAM>
+

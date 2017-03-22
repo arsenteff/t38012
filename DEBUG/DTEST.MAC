@@ -1,0 +1,389 @@
+	RSKL=177560	;…ƒˆ‘’Ž ‘Ž‘’ŽŸˆŸ ŠŽ‘Ž‹ˆ
+	RDKL=177562	;…ƒˆ‘’  „€›•    ŠŽ‘Ž‹ˆ
+	RSSC=177564	;…ƒˆ‘’ ‘Ž‘’ŽŸˆŸ Š€€
+	SCREEN=177566	;…ƒˆ‘’ „€›• Š€€
+
+TST$SP:	.WORD 0
+OZU$SP:	.WORD 0
+
+FLER:	.WORD	0
+CHCIKL:	.WORD	0
+
+VEKTOR:	.BLKW   2	;ŠŽˆŸ ‚…Š’Ž€ Š‹€‚ˆ€’“›
+ERROR:	.WORD	0
+
+BGNRAM:	.WORD	0	;€„…‘ €—€‹€ Ž‡“
+ENDRAM:	.WORD	0	;€„…‘ ŠŽ–€ Ž‡“
+
+STACK:	.WORD	0		;‘ˆ‘’…Œ›‰ ‘’…Š
+KOMNDA:	.WORD	0		;ŽŒ… ‚›Ž‹Ÿ…ŒŽ‰ ŠŽŒ€„›
+EXTCSI:	.BLKW	4		;€‘˜ˆ…ˆŸ ”€‰‹Ž‚ Ž “ŒŽ‹—€ˆž
+FILCSI:	.BLKW	15.		;Žˆ‘€ˆ… ‚•Ž„›• ”€‰‹Ž‚
+
+FILINP:	.BLKW	24.
+	.RAD50	/DK ARK351/
+	.RAD50	/SAV/
+	.BLKW	12.		;Žˆ‘€ˆ… ‚›•Ž„›• ”€‰‹Ž‚
+
+DLNFIL:	.WORD	0		;„‹ˆ€ ”€‰‹€ ‚ ‹ŽŠ€•
+DLNPAM: .WORD	28.		;„‹ˆ€ Ž’‹€†ˆ‚€…ŒŽ‰ €ŒŸ’ˆ ŠŽŒ‹…Š‘€
+AREA:	.BLKW	3		;\
+AREA0:	.BLKW	2		; \
+AREA1:	.BLKW	5		;  >“€‚‹Ÿž™ˆ… ‹ŽŠˆ Œ€ŠŽŠŽŒ€„
+AREA2:	.BLKW	4		; /
+AREA3:	.BLKW	5		;/
+N:	.WORD	0		;‘—…’—ˆŠ ‹ŽŠŽ‚
+NERR:	.WORD	0		;‘—…’—ˆŠ Ž˜ˆŽŠ
+
+BLOCK:	.BLKW	256.		;‹ŽŠ ˆ”ŽŒ€–ˆˆ ”€‰‹€
+
+;------------------------------------------------------
+;	  ’…‘’    "…ƒ“™ˆ‰    “‹œ"		      !
+;------------------------------------------------------
+RUN0:	MOV BGNRAM,ADRES;€—€‹œ›‰ €„…‘ Ž‡“
+1$:	MOV #16.,R4	;‘—…’—ˆŠ ˆ’ ‚ ‘‹Ž‚…
+	MOV #177776,R5	;"…ƒ“™ˆ‰ 0"
+2$:	MOV R5,DANNY
+	CALL INOUT
+	CALL INPUT
+	CMP DANNY,R5
+	BEQ 3$
+	MOV R5,R1
+	CALL ERRWRD	;…—€’œ ‘ŽŽ™…ˆŸ Ž Ž˜ˆŠ…
+3$:	SEC		;‘„‚ˆƒ "…ƒ“™…ƒŽ 0"
+	ROL R5
+	SOB R4,2$
+;;;       CALL  TTINDB	;***„‹Ÿ …†. DBG - ‚›•Ž„ ˆ‡ ‡€–ˆŠ‹. € „ˆ€‹Žƒ 
+
+	CALL	PRC2PRINT
+
+	ADD #2,ADRES	;”ŽŒˆŽ‚€ˆ… €„…‘€ ‘‹…„“ž™…‰ Ÿ—…‰Šˆ Ž‡“
+	CMP ADRES,ENDRAM;€€‹ˆ‡ ‡€‚…˜…ˆŸ ’…‘’€
+	BLO 1$
+	RETURN
+MSG40:	.ASCIZ <16>/        ’…‘’  "…ƒ“™ˆ‰  “‹œ"/<17>
+	.EVEN
+
+
+;------------------------------------------------------
+;	  ’…‘’    "…ƒ“™€Ÿ    …„ˆˆ–€"		      !
+;------------------------------------------------------
+RUN1:	MOV BGNRAM,ADRES;€—€‹œ›‰ €„…‘ Ž‡“
+1$:	MOV #16.,R4	;‘—…’—ˆŠ ˆ’ ‚ ‘‹Ž‚…
+	MOV #1,R5	;"…ƒ“™€Ÿ 1"
+2$:	MOV R5,DANNY
+	CALL OUTPUT
+	CALL INPUT
+	CMP DANNY,R5
+	BEQ 3$
+	MOV R5,R1
+	CALL ERRWRD	;…—€’œ ‘ŽŽ™…ˆŸ Ž Ž˜ˆŠ…
+3$:	ASL R5 		;‘„‚ˆƒ "…ƒ“™…‰ 1"
+	SOB R4,2$
+;;;       CALL  TTINDB	;***„‹Ÿ …†. DBG - ‚›•Ž„ ˆ‡ ‡€–ˆŠ‹. € „ˆ€‹Žƒ
+
+	CALL	PRC2PRINT
+
+	ADD #2,ADRES	;”ŽŒˆŽ‚€ˆ… €„…‘€ ‘‹…„“ž™…‰ Ÿ—…‰Šˆ Ž‡“
+	CMP ADRES,ENDRAM;€€‹ˆ‡ ŠŽ–€ ’…‘’€
+	BLO 1$
+	RETURN
+MSG30:	.ASCIZ <16>/        ’…‘’  "…ƒ“™€Ÿ  …„ˆˆ–€"/<17>
+	.EVEN
+
+
+STEPPRINT:
+	MOV	R0,-(SP)
+	MOV	#DLINA,R0
+1$:	MOVB	#40,STROKA-1(R0)
+	SOB	R0,1$
+	MOVB	#15,STROKA+78.
+	MOVB	#200,STROKA+79.
+
+	.PRINT	#STROKA
+	MOV	(SP)+,R0
+
+	.PRINT
+	RETURN
+
+;--------------------------------------------------------
+;	’…‘’ ‡€ˆ‘ˆ ‘‹Ž‚ ‚ €Š Ž‡“ ‘Ž ‘€‚…ˆ…Œ	!
+;--------------------------------------------------------
+WRDKOD:	CLR R4		;‘—…’—ˆŠ —ˆ‘‹€ Ž‚…Ÿ…Œ›• ŠŽ„Ž‚
+1$:	CALL ST 	;‘—…’—ˆŠ Ÿ—……Š Ž‡“
+	CMP R5,#1
+	BGT 15$
+	MOV #2,R5
+15$:	ASR R5
+	MOV BGNRAM,ADRES;€—€‹œ›‰ €„…‘ €Š€ Ž‡“
+2$:	MOV TABDAN(R4),DANNY  ;‡€ˆ‘›‚€…Œ›‰ ŠŽ„
+	CMP R4,#2	;Ž‚…Š€ ‚ –ˆŠ‹… "‚‚Ž„-€“‡€-‚›‚Ž„"
+	BLE 20$
+	CALL INOUT	;–ˆŠ‹ "‚‚Ž„-€“‡€-‚›‚Ž„"
+	BR  21$
+20$:	CALL OUTPUT	;–ˆŠ‹ "‚›‚Ž„"
+21$:	CALL INPUT	;‘—ˆ’›‚€ˆ… ‡€ˆ‘€ŽƒŽ ŠŽ„€
+	CMP @#DANNY,TABDAN(R4)  ;‘€‚…ˆ… ‡€ˆ‘›‚€…ŒŽƒŽ ˆ ‘—ˆ’€ŽƒŽ ŠŽ„Ž‚
+	BEQ 3$ 		;……•Ž„,…‘‹ˆ ŠŽ„› ‘€‚ˆ‹ˆ‘œ
+	MOV TABDAN(R4),R1  ;‡€ˆ‘›‚€‚˜ˆ‰‘Ÿ ŠŽ„
+	CALL ERRWRD	;…—€’œ ‘ŽŽ™…ˆŸ Ž Ž˜ˆŠ…
+3$:
+;;;	CALL	TTINDB		;***„‹Ÿ …†. DBG - ‚›•Ž„ ˆ‡ ‡€–ˆŠ‹. € „ˆ€‹Žƒ 
+
+	CMP	ADRES,BGNRAM
+	BNE	5$
+	MOV	TWRDKD(R4),R0
+	CALL	STEPPRINT
+5$:
+	CALL	PRC2PRINT
+
+	ADD	#2,ADRES	;€„…‘ ‘‹…„“ž™…‰ Ÿ—…‰Šˆ Ž‡“
+4$:
+	SOB	R5,2$
+	ADD	#2,R4	;€„…‘ ‘‹…„“ž™…ƒŽ ŠŽ’Ž‹œŽƒŽ ŠŽ„€
+	CMP	R4,#6	;‚‘… ŠŽ’Ž‹œ›… ŠŽ„› ˆ‘—…€› - ?
+	BLE	1$
+	RETURN
+TABDAN:	.WORD	125252,52525,125252,52525
+TWRDKD:	.WORD	MSG.00,MSG.01,MSG.02,MSG.03
+
+MSG.00:	.ASCII	<11><16>/–ˆŠ‹ "‚›‚Ž„" - „€›…: 125252/<15><17><200>
+MSG.01:	.ASCII	<11><16>/–ˆŠ‹ "‚›‚Ž„" - „€›…: 52525/<15><17><200>
+MSG.02:	.ASCII	<11><16>/–ˆŠ‹ "‚‚Ž„-€“‡€-‚›‚Ž„" - „€›…: 125252/<15><17><200>
+MSG.03:	.ASCII	<11><16>/–ˆŠ‹ "‚‚Ž„-€“‡€-‚›‚Ž„" - „€›…: 52525/<15><17><200>
+	.EVEN
+
+;----------------------------------------------------------
+;	/	…—€’ˆ	‘ŽŽ™…ˆŸ  Ž Ž˜ˆŠ…  ‚  Ž‡“	  !
+;----------------------------------------------------------
+;
+;      <R1> - ŠŽ„,‡€ˆ‘›‚€‚˜ˆ‰‘Ÿ ‚ Ž‡“
+;
+ERRW$:
+	CALL	ERRORINC
+
+	INC ERROR	;‘—…’—ˆŠ —ˆ‘‹€ Ž˜ˆŽŠ
+	MOV #100200,FLER;”‹€ƒ Ž˜ˆŠˆ Ž‡“
+	MOV #MSG15.,R2	;”ŽŒˆŽ‚€ˆ… ‘ˆŒ‚Ž‹Ž‚ ‡€ˆ‘›‚€‚˜…ƒŽ‘Ÿ ŠŽ„€
+	CALL OCTASC
+	MOV ADRES,R1	;€„…‘ Ž˜ˆŽ—ŽƒŽ ŠŽ„€ ‚ €Š… Ž‡“
+	MOV #MSG13.,R2	;€„…‘ “”…€ „‹Ÿ …—€’ˆ
+	CALL OCTASC	;‚Ž‘œŒ…ˆ—›… ‘ˆŒ‚Ž‹› €„…‘€
+	MOV DANNY,R1    ;‘—ˆ’€›‰ ŠŽ„
+	MOV #MSG17,R2
+	CALL OCTASC	;‚Ž‘œŒ…ˆ—›… ‘ˆŒ‚Ž‹› ‘—ˆ’€ŽƒŽ ŠŽ„€
+	RETURN
+
+ERRWRD:
+	CALL ERRW$
+	.PRINT #MSG12.	;…—€’œ ‘’ŽŠˆ ‘ŽŽ™…ˆŸ
+	CALL	ERRPAUSE
+	RETURN
+
+
+
+;--------------------------------------------------------
+;	’…‘’ ‡€ˆ‘ˆ €‰’ ‚ €Š Ž‡“ ‘Ž ‘€‚…ˆ…Œ	!
+;--------------------------------------------------------
+BYTKOD:	CLR R4		;‘—…’—ˆŠ —ˆ‘‹€ Ž‚…Ÿ…Œ›• ŠŽ„Ž‚
+1$:	CALL ST 	;‘—…’—ˆŠ €‰’ Ž‡“
+	MOV BGNRAM,ADRES;€—€‹œ›‰ €„…‘ €Š€ Ž‡“
+2$:	MOV TABDAN(R4),DANNY  ;‡€ˆ‘›‚€…Œ›‰ €‰’
+	CMP R4,#2	;‚›Ž ’ˆ€ –ˆŠ‹€ ‡€ˆ‘ˆ €‰’€
+	BLE 20$
+	CALL IOBYTE	;–ˆŠ‹ "‚‚Ž„-€“‡€-‚›‚Ž„ €‰’Ž‚›‰"
+	BR  21$
+20$:	CALL OUTBYT	;–ˆŠ‹ "‚›‚Ž„ €‰’Ž‚›‰"
+21$:	CALL INPUT	;‘—ˆ’›‚€ˆ… ‡€ˆ‘€ŽƒŽ €‰’€
+	BIT #1,ADRES	;Œ‹€„˜ˆ‰ ˆ‹ˆ ‘’€˜ˆ‰ €‰’ - ?
+	BEQ 4$
+	CMPB DANNY+1,TABDAN+1(R4)  ;Ž‚…Š€ ‘’€˜…ƒŽ €‰’€
+	BEQ 3$
+	BR  5$
+4$:	CMPB DANNY,TABDAN(R4)	;Ž‚…Š€ Œ‹€„˜…ƒŽ €‰’€
+	BEQ 3$ 		;……•Ž„,…‘‹ˆ ŠŽ„› ‘€‚ˆ‹ˆ‘œ
+5$:	MOV TABDAN(R4),R1	;‡€ˆ‘›‚€‚˜ˆ‰‘Ÿ €‰’
+	CALL ERRBT.	;…—€’œ ‘ŽŽ™…ˆŸ Ž Ž˜ˆŠ…
+3$:
+;;;    CALL  TTINDB	;***„‹Ÿ …†. DBG - ‚›•Ž„ ˆ‡ ‡€–ˆŠ‹. € „ˆ€‹Žƒ 
+
+	CMP	ADRES,BGNRAM
+	BNE	6$
+	MOV	TBYTKD(R4),R0
+	CALL	STEPPRINT
+6$:
+	CALL	PRC2PRINT
+
+	INC ADRES	;€„…‘ ‘‹…„“ž™…ƒŽ €‰’€ Ž‡“
+
+	SOB R5,2$
+	ADD #2,R4	;€„…‘ ‘‹…„“ž™…ƒŽ ŠŽ’Ž‹œŽƒŽ ŠŽ„€
+	CMP R4,#6	;‚‘… ŠŽ’Ž‹œ›… ŠŽ„› ˆ‘—…€› - ?
+	BLE 1$
+	RETURN
+
+TBYTKD:	.WORD	MSG.10,MSG.11,MSG.12,MSG.13
+
+MSG.10:	.ASCII	<11><16>/–ˆŠ‹ "‚›‚Ž„ €‰’Ž‚›‰" - „€›…: 125252/<15><17><200>
+MSG.11:	.ASCII	<11><16>/–ˆŠ‹ "‚›‚Ž„ €‰’Ž‚›‰" - „€›…: 52525/<15><17><200>
+MSG.12:	.ASCII	<11><16>/–ˆŠ‹ "‚‚Ž„-€“‡€-‚›‚Ž„ €‰’Ž‚›‰" - „€›…: 125252/<15><17><200>
+MSG.13:	.ASCII	<11><16>/–ˆŠ‹ "‚‚Ž„-€“‡€-‚›‚Ž„ €‰’Ž‚›‰" - „€›…: 52525/<15><17><200>
+	.EVEN
+
+;----------------------------------------------------------
+;	/	…—€’ˆ	‘ŽŽ™…ˆŸ  Ž Ž˜ˆŠ…  ‚  Ž‡“	  !
+;----------------------------------------------------------
+ERRBT.:
+	CALL	ERRORINC
+
+	INC ERROR	;‘—…’—ˆŠ —ˆ‘‹€ Ž˜ˆŽŠ
+	MOV #100200,FLER;”‹€ƒ Ž˜ˆŠˆ Ž‡“
+	MOV #MSG15.,R2	;”ŽŒˆŽ‚€ˆ… ‘ˆŒ‚Ž‹Ž‚ ‡€ˆ‘›‚€‚˜…ƒŽ‘Ÿ €‰’€
+	CALL OCTAL3
+	MOVB #40,MSG15.+3;‘ˆŒ‚Ž‹ Ž…‹€
+	MOVB #40,MSG15.+4
+	MOVB #40,MSG15.+5
+	MOV ADRES,R1	;€„…‘ Ž˜ˆŽ—ŽƒŽ ŠŽ„€ ‚ €Š… Ž‡“
+	MOV #MSG13.,R2	;€„…‘ “”…€ „‹Ÿ …—€’ˆ
+	CALL OCTASC	;‚Ž‘œŒ…ˆ—›… ‘ˆŒ‚Ž‹› €„…‘€
+	MOV DANNY,R1	 ;‘—ˆ’€›‰ €‰’
+	BIT #1,ADRES	;‘—ˆ’€ Œ‹€„˜ˆ‰ ˆ‹ˆ ‘’€˜ˆ‰ €‰’ - ?
+	BNE 1$
+	SWAB R1 	;€‘…—€’›‚€…’‘Ÿ ‘’€˜€Ÿ Ž‹Ž‚ˆ€ …ƒˆ‘’€ R1
+1$:	MOV #MSG17,R2
+	MOVB #40,MSG17+3;‘ˆŒ‚Ž‹ Ž…‹€
+	MOVB #40,MSG17+4
+	MOVB #40,MSG17+5
+	CALL OCTAL3	;‚Ž‘œŒ…ˆ—›… ‘ˆŒŽ‹› ‘—ˆ’€ŽƒŽ €‰’€
+	.PRINT #MSG12.	;…—€’œ ‘’ŽŠˆ ‘ŽŽ™…ˆŸ
+
+	CALL	ERRPAUSE
+	RETURN
+
+
+
+;--------------------------------------------------------
+;	’…‘’	Ž‚…Šˆ   €„…‘€–ˆˆ   Ž‡“		!
+;--------------------------------------------------------
+ADROZU:	CALL ST		;‘—…’—ˆŠ Ÿ—……Š Ž‡“
+	CMP R5,#1
+	BGT 15$
+	MOV #2,R5
+15$:	ASR R5
+	MOV BGNRAM,ADRES;€—€‹œ›‰ €„…‘ €Š€ Ž‡“
+2$:	MOV ADRES,DANNY ;‡€ˆ‘›‚€…Œ›‰ ŠŽ„ €„…‘€
+	CALL OUTPUT	;–ˆŠ‹ "‚›‚Ž„"
+	CALL INPUT	;‘—ˆ’›‚€ˆ… ‡€ˆ‘€ŽƒŽ ŠŽ„€
+	CMP DANNY,ADRES ;‘€‚…ˆ… ‡€ˆ‘›‚€…ŒŽƒŽ ˆ ‘—ˆ’€ŽƒŽ ŠŽ„Ž‚
+	BEQ 3$ 		;……•Ž„,…‘‹ˆ ŠŽ„› ‘€ˆ‹ˆ‘œ
+	MOV ADRES,R1
+	CALL ERRWRD	;…—€’œ ‘ŽŽ™…ˆŸ Ž Ž˜ˆŠ…
+3$:
+;;;    CALL  TTINDB	;***„‹Ÿ …†. DBG - ‚›•Ž„ ˆ‡ ‡€–ˆŠ‹. € „ˆ€‹Žƒ 
+
+
+	CMP	ADRES,BGNRAM
+	BNE	60$
+	MOV	#MSG.20,R0
+	CALL	STEPPRINT
+60$:
+	CALL	PRC2PRINT
+
+	ADD #2,ADRES	;€„…‘ ‘‹…„“ž™…‰ Ÿ—…‰Šˆ Ž‡“
+	SOB R5,2$
+;  Ž‚…Š€ €„…‘›• ŠŽ„Ž‚
+	CALL ST		;‘—…’—ˆŠ Ÿ—……Š Ž‡“
+	CMP R5,#1
+	BGT 16$
+	MOV #2,R5
+16$:	ASR R5
+	MOV BGNRAM,ADRES;€—€‹œ›‰ €„…‘ €Š€ Ž‡“
+4$:	CALL INPUT	;–ˆŠ‹ "‚‚Ž„"
+	CMP DANNY,ADRES
+	BEQ 5$
+	MOV ADRES,R1
+	CALL ERRWRD	;…—€’œ ‘ŽŽ™…ˆŸ Ž Ž˜ˆŠ…
+5$:
+;;;    CALL  TTINDB	;***„‹Ÿ …†. DBG - ‚›•Ž„ ˆ‡ ‡€–ˆŠ‹. € „ˆ€‹Žƒ
+
+
+	CMP	ADRES,BGNRAM
+	BNE	61$
+	MOV	#MSG.21,R0
+	CALL	STEPPRINT
+61$:
+	CALL	PRC2PRINT
+
+	ADD #2,ADRES	;€„…‘ ‘‹…„“ž™…‰ Ÿ—…‰Šˆ Ž‡“
+	SOB R5,4$
+;   Ž‚…Š€ ‘ ŽŒ…ŽŒ €‰’Ž‚
+	CALL ST
+	CMP R5,#1
+	BGT 17$
+	MOV #2,R5
+17$:	ASR R5
+	MOV BGNRAM,ADRES
+6$:	MOV ADRES,R4
+	SWAB R4 	;ŽŒ… €‰’Ž‚ „‹Ÿ ‡€ˆ‘ˆ
+	MOV R4,DANNY
+	CALL OUTPUT
+	CALL INPUT
+	CMP DANNY,R4
+	BEQ 7$
+	MOV R4,R1
+	CALL ERRWRD	;…—€’œ ‘ŽŽ™…ˆŸ Ž Ž˜ˆŠ…
+7$:
+;;;    CALL  TTINDB	;***„‹Ÿ …†. DBG - ‚›•Ž„ ˆ‡ ‡€–ˆŠ‹. € „ˆ€‹Žƒ
+
+	CMP	ADRES,BGNRAM
+	BNE	62$
+	MOV	#MSG.22,R0
+	CALL	STEPPRINT
+62$:
+	CALL	PRC2PRINT
+
+	ADD #2,ADRES
+	SOB R5,6$
+;  Ž‚…Š€ €„…‘›• Ž˜ˆŽŠ Ž‘‹… ŽŒ…€ €‰’Ž‚
+	CALL ST
+	CMP R5,#1
+	BGT 18$
+	MOV #2,R5
+18$:	ASR R5
+	MOV BGNRAM,ADRES
+8$:	MOV ADRES,R4
+	SWAB R4
+	CALL INPUT
+	CMP DANNY,R4
+	BEQ 9$
+	MOV R4,R1
+	CALL ERRWRD	;…—€’œ ‘ŽŽ™…ˆŸ Ž Ž˜ˆŠ…
+9$:
+;;;    CALL  TTINDB	;***„‹Ÿ …†. DBG - ‚›•Ž„ ˆ‡ ‡€–ˆŠ‹. € „ˆ€‹Žƒ
+
+	CMP	ADRES,BGNRAM
+	BNE	63$
+	MOV	#MSG.23,R0
+	CALL	STEPPRINT
+63$:
+	CALL	PRC2PRINT
+ 
+	ADD #2,ADRES
+	SOB R5,8$
+	RETURN
+
+MSG.20:	.ASCII	<11><16>/–ˆŠ‹ "‚›‚Ž„" - „€›…: ŠŽ„ €„…‘€/<15><17><200>
+MSG.21:	.ASCII	<11><16>/–ˆŠ‹ "‚‚Ž„" - „€›…: ŠŽ„ €„…‘€/<15><17><200>
+MSG.22:	.ASCII	<11><16>/–ˆŠ‹ "‚›‚Ž„" - „€›…: ŠŽ„ €„…‘€ ŽŒ… €‰’/<15><17><200>
+MSG.23:	.ASCII	<11><16>/–ˆŠ‹ "‚‚Ž„" - „€›…: ŠŽ„ €„…‘€ ŽŒ… €‰’/<15><17><200>
+	.EVEN
+
+;-----------------------------------------
+;    / ‚›—ˆ‘‹…ˆŸ —ˆ‘‹€ €‰’ Ž‡“       !
+;-----------------------------------------
+ST::	MOV ENDRAM,R5
+	SUB BGNRAM,R5
+1$:	RETURN
+
+
+

@@ -1,0 +1,219 @@
+;   *************************************************************
+;   * ********************************************************* *
+;   * *     €Š…’  Ž„Žƒ€ŒŒ	“—Ž‰	Ž’‹€„Šˆ  Žƒ€ŒŒ     * *
+;   * *      ‚›—ˆ‘‹ˆ’…‹œŽƒŽ  “‘’Ž‰‘’‚€  ˆ‡„…‹ˆŸ  ž-46      * *
+;   * * 	  €  €‡…  Ž’‹€„Ž—ŽƒŽ  ŠŽŒ‹…Š‘€	      * *
+;   * * 		      ‚“-0480			      * *
+;   * ********************************************************* *
+;   *************************************************************
+
+	.MCALL	.TTYIN,.TTINR,.TTYOUT,.PRINT,.CSISPC,.CLOSE
+
+;***< SYSTEM >***
+.LIBRARY /DK:SYS.MLB/
+.MCALL .SYSINC,.TYPE
+.SYSINC
+
+	JSW	==   44 	;‘‹Ž‚Ž ‘Ž‘’ŽŸˆŸ ‡€„€—ˆ ‚ Ž‘
+
+;             STATUS      -  ‘‹Ž‚Ž ‘Ž‘’ŽŸˆŸ Ž’‹€„Ž—ŽƒŽ ŠŽŒ‹…Š‘€
+STATUS::.WORD	0
+	PGM	==	1		;ˆ’ ‡€ƒ“†…Ž‰ Žƒ€ŒŒ›
+	MODPGM	==	2		;ˆ’ ŒŽ„ˆ”ˆŠ€–ˆˆ ‡€ƒ“†…Ž‰ Žƒ€ŒŒ›
+	INI	==	4		;ˆ’ ˆˆ–ˆ€‹ˆ‡€–ˆˆ ŠŽŒ‹…Š‘€
+	ERRCKL	==     10		;ˆ’ ‡€–ˆŠ‹ˆ‚€ˆŸ Ž Ž˜ˆŠ…
+	BUSDLG	==    200		;ˆ’ ‚›‚Ž„€ „ˆ€‹Žƒ€ ˆ Ž˜ˆŠ… € Q-BUS
+	NBR	==    400		;ˆ’ €Ž€ ‚Ž‘œŒ…ˆ—ŽƒŽ —ˆ‘‹€
+	OPN	==   1000		;ˆ’ Ž’Š›’ˆŸ Ÿ—…‰Šˆ
+	PDP	==   2000		;ˆ’ ‘Ž‘’ŽŸˆŸ „
+	NAK	==   4000		;ˆ’ ƒŽ’Ž‚Ž‘’ˆ €ŠŽˆ’…‹Ÿ
+	ZPRT	==  10000		;ˆ’ ‡€…’€ „/
+	PEREM	==  20000		;ˆ’ ……Œ…™…ˆŸ Ž‡“/‡“
+	OTLAD	==  40000		;ˆ’ E†ˆM€ O’‹€„Šˆ
+	PRC	== 100000		;ˆ’ €‹ˆ—ˆŸ Ž–…‘‘Ž€
+
+STATS2:	.WORD   0		;ŠŽ„ Ž…€–ˆˆ Ž Q-˜ˆ…
+
+	D$VVOD  ==        2	; B STATS2
+	D$VYV   ==        4     ;
+	D$VPV   ==        6	; Œ‹€„˜ˆ‰ €‰’ ’Ž‹œŠŽ „‹Ÿ
+	D$VPVB  ==       10	; ŠŽ„Ž‚ Ž…€–ˆ‰!!!
+	D$VYVB  ==       12	;
+	D$VYVP  ==       14	;
+;			*********************************     
+	D$TEST  ==	400	;ˆ’ ‡€ƒ“‡Šˆ ’…‘’€
+	D$TSOZ  ==     1000	;ˆ‡€Š ’…‘’€ S$TEST
+	D$OZU   ==     2000  	;ˆ‡€Š ’…‘’€ TSTOZU  
+;          	       4000	;ˆ‡€Š ŽŸ„Š€ …›‚€ˆŸ
+	D$FAST  ==    10000     ;ˆ‡€Š ›‘’ŽƒŽ ’…‘’ˆŽ‚€ˆŸ
+;		      20000	;‡€–ˆŠ‹ˆ‚€ˆ… ’…‘’€
+	ERRQ    ==   100000     ;ˆ‡€Š Ž˜ˆŠˆ Ž Q-˜ˆ…
+
+STATS3:	.WORD   0		;ŠŽ„ ‡€ƒ“†…ŽƒŽ ’…‘’€
+
+;          STATS3  -  ŽŒ…€  ’…‘’Ž‚
+          1     ;€€‹ˆ‡ ˜ˆ› „€›•
+          2     ;€€‹ˆ‡ ˜ˆ› “€‚‹…ˆŸ
+          3     ;’…‘’ ‚›Ž€ €ŠŽ‚
+          4     ;’…‘’ ’…•Ž‹Žƒˆ—…‘ŠŽƒŽ Ž‡“
+          5     ;’…‘’ Ž‘Ž‚›• ŠŽŒ€„
+          6     ;’…‘’ ŠŽŒ.€‘˜ˆ.€ˆ”Œ…’ˆŠˆ
+          7     ;’…‘’ ‚“’…ˆ• …›‚€ˆ‰
+          8.    ;’…‘’ ‚…˜ˆ• …›‚€ˆ‰
+          9.    ;’…‘’ Ž‡“
+
+STATS4:	.WORD	0		;ˆ‡€Š Žƒ€ŒŒˆ“…ŒŽ‰ ŒˆŠŽ‘•…Œ›
+
+
+.INCLUDE /DK:DFBGN.MAC/
+.INCLUDE /DK:DFEXIT.MAC/
+.INCLUDE /DK:DFRTRN.MAC/
+.INCLUDE /DK:DFSOB.MAC/
+.INCLUDE /DK:DFKMND.MAC/
+
+.INCLUDE /DK:DFPRED.MAC/
+.INCLUDE /DK:DFINDX.MAC/
+
+.INCLUDE /DK:DFINDR.MAC/
+.INCLUDE /DK:DFPUSK.MAC/
+.INCLUDE /DK:DFKANL.MAC/
+.INCLUDE /DK:DFZHVT.MAC/
+
+.INCLUDE /DK:DFNABR.MAC/
+.INCLUDE /DK:DFQBUS.MAC/
+.INCLUDE /DK:DPPRG.MAC/
+
+.INCLUDE /DK:DFLIB.MAC/
+
+.INCLUDE /DK:DFKEYT.MAC/
+.INCLUDE /DK:DFKEYV.MAC/
+.INCLUDE /DK:DFKEYI.MAC/
+.INCLUDE /DK:DFKEYL.MAC/
+.INCLUDE /DK:DFKEYN.MAC/
+.INCLUDE /DK:DFKEYX.MAC/
+
+.INCLUDE /DK:DTEST.MAC/
+;;;.INCLUDE /DK:DVECTD.MAC/
+
+.INCLUDE /DK:DTANL.MAC/
+
+.INCLUDE /DK:DTBUSA.MAC/
+.INCLUDE /DK:DTBUSC.MAC/
+
+.INCLUDE /DK:DTPUSK.MAC/
+.INCLUDE /DK:DTKOM.MAC/
+.INCLUDE /DK:DTKRA.MAC/
+.INCLUDE /DK:DTINT.MAC/
+.INCLUDE /DK:DTEXT.MAC/
+.INCLUDE /DK:DTPAMD.MAC/
+.INCLUDE /DK:DTPZU.MAC/
+.INCLUDE /DK:DTBANK.MAC/
+.INCLUDE /DK:DTACP.MAC/
+.INCLUDE /DK:DTARN.MAC/
+
+.INCLUDE /DK:DTOZU.MAC/
+.INCLUDE /DK:DTTECH.MAC/
+
+.INCLUDE /DK:DTFILE.MAC/
+.INCLUDE /DK:DPROG.MAC/
+.INCLUDE /DK:DFKEYD.MAC/
+
+
+DBG$SP:	.WORD	0		;‘’…Š ˆ ‚•Ž„… ‚ …†ˆŒ Ž’‹€„Šˆ
+
+DBG::	;;;MOV @#ERROR,R0
+	MOV	SP,DBG$SP	;‘Ž•€…ˆ… “Š€‡€’…‹Ÿ ‘’…Š€
+DBGBGN:
+	.PRINT	#H		;…—€’œ ‡€ƒŽ‹Ž‚Š€ Ž’‹€„Šˆ
+	BIS	#OTLAD,STATUS
+	BIC	#QSTSOERROR,QBUSSTATUS
+
+DIALOG:	BIC	#BUSDLG,STATUS
+	.PRINT	#WELCOM 	;ˆƒ‹€˜…ˆ… Ž’‹€„—ˆŠ€
+	BIC	#D$TEST,STATS2	 ;ˆ’ ‡€ƒ“†€…ŒŽƒŽ ’…‘’€
+	CALL	ND
+RESYMB: 
+	BIS	#10100,JSW	;ˆ’› Ž‘ˆŒ‚Ž‹œŽƒŽ ‚‚Ž„€ ‘ ’…Œˆ€‹€
+	.TTYIN			;Ž‘ˆŒ‚Ž‹œ›‰ ‚‚Ž„ ŠŽŒ€„ Ž’‹€„Šˆ
+RE$LF:
+	MOV	DBG$SP,SP	;‚Ž‘‘’€Ž‚‹…ˆ… “Š€‡€’…‹Ÿ ‘’…Š€
+	MOV	#<WELCOM-T$SYMB>,R1  ;ŠŽ‹ˆ—…‘’‚Ž ‘ˆŒ‚Ž‹Ž‚
+1$:	CMPB	R0,T$SYMB-1(R1) ;Ž‚…Š€ € ˆ‘Ž‹œ‡Ž‚€ˆ… ‘ˆŒ‚Ž‹€
+	BEQ	2$
+	SOB	R1,1$
+	BR	RESYMB		;Ž„Ž‹†…ˆ… ‚‚Ž„€ ‘ˆŒ‚Ž‹Ž‚
+2$:	CMPB	R0,#12
+	BEQ	3$
+	CMPB	R0,#15
+	BEQ	3$
+	.TTYOUT 		;‚›‚Ž„ ‘ˆŒ‚Ž‹€ € „ˆ‘‹…‰
+3$:
+	ASL	R1		;‘Œ…™…ˆ… ‚ ’€‹ˆ–… Ž„Žƒ€ŒŒ
+	TST	T$FUNC-2(R1)
+	BEQ	4$
+	CALL	@T$FUNC-2(R1)	;‚›Ž‹…ˆ… ”“Š–ˆˆ Ž ‘ˆŒ‚Ž‹“
+	BR	RESYMB
+4$:	.PRINT	#100$
+	BR	RESYMB
+100$:	.ASCIZ	<16>/!!!ŠŽŒ€„€ … …€‹ˆ‡Ž‚€€!!!/<17>
+;   ’€‹ˆ–€ ˆ‘Ž‹œ‡“…Œ›• ˆ Ž’‹€„Š… ‘ˆŒ‚Ž‹Ž‚
+T$SYMB: .BYTE	<4>,<5>,<12>,<15>,'/,'<,'>
+	.BYTE	'0,'1,'2,'3,'4,'5,'6,'7
+	.BYTE	'\,'^,'_
+	.BYTE	'+,'-,'H
+	.BYTE	'@,'C,'G,'K,'O,'Y,'Z,<177>
+	.BYTE	'R,'S
+	.BYTE	'V,'I,'L,'N,'T
+	.BYTE	'X,'W
+;;;	.BYTE	'U
+	.BYTE	'A,'B,<1>,'P,'D
+;;;	.BYTE	<13>
+WELCOM: .ASCII	<12><15><17>/D>/<200>;ˆƒ‹€˜…ˆ… Š „ˆ€‹Žƒ“
+	.EVEN
+;   ’€‹ˆ–€ ‚•Ž„Ž‚ /, ˆ‘Ž‹œ‡“…Œ›• ˆ Ž’‹€„Š…
+T$FUNC: .WORD	F$BGN,F$EXIT,F$LF,F$RTRN,F$OPEN,F$SOB,F$KMND
+	.WORD	F$DGT,F$DGT,F$DGT,F$DGT,F$DGT,F$DGT,F$DGT,F$DGT
+	.WORD	F$BYTE,F$PRED,F$INDX
+	.WORD	F$LF,F$PRED,F$HELP
+	.WORD	F$INDR,F$CPSK,F$PUSK,F$KANL,F$OSVB,F$CPDP,F$ZHVT,F$DEL
+	.WORD	F$PRM,F$NPRM
+	.WORD	F$V,F$I,F$L,F$N,F$T
+	.WORD	F$X,F$W
+;;;	.WORD	F$U
+	.WORD	F$PDP,F$ZPDP,F$SUA,S$PROG,F$D
+;;;	.WORD	F$KINT
+;   ‡€ƒŽ‹Ž‚ŽŠ  …†ˆŒ€  “—Ž‰  Ž’‹€„Šˆ
+H:	.ASCII	<12><15><16><11><11><11>/Š Ž Œ €  „ ›   Ž ’ ‹ € „ Š ˆ/<12><15>
+	.ASCII	<17>!	/  -!<16>/Ž’Š›’œ Ÿ—…‰Š“/<11>
+	.ASCII	<17>/	<ENTER>/<16>/-‡€Š›’œ Ÿ—…‰Š“/<12><15>
+	.ASCII	<17>/	-  -/<16>/Ž’Š›’œ …„›„“™“ž Ÿ—…‰Š“/
+	.ASCII	    /	+  -Ž’Š›’œ ‘‹…„“ž™“ž Ÿ—…‰Š“/<12><15>
+	.ASCII	<17>/	@  -/<16>/ŠŽ‘‚…Ž… Ž’Š›’ˆ… Ÿ—…‰Šˆ/
+	.ASCII	<17>/	_  -/<16>/ˆ„…Š‘Ž… Ž’Š›’ˆ… Ÿ—…‰Šˆ/<12><15>
+	.ASCII	<17>/	G  -/<16>/“‘Š Ž–…‘‘Ž€/<11>
+	.ASCII	<17>/	C  -/<16>/–ˆŠ‹ˆ—…‘Šˆ‰ “‘Š Ž–…‘‘Ž€/<12><15>
+	.ASCII	<17>/	Z  -/<16>/‡€•‚€’ Š€€‹€/<17><11>
+	.ASCII	    /	O  -/<16>/Ž‘‚ŽŽ†„…ˆ… Š€€‹€/<12><15>
+	.ASCII	<17>/	Y  -/<16>/–ˆŠ‹ˆ—…‘Šˆ‰ ‡€•‚€’ Š€€‹€/
+	.ASCII	<17>/	K  -/<16>/ˆ”ŽŒ€–ˆŸ Ž Š€€‹…/<12><15>
+	.ASCII	<17>/	V  -/<16>/‚…ˆ”ˆŠ€–ˆŸ ’…‘’€/<11>
+	.ASCII	<17>/	I  -/<16>/ˆ”ŽŒ€–ˆŸ Ž ’…‘’…/<12><15>
+	.ASCII	<17>/	L  -/<16>/‡€ƒ“‡Š€ ’…‘’€/<11>
+	.ASCII	<17>/	N  -/<16>/‡€ƒ“‡Š€ ‘‹…„“ž™…ƒŽ ’…‘’€/<12><15>
+	.ASCII	<17>/	T  -/<16>/‡€“‘Š ’…‘’Ž‚/<11>
+	.ASCII	<17>/	D  -/<16>/„ˆ€‹Žƒ /<17>/Q-BUS/<12><15>
+	.ASCII	<17>/	X  -/<16>/Ž„ŽŠ€’›… …›‚€ˆŸ/
+	.ASCII	<17>/	W  -/<16>/‡€–ˆŠ‹ˆ‚€ˆ… …›‚€ˆ‰/<12><15>
+	.ASCII	<17>/	R  -/<16>/……Œ…™…ˆ… Ž‡“-‡“/<11>
+	.ASCII	<17>/	S  -/<16>/‡€…’ ……Œ…™…ˆŸ/<12><15><17>
+	.ASCII	<17>/	H  -/<16>/’Ž’ Š€ ŽŒŽ™ˆ/<11>
+	.ASCII	<17>/	P  -/<16>/Žƒ€ŒŒˆŽ‚€ˆ… ‡“/<12><15><17>
+	.ASCII	    /	A  -/<16>/€‡…˜…ˆ… „/<11>
+	.ASCII	<17>/	B  -/<16>/‡€…’ „/<12><15>
+;;;	.ASCII	<17>/	CTRL/!/D-!<16>/‚›•Ž„ € €—€‹Ž Ž’‹€„Šˆ/
+	.ASCII	<17>/	CTRL/!/E-!<16>/‚›•Ž„ ˆ‡ …†ˆŒ€ Ž’‹€„Šˆ/<12><15>
+	.ASCII	<12><15>
+	.ASCIZ	<17>
+	.EVEN
+
+	.END DBG

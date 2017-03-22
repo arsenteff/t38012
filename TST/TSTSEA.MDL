@@ -1,0 +1,17 @@
+	.TITLE TSTSEA.MDL
+;**********************************************
+.ITEM TSTSEA,,,<>,<Žˆ‘Š ’…‘’€ Ž ŽŒ…“>
+;**********************************************
+; IN	- R0 (ŽŒ… ’…‘’€)
+; OUT	- R0 (‘‘›‹Š€ € ’…‘’)
+;**********************************************
+	.SAVRON
+	MOV	R0,R1
+	ITM.FML #TS$TST,R2
+	FML.CNT R2,R4
+	FML.FIRST R2,R2
+1$:	ITM.FML (R2)+,R0
+	FML.SEARCH R0,R1,#TSTNUM
+	BCC	2$
+	SOB	R4,1$
+2$:	RETURN

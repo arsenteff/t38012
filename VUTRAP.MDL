@@ -1,0 +1,131 @@
+.GLOBL	BUFLIB
+
+DLINA = 80.
+STROKA:	.BLKB DLINA
+AREA0:	.BLKW 2
+
+TRPCALL = 1
+TRPOERROR = 2
+TRPSTS:	.WORD 2
+
+;   *************************************************************
+;   * о/о опенапюгнбюмхъ дбнхвмнцн вхякю б бняэлепхвмше яхлбнкш *
+;   *************************************************************
+;
+;     <R1> - вхякн
+;     <R2> - юдпея астепю
+;
+OCTASC:
+	MOV	R0,-(SP)
+	MOV	#6,R3		;йнкхвеярбн бняэлепхвмшу жхтп
+	ADD	R3,R2
+1$:	CLR	R0		;ондцнрнбйю вхякю оепед декемхел
+	DIV	#8.,R0		;декемхе мю 8. х онксвемхе нярюрйю
+	BIS	#60,R1		;тнплхпнбюмхе яхлбнкю
+	MOVB	R1,-(R2)	;гюохяэ яхлбнкю б астеп дюммшу
+	MOV	R0,R1
+	SOB	R3,1$
+	MOV	(SP)+,R0
+	RETURN
+
+;   *************************************************************
+;   *	   ондопнцпюллю  йнохпнбюмхъ  яннаыемхи  б  астеп	*
+;   *************************************************************
+;
+COPMSG:	TSTB	@R3
+	BEQ	1$
+	MOVB	(R3)+,(R5)+
+	BR	COPMSG
+1$:	RETURN
+
+CLRSTR:
+	MOV	#DLINA,R0
+1$:	MOVB	#40,STROKA-1(R0)
+	SOB	R0,1$
+	RETURN
+
+;   *************************************************************
+;   *	 о/о  напюанрйх  опепшбюмхи  он  4  х  10   бейрнпюл	*
+;   *************************************************************
+;
+TRPTYP: MOV	R0,-(SP)
+	MOV	R1,-(SP)
+	MOV	R2,-(SP)
+	MOV	R3,-(SP)
+	MOV	R4,-(SP)
+	MOV	R5,-(SP)
+	BIS	#TRPCALL,TRPSTS
+	BIT	#TRPOERROR,TRPSTS
+	BEQ	4$
+	BCS	1$
+	.PRINT	#TRAP4
+	BR	2$
+1$:	.PRINT	#TRAP10
+2$:	CALL	CLRSTR		;нвхярйю астепю ярпнйх
+	MOV	#B$PC,R3	;астеп явервхйю йнлюмд
+	MOV	#STROKA,R5
+	CALL	COPMSG
+	MOV	14(SP),R1	;явервхйю йнлюмд
+	MOV	#STROKA+3,R2
+	CALL	OCTASC
+	MOV	#B$PS,R3	;астеп пяо опнжеяянпю
+	MOV	#STROKA+20.,R5
+	CALL	COPMSG
+
+	MOV	16(SP),R1	;пяо опнжеяянпю
+	MOV	#STROKA+23.,R2
+	CALL	OCTASC
+
+	MOV	#B$SP,R3	;астеп сйюгюрекъ ярейю
+	MOV	#STROKA+40.,R5
+	CALL	COPMSG
+
+	MOV	SP,R1		;сйюгюрекэ ярейю
+	SUB	#20,R1
+	MOV	#STROKA+43.,R2
+	CALL	OCTASC
+
+	CLRB	STROKA+50.
+	.PRINT	#STROKA 	;оEвAрэ оепбни ярпнйх
+	CALL	CLRSTR
+
+	MOV	#6,R0
+3$:	ASL	R0
+	MOV	T$REG-2(R0),R3
+	MOV	T$STR-2(R0),R5
+	CALL	COPMSG
+	MOV	R0,R4
+	SUB	#2,R4
+	ADD	SP,R4
+	MOV	@R4,R1		;йнд вхякю б пецхярпе
+	MOV	R5,R2		;юдпея б астепе ярпнйх
+	CALL	OCTASC
+	ASR	R0
+	SOB	R0,3$
+
+	.PRINT	#STROKA 	;оEвAрэ брнпни ярпнйх
+
+;;;	BIS	#TRPOERROR,TRPSTS
+4$:
+	.TRPSET #AREA0,#TRPTYP
+	MOV	(SP)+,R5
+	MOV	(SP)+,R4
+	MOV	(SP)+,R3
+	MOV	(SP)+,R2
+	MOV	(SP)+,R1
+	MOV	(SP)+,R0
+	RTI
+T$REG:	.WORD	B$R5,B$R4,B$R3,B$R2,B$R1,B$R0
+T$STR:	.WORD	STROKA+50.,STROKA+40.,STROKA+30.,STROKA+20.,STROKA+10.,STROKA
+TRAP4:	.ASCIZ	<11>/TRAP TO 4/
+TRAP10: .ASCIZ	<11>/TRAP TO 10/
+B$PC:	.ASCIZ	!PC/!
+B$PS:	.ASCIZ	!PS/!
+B$SP:	.ASCIZ	!SP/!
+B$R0:	.ASCIZ	!R0/!
+B$R1:	.ASCIZ	!R1/!
+B$R2:	.ASCIZ	!R2/!
+B$R3:	.ASCIZ	!R3/!
+B$R4:	.ASCIZ	!R4/!
+B$R5:	.ASCIZ	!R5/!
+	.EVEN

@@ -1,0 +1,24 @@
+;------------------------------------------------------
+;	  ’…‘’    "…ƒ“™ˆ‰    “‹œ"		      !
+;------------------------------------------------------
+RUN0:	MOV BGNRAM,ADRES;€—€‹œ›‰ €„…‘ Ž‡“
+1$:	MOV #16.,R4	;‘—…’—ˆŠ ˆ’ ‚ ‘‹Ž‚…
+	MOV #177776,R5	;"…ƒ“™ˆ‰ 0"
+2$:	MOV R5,DANNY
+	CALL INOUT
+	CALL INPUT
+	CMP DANNY,R5
+	BEQ 3$
+	MOV R5,R1
+	CALL ERRWRD	;…—€’œ ‘ŽŽ™…ˆŸ Ž Ž˜ˆŠ…
+3$:	SEC		;‘„‚ˆƒ "…ƒ“™…ƒŽ 0"
+	ROL R5
+	SOB R4,2$
+       CALL  TTINDB	;***„‹Ÿ …†. DBG - ‚›•Ž„ ˆ‡ ‡€–ˆŠ‹. € „ˆ€‹Žƒ 
+	ADD #2,ADRES	;”ŽŒˆŽ‚€ˆ… €„…‘€ ‘‹…„“ž™…‰ Ÿ—…‰Šˆ Ž‡“
+	CMP ADRES,ENDRAM;€€‹ˆ‡ ‡€‚…˜…ˆŸ ’…‘’€
+	BLO 1$
+	RETURN
+MSG40:	.ASCIZ <16>/        ’…‘’  "…ƒ“™ˆ‰  “‹œ"/<17>
+	.EVEN
+

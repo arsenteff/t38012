@@ -1,0 +1,48 @@
+;****************************************************************
+;	  ’…‘’ ŠŽŒ€„ €‘˜ˆ…Ž‰ €ˆ”Œ…’ˆŠˆ Ž–…‘‘Ž€         *
+;****************************************************************
+T$TACP::
+	JSR	R5,SAVRG
+	MOVB #11.,STATS3
+;;;	.PRINT	#MG290.
+
+	MOV	#TS$ACP,R0
+	CALL	TITLEPRINT
+
+	CALL	INTENABL
+
+ACP1:	CLR	ERROR
+	CALL	CLRBUS	;Ž—ˆ‘’Š€ Š€€‹€
+	CALL	ZAPRET
+ACP:
+	MOV	#3,CHCIKL	;‘—…’—ˆŠ –ˆŠ‹Ž‚ Ž‚…Šˆ ’…‘’€
+1$:	.CSISPC	#FILCSI,#EXTCSI,#TACP
+	TST	(SP)+      ;Ž—ˆ‘’ˆ’œ á’…Š Ž‘‹… .CSISPC
+	CALL	S$LOAD
+	CALL	PUSK2	;“‘Š Ž–…‘‘Ž€
+	CALL	TTINDB	;„‹Ÿ …†. DBG - ‚›•Ž„ ˆ‡ ‡€–ˆŠ‹. € „ˆ€‹Žƒ 
+	CALL	CLRZPR
+	MOV	CHCIKL,R1
+	ASL	R1
+	MOV	TZDACP-2(R1),R1
+	CALL	Z1S+4	;‡€„…†Š€ ……Œ…€Ÿ
+	CALL	FAST
+	CALL	ANLTST
+	CALL	TTINDB
+	TST	ERROR
+	BEQ	2$
+
+	MOV	#TS$ACP,R0
+	CALL	TERROUT
+	BCC	10$
+
+	BR	ACP1
+2$:	DEC	CHCIKL
+	BNE	1$
+10$:	RETURN
+
+TZDACP:	.WORD 1800.,950.,500.
+
+;;;MG290.:	.ASCIZ <16>/   ’…‘’ €–/<17>
+	.EVEN
+

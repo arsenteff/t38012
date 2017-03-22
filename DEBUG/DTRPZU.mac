@@ -1,0 +1,66 @@
+;****************************************************************
+;	  ’…‘’ ŠŽŒ€„ €‘˜ˆ…Ž‰ €ˆ”Œ…’ˆŠˆ Ž–…‘‘Ž€         *
+;****************************************************************
+T$RPZU::
+	JSR	R5,SAVRG
+	MOVB #12.,STATS3
+;;;	.PRINT	#MG295.
+
+	MOV	#TS$RZU,R0
+	CALL	TITLEPRINT
+
+	CALL	INTENABL
+1$:
+	.PRINT	#W24V
+	.GTLIN	#STROKA,#WGO1
+	TSTB	STROKA+1
+	BEQ	2$
+	.PRINT	#ERRSTR
+	BR	1$
+2$:	CMPB	STROKA,#'N	;Ž’Š€‡ Ž’ Žƒ.
+	BEQ	TRPZUE
+
+10$:	CMPB	STROKA,#'Y	;Žƒ€ŒŒˆŽ‚€ˆ…
+	BNE	1$
+
+RPZU1:	CLR	ERROR
+	CALL	CLRBUS	;Ž—ˆ‘’Š€ Š€€‹€
+	CALL	ZAPRET
+RPZU:
+	MOV	#3,CHCIKL	;‘—…’—ˆŠ –ˆŠ‹Ž‚ Ž‚…Šˆ ’…‘’€
+1$:	.CSISPC	#FILCSI,#EXTCSI,#TRPZU
+	TST	(SP)+      ;Ž—ˆ‘’ˆ’œ á’…Š Ž‘‹… .CSISPC
+	CALL	S$LOAD
+
+	CALL	ZAPRET
+	CALL	PUSK2	;“‘Š Ž–…‘‘Ž€
+	CALL	TTINDB	;„‹Ÿ …†. DBG - ‚›•Ž„ ˆ‡ ‡€–ˆŠ‹. € „ˆ€‹Žƒ 
+
+	MOV	CHCIKL,R1
+	ASL	R1
+	MOV	TZDRZU-2(R1),R1
+	CALL	Z1S+4	;‡€„…†Š€ ……Œ…€Ÿ
+	CALL	FAST
+	CALL	ANLTST
+	CALL	TTINDB
+	TST	ERROR
+	BEQ	2$
+
+	MOV	#TS$RZU,R0
+	CALL	TERROUT
+	BCC	10$
+
+	BR	RPZU1
+2$:	DEC	CHCIKL
+	BNE	1$
+10$:
+	.PRINT	#M24VOFF
+	.PAUSE
+TRPZUE:	RETURN
+
+TZDRZU:	.WORD 500.,500.,500.
+
+M24VOFF:.ASCIZ	<12><15><11><16>/‚›Š‹ž—ˆ’… ˆ‘’Ž—ˆŠ ˆ’€ˆŸ 24‚/<17>
+;;;MG295.:	.ASCIZ <16>/   ’…‘’ ‡“/<17>
+	.EVEN
+

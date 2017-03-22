@@ -1,0 +1,130 @@
+	.TITLE T38012.MAC
+	.MCALL	.EXIT,.PRINT,.TRPSET
+
+
+RELESE = 1
+
+START:
+	MOV	SP,VU$SP
+	JMP	VU
+VU$SP:	.WORD
+
+;***< SYSTEM >***
+.LIBRARY /DK:SYS.MLB/
+.MCALL .SYSINC,.TYPE
+.SYSINC
+
+;***< ˆ‹ˆŽ’…—›… ”“Š–ˆˆ >***
+.LIBRARY /DK:LIB.MLB/
+.MCALL	 .SAVRON,.BINOCT,.BINHEX,.BINDEC,.NULCLR
+.MCALL	 .STRCOP,.STRSPL,.R50ASC,.MSGCOP
+
+;***< CONFIG >***
+.INCLUDE /DK:T38012.CFG/
+
+;***< DATA >***
+VUITEM: .WORD	;‹…Œ…’
+VUFAML: .WORD	;“Š€‡€’…‹œ € ‘…Œ…‰‘’‚Ž
+VUTEST: .WORD	;’…Š“™ˆ‰ ’…‘’
+
+;***< TRAP TO 4 AND 10 VECTORS >***
+.INCLUDE /DK:VUTRAP.MDL/
+
+;***< Š‹€‚ˆ€’“€ >***
+;.INCLUDE /DK:CANAL.MDL/
+
+.ITEM MSGTTL,,,<>,<€Š-32>
+.ITEM MSG001,,,<>,<Ž„ˆ ˆ‡ …ƒˆ‘’Ž‚ ‚“-480 …„Ž‘’“…, ‚Ž‡ŒŽ†Ž … ‚Š‹ž—… ’“Œ‹… ˆ’€ˆŸ 115‚>
+.ITEM MSG002,,,<>,<„‹Ÿ Ž„Ž‹†…ˆŸ €†Œˆ’… "0" ˆ‹ˆ Ž‚’Žˆ’œ ˆ• Ž‚…Š“ "1">
+
+.ITEM MSGZADR,,,<.MSG <NUMDEC>,ZADRCOUNT>,<–ˆŠ‹Ž‚ ‚‘…ƒŽ:>
+
+.GLOBL FILEPROG
+FILEPROG:.ASCIZ	/DK:ARK32.SAV/
+	.EVEN
+
+D$INT = 177577		;„€›… „‹Ÿ €‡…˜…ˆŸ …›‚€ˆ‰
+R$INT = 177660		;…ƒˆ‘’ „€›• ‡€…’ …›‚€ˆ‰
+
+INTENABL::
+	CALL	ZAHVAT
+	CALL	CLRZPR
+	MOV	#D$INT,DANNY
+	MOV	#R$INT,ADRES
+	CALL	OUTPUT
+	RETURN
+
+ZADRCOUNT:
+	MOV	R3,R0
+	RETURN
+
+VU::
+	MOV	VU$SP,SP
+	.TRPSET #AREA0,#TRPTYP
+	CLR	STATUS
+4$:
+	CALL	VURGTEST
+	BCC	2$
+	STR.OUT
+	MSG.TXT	#MSG001
+	MSG.TXT	#MSG002
+3$:
+	.KEYOUT <#'0,#'1>
+	TST	R0
+	BEQ	3$
+	CMP	R0,#2
+	BEQ	4$
+2$:
+	BIS	#TRPOERROR,TRPSTS
+	CALL	VURGINIT
+
+	TTL.SET #MSGTTL
+	MNU.SET #MN$FML
+	MNU.SHOW #MN$FML
+
+	TST.SEA #51,R0
+	BCS	1$
+	TST.RUN R0
+
+1$:	.EXIT
+
+MSG::	.WORD
+ERR::	.WORD
+
+NO = 0
+YES = 1
+DMAISA = YES
+
+;   *************************************************************
+;   *       Ž„Žƒ€ŒŒ€ Žƒ€ˆ‡€–ˆˆ ‚…Œ…›• ‡€„…†…Š         *
+;   *************************************************************
+;
+Z1S::	MOV	#100.,R1	;‡€„…†Š€ 1 ‘…Š
+1$:	CALL	Z10MS
+	SOB	R1,1$
+	RETURN
+Z10MS::
+.IF	EQ DMAISA-YES
+.IFT
+	MOV	#1000.,R0	;‡€„…†Š€ 10 Œ‘…Š
+.IFF
+	MOV	#13400.,R0	;‡€„…†Š€ 10 Œ‘…Š
+.ENDC
+
+1$:	SOB	R0,1$
+	RETURN
+
+Z0.5MS::
+
+.IF	EQ DMAISA-YES
+.IFT
+	MOV	#50.,R0		;‡€„…†Š€ 500 ŒK ‘…Š
+.IFF
+	MOV	#670.,R0		;‡€„…†Š€ 500 ŒK ‘…Š
+.ENDC
+
+1$:	SOB	R0,1$
+	RETURN
+
+	.END START
+

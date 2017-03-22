@@ -1,0 +1,119 @@
+;***********************************************************
+;                    ’…‘’  Ž‡“	Œ…„‹…›‰		   *
+;***********************************************************
+TSTOZU::
+	JSR	R5,SAVRG
+	MOVB #9.,STATS3
+	MOV SP,@#OZU$SP
+
+;;;	.PRINT #MSGOZU
+
+	MOV	#TS$FUL,R0
+	CALL	TITLEPRINT
+
+	CALL	INTENABL
+
+	CALL CLRBUS		;Ž—ˆ‘’Š€ Š€€‹€
+;;;	BIC #32000,STATUS	;‘Ÿ’œ ˆ’› PDP,ZPRT,PEREM
+	CALL	ANLPDP		;ZAHVAT
+	CALL	CLRPZU
+T90:	BIS	#D$OZU,@#STATS2
+        MOVB	#10.,STATS3
+
+	MOV	#MSG10.,R0	; …—€’œ Ž„‡€ƒŽ‹Ž‚Š€
+	CALL	STEPPRINT
+
+	CALL	CLBUSO
+	CLR	ERROR
+	MOV	#40000,BGNRAM
+	MOV	#50000,ENDRAM
+;
+	CALL WRDKOD	;’…‘’ Ž‘‹Ž‚Ž‰ Ž‚…Šˆ Ž‡“
+T91:	MOVB #11.,STATS3
+
+	MOV	#MSG11.,R0	; …—€’œ Ž„‡€ƒŽ‹Ž‚Š€
+	CALL	STEPPRINT
+
+	CALL CLBUSO
+	CALL BYTKOD	;’…‘’ Ž€‰’Ž‰ Ž‚…Šˆ Ž‡“
+T92:
+	MOVB	#12.,STATS3
+	MOV	#MSG20,R0	; …—€’œ Ž„‡€ƒŽ‹Ž‚Š€
+	CALL	STEPPRINT
+
+	CALL	CLBUSO
+	CALL	ADROZU	;’…‘’ Ž‚…Šˆ €„…‘€–ˆˆ Ž‡“
+;
+	MOV	#MSG9.,R0	; …—€’œ Ž„‡€ƒŽ‹Ž‚Š€
+	CALL	STEPPRINT
+
+	CALL	ZPRPZU     ;……Œ…™…ˆ… €ŠŽ‚ Ž‡“/‡“
+	MOV	#140000,BGNRAM
+	MOV	#150000,ENDRAM
+	CALL	ADROZU	;Ž‚…Š€ €„…‘€–ˆˆ ……Œ…™…›• €ŠŽ‚ Ž‡“
+;
+	CALL	CLRPZU     ;‘Ÿ’ˆ… ……Œ…™…ˆŸ Ž‡“/‡“
+	MOV	#40000,BGNRAM
+	MOV	#50000,ENDRAM	
+T93:
+	MOVB	#13.,STATS3
+	MOV	#MSG30,R0	; …—€’œ Ž„‡€ƒŽ‹Ž‚Š€
+	CALL	STEPPRINT
+
+	CALL	CLBUSO
+	CALL	RUN1	;’…‘’ "…ƒ“™€Ÿ …„ˆˆ–€"
+T94:
+	MOVB	#14.,STATS3
+	MOV	#MSG40,R0	; …—€’œ Ž„‡€ƒŽ‹Ž‚Š€
+	CALL	STEPPRINT
+
+	CALL CLBUSO
+	CALL RUN0	;’…‘’ "…ƒ“™ˆ‰ “‹œ"
+	CALL CLBUSO	;‚Ž‘‘’€Ž‹…ˆ… ‘ˆƒ€‹Ž‚ ˆ’…”…‰‘€
+	CALL ZPRPZU     ;……Œ…™…ˆ… €ŠŽ‚ Ž‡“/‡“
+	BIC #D$OZU,STATS2
+	CALL OSVOB
+	RETURN
+;
+MSG9.:	.ASCIZ  <11><16>/……Œ…™…ˆ… €ŠŽ‚ ‚ ‘’€˜ˆ… €„…‘€/<17>   
+MSG20:  .ASCIZ	<16>/        ’…‘’ €„…‘€–ˆˆ Ž‡“/<17>
+;;;MSGOZU: .ASCIZ  <16>/   ’…‘’ Ž‡“ (Œ…„‹…›‰)/<17>
+	.EVEN
+;
+CLBUSO:
+	MOV #177777,DANNY
+	BIS #^C11400,RG$RGD+2	; B$PRM,B$PDPR,B$PRM
+	MOV RG$RGD+2,@RG$RGD
+	MOV #177777,RG$RGG+2
+	MOV RG$RGG+2,@RG$RGG
+	RETURN
+
+;----------------------------------------------------------
+;	/  ……‚Ž„€ €‰’€ ‚ ‚Ž‘œŒ…ˆ—›… ‘ˆŒ‚Ž‹›        !
+;----------------------------------------------------------
+OCTAL3::CLR R0
+	ASHC #2,R0	;‚›„…‹…ˆ… 2 ‘’€˜ˆ• ˆ’Ž‚
+	BIS #60,R0	;‘’€˜ˆ‰ ‘ˆŒ‚Ž‹
+	MOVB R0,(R2)+
+	MOV #2,R3	;‘—…’—ˆŠ ’ˆ€„ …Ž€‡“…ŒŽƒŽ ŠŽ„€
+1$:	CLR R0
+	ASHC #3,R0	;‚›„…‹…ˆ… ’ˆ€„›
+	BIS #60,R0	;”ŽŒˆŽ‚€ˆ… ‘ˆŒ‚Ž‹€
+	MOVB R0,(R2)+	;‡€‘›‹Š€ ‘ˆŒ‚Ž‹€ ‚ “”…
+	SOB R3,1$
+	RETURN
+
+MSG10.::.ASCII <16>/        Ž‚…Š€  Ž‡“  ŠŽ’Ž‹œ›Œˆ /
+	.ASCIZ / ŠŽ„€Œˆ  Ž‘‹Ž‚Ž/<17>
+MSG11.::.ASCII <16>/        Ž‚…Š€  Ž‡“  ŠŽ’Ž‹œ›Œˆ /
+	.ASCIZ / ŠŽ„€Œˆ  Ž€‰’Ž/<17>
+MSG12$:	.ASCII <16>/    Ž‚…œ’… ’…•Ž‹Žƒˆ—…‘ŠŽ… Ž‡“ !/<12>
+MSG12.: .ASCII <15><16>/    €„:/
+MSG13.:	.BLKB 6
+MSG14.:	.ASCII /    ‡€:/
+MSG15.:	.BLKB 6
+MSG16.:	.ASCII /   ‘—ˆ’:/
+MSG17:	.BLKB 6
+	.ASCIZ /  /<17>
+	.EVEN
+

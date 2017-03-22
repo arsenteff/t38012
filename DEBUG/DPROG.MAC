@@ -1,0 +1,361 @@
+	.TITLE DPROG
+
+	VPZU = 8192.
+
+SP$PRG:	.WORD
+
+UPRZVZ:	.ASCII	<12><15><11>/**************************************************************/<200>
+UPRCOM:	.ASCII	<12><15><11><17>/*	W  -  /
+	.ASCII	<16>/Žƒ€Œ. ‡“/
+	.ASCII	<11><17>/   C  -  /
+	.ASCII	<16>/Ž‚…Š€ —ˆ‘’Ž’›/
+	.ASCII	/    */<17>
+	.ASCII	<12><15><11>/*	V  -  /
+	.ASCII	<16>/‘€‚…ˆ… ‡“/
+	.ASCII	<17><11>/   E  -  /
+	.ASCII	<16>/‡€‚…˜…ˆ… 	     */<17><200>
+UPRFIN:
+	.ASCIZ	<12><15><12><15><17>
+PR    : .ASCII	/PR>/<200>
+;
+;;;MSG$P1:	.ASCIZ	<12><15><16><11><11>/***** €Ž’€ ‘ ŒˆŠŽ‘•…ŒŽ‰  573”4€ *****/<17>   
+MSG$P2:	.ASCIZ	<12><15><16><11><11>/***** €Ž’€ ‘ ŒˆŠŽ‘•…ŒŽ‰  Œ573”4€ *****/<17>   
+ERRW:	.ASCII	/PR-?/<12><15><11><16>/  Ž˜ˆŠ€  Žƒ€ŒŒˆŽ‚€ˆŸ/<17><12><15>
+ERRBYT: .ASCIZ	<11><16>/  €„…‘ /<11>/    ‡“	      ”€‰‹/<17><12><15>
+ERRB1:	.ASCII	<11>/ /
+ADRWRD: .BLKB	6
+	.ASCII	%/%/	  /
+WRDMC:	.BLKB	6
+	.ASCII	/   /
+WRDFIL: .BLKB	6
+	.BYTE	0
+ERRKR:	.ASCIZ	/PR-?/<11><16>/Šˆ‘’€‹‹› ‘Ž„…†€’ ˆ”ŽŒ€–ˆž/<17>
+KRNORM: .ASCIZ	/PR>/<11><16>/Šˆ‘’€‹‹› —ˆ‘’›/<17>
+;;;WGO:	.ASCII  <12><15>/PR>/
+W24V:	.ASCII	<12><15><11><16>/‚Š‹ž—ˆ’… ˆ‘’Ž—ˆŠ ˆ’€ˆŸ  24‚ ˆ /
+        .ASCII   /€†Œˆ’…/<17><12><15>
+	.ASCIZ  <11>/ Y  -  /<16>/„‹Ÿ Žƒ€ŒŒˆŽ‚€ˆŸ  ˆ‹ˆ/<17>
+WGO1:	.ASCII  <11>/ N  -  /<16>/Ž’Š€‡ Ž’  Žƒ€ŒŒˆŽ‚€ˆŸ ==>/<17><200>  
+;;;ERRCMP: .ASCIZ	/PR-?/<11><16>/*****   …‘€‚…ˆ…  ŒˆŠŽ‘•…Œ   *****/<17>
+;;;GO:	.ASCII	/PR>/<16><11>/„‹Ÿ  Ž„Ž‹†…ˆŸ	€†Œˆ’…    ˆ‹ˆ  …  ==> /<17><200>
+
+MSPRFILE:.ASCII <12><15><16>/ˆŒŸ ”€‰‹€: /<17><200>
+	.EVEN
+
+
+
+;   ********************************************************
+;   *      /  Žƒ€ŒŒˆŽ‚€ˆŸ  ŒˆŠŽ‘•…Œ  573”4        *
+;   ********************************************************
+;
+S$PROG::
+	JSR	R5,SAVRG
+	BIS	#BUSDLG,STATUS
+	MOV	SP,SP$PRG
+	BIS	#10,STATS4	;ˆ‡€Š …†ˆŒ€
+	CALL	ANLPDP		;
+	CALL	CLRPZU		;‘Ÿ’œ ……Œ…™…ˆ…
+;;;	TST FILINP
+;;;	BNE 10$
+	.PRINT #MSPRFILE
+	.PRINT #FILEPROG
+	.CSISPC #FILCSI,#EXTCSI,#FILEPROG
+
+	TST (SP)+		;Ž—ˆ‘’ˆ’œ ‘’…Š Ž‘‹… .CSISPC
+10$:
+;;;	TSTB @#STATS4
+;;;	BPL 30$
+	.PRINT #MSG$P2		; Œ573”4€
+;;;	BR 35$
+;;;30$:	.PRINT #MSG$P1		;  573”4€
+;
+35$:
+	CALL S$FILE		;Ž’Š›’ˆ… ”€‰‹€
+	BCS ZAPROS		;”€‰‹ … €‰„…
+	CMP DLNFIL,#32.
+	BLT ZAPROS
+	MOV #32.,@#DLNFIL
+	CALL	ZAHVAT
+;
+ZAPROS:
+	.PRINT	#UPRZVZ
+	.PRINT	#UPRCOM
+	.PRINT	#UPRZVZ
+	.PRINT	#UPRFIN
+ZAPR$P:
+	MOV	SP$PRG,SP
+;;;	BIC	#QSTSOERROR,QBUSSTATUS
+	.GTLIN	#STROKA,#PR 	;
+	TSTB	STROKA+1
+	BNE	ZAPROS
+;
+ANLCM:  CMPB	STROKA,#'E	;‡€‚…˜…ˆ…
+	BNE	AN
+	CLR	FILINP
+F$C1:	.CLOSE	#0
+;;;	JMP SYSVV
+	BIC	#10,STATS4
+	BIT     #OTLAD,STATUS
+	BEQ	1$
+	JMP	DIALOG
+1$:
+;;;	BIs	#QSTSOERROR,QBUSSTATUS
+	RETURN
+
+AN:	CMPB	STROKA,#'C	;Ž‚…Š€ —ˆ‘’Ž’› Šˆ‘’€‹‹€
+	BNE	15$
+	CALL	PROV
+	BR	ZAPR$P
+15$:	CMPB	STROKA,#'V	;‘€‚…ˆ… ‡“ ‘ ”€‰‹ŽŒ
+	BNE	20$
+	CALL	S$VPRG
+	BR	ZAPR$P
+20$:	CMPB	STROKA,#'W	;Žƒ€ŒŒˆŽ‚€ˆ…
+	BEQ	25$
+	.PRINT	#ERRSTR		;Ž˜ˆŠ€ ‚‚Ž„€	
+	BR	ZAPROS
+25$:
+;;;	TSTB STATS4
+;;;	BPL  27$		
+	CALL PRMPZU		;„‹Ÿ Œ/‘ Œ573”4€
+;;;	BR 28$	 
+;;;27$:	CALL PRPZU		;„‹Ÿ Œ/‘  573”4€
+28$:	TST R0	
+	BLT 35$			;…‘‹ˆ ›‹€ Ž˜ˆŠ€ Žƒ€ŒŒˆŽ‚€ˆŸ
+	CALL S$VPRG		;‘€‚…ˆ… ŒˆŠŽ‘•…Œ› ˆ ”€‰‹€
+35$:	JMP ZAPR$P
+
+
+
+
+;   *************************************************************
+;   *		  /  Ž—ˆ‘’Šˆ	“Š€‡€ŽƒŽ  “”…€		*
+;   *************************************************************
+;
+;    <R4>  -  „‹ˆ€ “”…€ ‚ ‘‹Ž‚€•
+;    <R5>  -  €„…‘ €—€‹€ “”…€
+CLEAR:: CLR (R5)+
+	SOB R4,CLEAR
+	RETURN
+
+
+
+;*********************************************
+;      /  Žƒ€ŒŒˆŽ‚€ˆŸ  ‡“  Œ573”4€  *
+;*********************************************
+;
+PRMPZU:	.PRINT	#W24V
+	.GTLIN	#STROKA,#WGO1
+	TSTB	STROKA+1
+	BEQ	ANLKM
+	.PRINT	#ERRSTR
+	BR	PRMPZU
+ANLKM:	CMPB	STROKA,#'N	;Ž’Š€‡ Ž’ Žƒ.
+	BNE	10$
+	JMP	ZAPR$P
+10$:	CMPB	STROKA,#'Y	;Žƒ€ŒŒˆŽ‚€ˆ…
+	BNE	PRMPZU
+	CLR	R1		;€—€‹œ›‰ €„…‘  ‡“
+	CLR	N		;ŽŒ… ‹ŽŠ€
+;
+20$:	MOV	#BLOCK,R5	;€„.‹ŽŠ€ „€›• „‹Ÿ / CLEAR
+	MOV	#256.,R4	;ŠŽ‹ˆ—…‘’‚Ž ‘‹Ž‚ „‹Ÿ / CLEAR
+	CALL	CLEAR		;Ž—ˆ‘’Š€ “”…€
+;
+	CALL	S$BL		;‘—ˆ’€’œ ‹ŽŠ ˆ‡ ”€‰‹€
+	BCS	50$
+	MOV	#BLOCK,R4	;€„. ‹ŽŠ€ „€›•
+	MOV	#256.,R5	;ŠŽ‹. ‘‹Ž‚ ‚ ‹ŽŠ…
+	
+25$:	MOV	#15.,R2		;ŠŽ‹ˆ—…‘’‚Ž Ž›’ŽŠ ‡€ˆ‘ˆ
+	CLR	R3		;„‹ˆ’…‹œŽ‘’œ ˆŒ“‹œ‘€
+27$:	ADD	#360,R3
+;
+	MOV	R1,ADRES
+	MOV	(R4),DANNY 	;‘—ˆ’€’œ „€›…
+	BEQ	45$
+	CALL	OUTPR
+	MOV	#360,R0
+28$:	SOB	R0,28$		;‡€„…†Š€
+;
+30$:	CALL	INPUT
+	CMP	(R4),DANNY 	;‘€‚ˆ’œ ‡“ ˆ ”€‰‹
+	BEQ	40$
+	SOB	R2,27$
+;			…‘‹ˆ €‰’ Žƒ€ŒŒˆ“…’‘Ÿ …‚…Ž
+40$:	MUL	#3,R3		;“‚…‹ˆ—ˆ’œ „‹ˆ’.ˆŒ. ‚ 3 €‡€
+	CALL	OUTPR
+	MOV	#360,R0
+42$:	SOB	R0,42$		;‡€„…†Š€
+45$:	CALL	INPUT
+	CMP	(R4),DANNY
+	BEQ	47$
+	MOV	DANNY,R0
+	MOV	ADRES,R1
+	CALL	DPROCT
+	.PRINT	#ERRW
+	.PRINT	#ERRB1
+	MOV	#-6,R0		;Ž˜ˆŠ€ Žƒ€ŒŒˆŽ‚€ˆŸ
+	BR	50$
+;
+47$:	TST	(R4)+		;“‚…‹ˆ—ˆ’œ €„…‘ ‚ ‹ŽŠ… „€›•
+	TST	(R1)+		;“‚…‹ˆ—ˆ’œ €„…‘ ‡“
+	SOB	R5,25$
+	INC	N		;“‚…‹ˆ—ˆ’œ ŽŒ… ‹ŽŠ€
+
+	CALL	PRCPRINT
+
+	CMP	N,DLNFIL
+	BLT	20$
+50$:	RETURN
+
+
+PRC2PRINT:
+	CALL  TTINDB		;***„‹Ÿ …†. DBG - ‚›•Ž„ ˆ‡ ‡€–ˆŠ‹. € „ˆ€‹Žƒ 
+	BIT	#77,ADRES
+	BNE	1$
+
+	MOV	R0,-(SP)
+	MOV	R1,-(SP)
+	MOV	R5,-(SP)
+	MOV	ADRES,R0
+	SUB	BGNRAM,R0
+	CALL	ST
+	MOV	R5,R1
+	CALL	OUTPRC
+	MOV	(SP)+,R5
+	MOV	(SP)+,R1
+	MOV	(SP)+,R0
+1$:	RETURN
+
+
+PRC3PRINT:
+	BIT	#177,ADRES
+	BNE	1$
+	MOV	R0,-(SP)
+	MOV	R1,-(SP)
+	MOV	ADRES,R0
+	MOV	#VPZU,R1
+	CALL	OUTPRC
+	MOV	(SP)+,R1
+	MOV	(SP)+,R0
+1$:	RETURN
+
+PRCPRINT:
+	MOV	R0,-(SP)
+	MOV	R1,-(SP)
+	MOV	N,R0
+	MOV	DLNFIL,R1
+	CALL	OUTPRC
+	MOV	(SP)+,R1
+	MOV	(SP)+,R0
+	RETURN
+
+PRCNT:	.ASCII	/00%/<15><200>
+	.EVEN
+;*************************
+; ‚›‚Ž„ Ž–…’Ž‚ € Š€
+;
+;R0*100/R1
+;*************************
+OUTPRC:
+	MOV	R2,-(SP)
+	MOV	R3,-(SP)
+
+	MOV	R1,R2
+	MUL	#100.,R0
+	DIV	R2,R0
+	CMP	R1,#50.
+	BLT	1$
+	INC	R0
+1$:
+	MOV	R0,R3
+	CLR	R2
+	DIV	#10.,R2
+	ADD	#60,R3
+	MOVB	R3,PRCNT+1
+	
+	MOV	R2,R3
+	CLR	R2
+	DIV	#10.,R2
+	ADD	#60,R3
+	MOVB	R3,PRCNT
+
+	.PRINT	#PRCNT
+
+	MOV	(SP)+,R3
+	MOV	(SP)+,R2
+	RETURN
+
+
+;*****************************************************
+;	/ Ž‚…Šˆ ‡“ € —ˆ‘’Ž’“		     *
+;*****************************************************
+PROV:	BIC     #10,STATS4
+	MOV	#VPZU,R5
+	CLR	R3
+1$:	MOV	R3,ADRES
+	CALL	INPUT
+	TST 	DANNY
+	BEQ	5$
+	MOV	DANNY,R0
+	MOV	ADRES,R1
+	MOV	#1000,R4	;„‹Ÿ ˆ‡…†€ˆŸ Ž˜ˆŠˆ ‚ DPROCT
+	CALL	DPROCT
+	CLRB	WRDFIL		;„‹Ÿ ˆ‘Š‹ž—…ˆŸ ‘‹Ž‚€ ”€‰‹€
+	BIS	#10,STATS4
+	.PRINT	#ERRB1
+5$:
+	.TTINR			;€€‹ˆ‡ …„ˆˆ—ŽƒŽ ‚‚Ž„€
+	BCC	3$
+
+	TST	(R3)+		;“‚…‹ˆ—ˆ’œ €„…‘ ‡“
+	
+	CALL	PRC3PRINT
+
+	SOB	R5,1$
+	BIT	#10,@#STATS4
+	BEQ	10$
+	.PRINT	#ERRKR
+	BR	15$
+10$:	.PRINT	#KRNORM
+15$:	RETURN
+3$:	JMP	ZAPR$P
+
+
+;   *************************************************************
+;   *  /   ‘€‚…ˆŸ  ”€‰‹€  ˆ  €ŒŸ’ˆ „‹Ÿ …†ˆŒ€ Žƒ€Œ.	*
+;   *************************************************************
+;
+S$VPRG::CLR	N
+10$:	CALL	S$BL
+	BCS	1$
+	CALL	V$BLK		;/ ‘€‚…ˆŸ ‹ŽŠ€ ˆ Ž’‹€„Ž—Ž‰ €ŒŸ’ˆ
+	INC	N
+
+	CALL	PRCPRINT
+
+	CMP	N,DLNFIL
+	BLT	10$
+1$:	RETURN
+
+
+
+;**********************************************
+;      / Ž„ƒŽ’Ž‚Šˆ „€›• „‹Ÿ ˆ„ˆŠ€–ˆˆ    *
+;**********************************************
+;   <R0>  -  €‰’ ˆ‡ ‡“
+;   <R1>  -  €„…‘ ‚ ‡“
+;   <R4>  -  €‰’ ˆ‡ ”€‰‹€
+DPROCT: MOV	R1,-(SP)
+	MOV	#ADRWRD,R2		;‚ R1 €„…‘ ‡“
+	CALL	OCTASC
+	MOV	#WRDMC,R2
+	MOV	DANNY,R1		;„€›… ˆ‡ ‡“
+	CALL	OCTASC
+	MOV	#WRDFIL,R2
+	MOV	(R4),R1			;„€›… ˆ‡ ”€‰‹€
+	CALL	OCTASC
+	MOV	(SP)+,R1
+	RETURN
+

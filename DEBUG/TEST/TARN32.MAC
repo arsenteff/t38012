@@ -1,0 +1,753 @@
+	.TITLE TRPZU.MAC
+
+	.ASECT
+
+;	’…‘’ €–
+
+;	‹Ž‚“˜Šˆ	…›‚€ˆ‰	000000-000576
+	.REPT	96.
+	.WORD	VEKXX,340
+	.ENDR
+	.=0
+	.WORD	BGN,340
+	.WORD	VEK4,340
+	.WORD	VEK10,340
+	.WORD	VEK14,340
+	.WORD	SAVRON,340
+	.WORD	VEK24,340
+	.WORD	VEK30,340
+	.WORD	VEK34,340
+	.=100
+	.WORD	VEK100,340
+	.=170
+	.WORD	VEK170,340
+	.WORD	VEK174,340
+	.=250
+	.WORD	VEK250,340
+	.=274
+	.WORD	VEK274,340
+	.=46
+	$ENDAD
+	.=52
+	.WORD	0
+
+	.=400
+$MAIL:	.WORD	0
+$FATAL:	.WORD	0	;	ŽŒ… Ž˜ˆŠˆ
+$TESTN:	.WORD	0	;	ŽŒ… ’…‘’€
+$PASS:	.WORD	0	;	‘—…’—ˆŠ Ž•Ž„Ž‚
+$DEVCT:	.WORD	0
+$UNIT:	.WORD	0
+$MSGAD:	.WORD	0
+$MSGLG:	.WORD	0
+$ENV:	.BYTE	0
+$ENVM:	.BYTE	0
+$SWREG:	.WORD	0
+$USWR:	.WORD	0
+$CPUOP:	.WORD	0
+$MTYP1:	.WORD	0
+$MADR1:	.WORD	0
+$MTYP2:	.WORD	0
+$MADR2:	.WORD	0
+$MTYP3:	.WORD	0
+$MADR3:	.WORD	0
+$MTYP4:	.WORD	0
+$MADR4:	.WORD	0
+$APTHD:	.WORD	0
+$MBADR:	.WORD	$MAIL
+$TSTM:	.WORD	11
+$PASTM:	.WORD	11
+$UNITM:	.WORD	0
+	.WORD	24
+	.=200
+BGN:	MOV	#VEK0,0
+	BR	1$
+	.=210
+	CLR	@#$PASS
+1$:	JMP	START
+	.=500
+BUFF:	0
+
+START:
+;;;	MOV	#BFR$R,@#$PASS
+	MOV	#BUFF,SP
+	CLR	$MAIL
+	CLR	$FATAL
+RESTRT:	MOV	#BUFF,SP
+	CLR	$TESTN
+	JMP	TST1
+
+TST1:
+	INC	@#$TESTN
+	CMP	#1,@#$TESTN
+	BNE	TST2-12
+	MTPS	#340		;‡€…’ˆ’œ Œ€‘Šˆ“…Œ›… …›‚€ˆŸ
+
+	MOV	#VOUT,@#100
+	CLR	INT100
+        CALL	Z300MS		;Ž†ˆ„€ˆ… …›‚€ˆ‰ Ž ‚…Š’Ž“ 100 Ž’ €– ”ŽŒˆ“…Œ›• ‚ ˜€‘‘ˆ
+
+	TST	INT100		;…›‚€ˆŸ ›‹ˆ?
+	BNE	TST2		;„€
+	MOV	#13,@#$FATAL
+	IOT
+	BR	.
+	MOV	#1,@#$FATAL
+	IOT
+	BR	.
+
+TST2:
+	INC	@#$TESTN
+	CMP	#2,@#$TESTN
+	BNE	TST3-12
+
+	MOV	#VPPO,@#24
+	CLR	INTPRI
+        CALL	Z300MS		;Ž†ˆ„€ˆ… …›‚€ˆ‰ Ž ‚…Š’Ž“ 24 Ž’ €ˆ ”ŽŒˆ“…Œ›• ‚…˜…‰ Žƒ€ŒŒŽ‰
+
+	TST	INTPRI		;…›‚€ˆŸ ›‹ˆ?
+	BNE	TST3		;„€
+	MOV	#14,@#$FATAL
+	IOT
+	BR	.
+	MOV	#2,@#$FATAL
+	IOT
+	BR	.
+
+TST3:
+	INC	@#$TESTN
+	CMP	#3,@#$TESTN
+	BNE	TST4-12
+	MTPS	#340		;‡€…’ˆ’œ Œ€‘Šˆ“…Œ›… …›‚€ˆŸ
+
+        CALL	TST.KA		;ŠŽŒŒ“’€–ˆŸ ……„€’—ˆŠ€ 1 € Š€€‹€ € ˆ Ž‚…Š€
+	MOV	R2,@#$FATAL
+	BEQ	TST4
+	IOT
+	BR	.
+	MOV	#3,@#$FATAL
+	IOT
+	BR	.
+
+TST4:
+	INC	@#$TESTN
+	CMP	#4,@#$TESTN
+	BNE	TST5-12
+
+        CALL	TST.KB		;ŠŽŒŒ“’€–ˆŸ ……„€’—ˆŠ€ 2 € Š€€‹€  ˆ Ž‚…Š€
+	MOV	R2,@#$FATAL
+	BEQ	TST5
+	IOT
+	BR	.
+	MOV	#4,@#$FATAL
+	IOT
+	BR	.
+
+TST5:
+	INC	@#$TESTN
+	INC	@#$PASS
+	JMP	.
+
+; *******************************************************
+;               …ƒˆ‘’ 0 “€‚‹…ˆŸ €Š (RK0)
+; *******************************************************
+        RK0     =177660 ; €‡  €‡€—…ˆ…
+                        ;
+                        ;  0    1  /„  1: ‚Š‹, 0: ‚›Š‹
+                        ;  1    2  /„  -
+                        ;  2    3  /„  -
+                        ;  3    4  /„  -
+                        ;  4    5  /„  -
+                        ;  5    6  /„  -
+        B$SBRS  =   100 ;  6    ‘Ž‘/…‘’€’
+                        ;               0: €‘‘ˆ‚
+                        ;               1: ˆŒ. ‘Ž‘€)
+        B$ZINT  =   200 ;  7    ‡€…’ ‚…˜ˆ• …›‚€ˆ‰
+                        ;               0: €‡…˜…ˆ…
+                        ;               1: ‡€…’
+        B$KMAN  =   400 ;  8    ŠŽŒ€‘/€’…€
+                        ;               0: ŠŽŒ€‘
+                        ;               1: €’…€
+        B$IMPL  =  1000 ;  9    ˆŒ“‹œ‘ ……‘’Ž‰Šˆ
+                        ;               0: €‘‘ˆ‚
+                        ;               1: ˆŒ“‹œ‘
+        B$TLF   =  2000 ; 10    ’‹”/’‹ƒ
+                        ;               0: ’…‹…ƒ€”
+                        ;               1: ’…‹…”Ž
+        B$TACP  =  4000 ; 11    Ž‚…Š€ €–
+                        ;               0: ‚›Š‹
+                        ;               1: ‚Š‹
+        B$DPRS  = 10000 ; 12    „‘ €‚’ŽŒ€’
+                        ;               0: „€‹œˆ‰
+                        ;               1: ‹ˆ†ˆ‰
+        B$ISPR  = 20000 ; 13    …ˆ‘€‚Ž‘’œ
+                        ;               0: ˆ‘.
+                        ;               1: …ˆ‘.
+        B$SVET  = 40000 ; 14    ‘‚…’Ž„ˆŽ„
+                        ;               0: Žƒ€˜…
+                        ;               1: ‡€‘‚…—…
+                        ; 15    … ˆ‘Ž‹œ‡“…’‘Ÿ
+; *******************************************************
+;               …ƒˆ‘’ 2 ‘Ž‘’ŽŸˆŸ €Š (RST2)
+; *******************************************************
+        RST2    =177674 ; €‡  €‡€—…ˆ…
+                        ;
+                        ; 0-1   ŽŒ… €Š
+        B$NALL  =     3 ;               3: „‹Ÿ ‚‘…•
+        B$N1    =     2 ;               2: „‹Ÿ €Š 1
+        B$N2    =     1 ;               1: „‹Ÿ €Š 2
+        B$N3    =     0 ;               0: „‹Ÿ €Š 3
+        B$INT   =     4 ;  2    ’…Ž‚€ˆ… …›‚€ˆŸ Ž’ –
+
+; *******************************************************
+;               …ƒˆ‘’ €– („‹Ÿ —’…ˆŸ)
+; *******************************************************
+        R$ACP  = 177676 ; €‡  €‡€—…ˆ…
+                        ;
+                        ; 0-6  - „€›…
+                        ; 7-15 - €„…‘Ž… ‘Œ…™…ˆ…
+
+; *******************************************************
+;       –ˆ”Ž‚Ž‰ ˆ…ŒŽ……„€’—ˆŠ (–) - ˆ…ŒˆŠ
+; *******************************************************
+        R$PRMM = 177666 ; Œ‹€„˜€Ÿ —€‘’œ 32à …ƒˆ‘’€ „€›• ˆ…ŒˆŠ€
+        R$PRMS = 177670 ; ‘’€˜€Ÿ —€‘’œ 32à …ƒˆ‘’€ „€›• ˆ…ŒˆŠ€
+                        ;
+                        ; €‡  €‡€—…ˆ…
+                        ; 0-7   •€€Š’…ˆ‘’ˆŠ€
+                        ;               130: “€‚‹…ˆ… €Š
+                        ; 8-9   ŽŒ… €Š
+                        ;               3: „‹Ÿ ‚‘…•
+                        ;               2: „‹Ÿ €Š 1
+                        ;               1: „‹Ÿ €Š 2
+                        ;               0: „‹Ÿ €Š 3
+                        ; 10    ’‹ƒ
+                        ;               0: ‚›Š‹
+                        ;               1: ‚Š‹
+                        ; 11    ŠŽŒ€‘/€’…€
+                        ;               0: -Œ ŠŽŒ€‘
+                        ;               1: -Œ €’…€
+                        ; 12    … ˆ‘Ž‹œ‡“…’‘Ÿ
+                        ; 13    0,5 Š£–
+                        ;               0: +0,0 ªƒæ
+                        ;               1: +0,5 ªƒæ
+                        ;14-17  …„ˆˆ–› ªƒæ
+                        ;18-21  „…‘Ÿ’Šˆ ªƒæ
+                        ;22-25  ‘Ž’ˆ ªƒæ
+                        ;26-28  ’›‘Ÿ—ˆ ªƒæ
+                        ;29-30  Œ€’ˆ–€
+                        ;               0: ŽŒ€‹œ€Ÿ €Ž’€
+                        ;               1: …’ „€›•
+                        ;               2: ŠŽ’Ž‹œ
+                        ;               3: €€‹Žƒˆ—Ž 0
+                        ; 31    €ˆ’…’ (…—…’Ž‘’œ)
+
+; *******************************************************
+;       –ˆ”Ž‚Ž‰ ˆ…ŒŽ……„€’—ˆŠ (–) - ……„€’—ˆŠ
+; *******************************************************
+        R$PRDM = 177666 ; Œ‹€„˜€Ÿ —€‘’œ 32à …ƒˆ‘’€ „€›• ……„€’—ˆŠ€
+        R$PRDS = 177670 ; ‘’€˜€Ÿ —€‘’œ 32à …ƒˆ‘’€ „€›• ……„€’—ˆŠ€
+                        ;
+                        ; €‡  €‡€—…ˆ…
+                        ; 0-7   •€€Š’…ˆ‘’ˆŠ€
+                        ;               116: ‚›—ˆ‘‹…›‰ Š“
+                        ; 8-9   ŽŒ… €Š
+                        ;               3: „‹Ÿ ‚‘…•
+                        ;               2: „‹Ÿ €Š 1
+                        ;               1: „‹Ÿ €Š 2
+                        ;               0: „‹Ÿ €Š 3
+                        ;10-16  “‹ˆ
+                        ;17-28  ‚›—ˆ‘‹…›‰ ŠŽ„ Š“€
+                        ;29-30  Œ€’ˆ–€
+                        ;               0: ŽŒ€‹œ€Ÿ €Ž’€
+                        ;               1: …’ „€›•
+                        ;               2: ŠŽ’Ž‹œ
+                        ;               3: €€‹Žƒˆ—Ž 0
+                        ; 31    €ˆ’…’ (…—…’Ž‘’œ)
+
+; *******************************************************
+;               …ƒˆ‘’ “€‚‹…ˆŸ –
+; *******************************************************
+        R$UCPP  =177664 ; €‡  €‡€—…ˆ…
+                        ;
+        B$UPRA  =     1 ;  0    “€‚‹…ˆ… €
+                        ;               0: €Ž’€ Š€€‹ €
+                        ;               1: ŠŽ’Ž‹œ Š€€‹€ €
+        B$UPRB  =     2 ;  1    “€‚‹…ˆ… 
+                        ;               0: €Ž’€ Š€€‹ 
+                        ;               1: ŠŽ’Ž‹œ Š€€‹ 
+        B$UAB   =     4 ;  2    ‚›Ž Š€€‹€
+                        ;               0: Š€€‹ €
+                        ;               1: Š€€‹ 
+        B$ICPP  =    10 ;  3    ‚“’. …›‚€ˆ…
+
+;*********************************************************
+B$3SEC	=	6667.		;  3 ‘…Š“„›
+B$90G 	=	4000		; 90 ƒ€„“‘Ž‚
+B$135G	=	6000		;135 ƒ€„“‘Ž‚
+B$315G	=	176000		;315 ƒ€„“‘Ž‚
+B$40G	=	1616		; 40 ƒ€„“‘Ž‚
+B$180G	=	170000		;180 ƒ€„“‘Ž
+
+; *************************************************************
+;		Ž‚…Š€ –ˆ”Ž‚ŽƒŽ ˆ…ŒŽ-……„€’—ˆŠ€
+; *************************************************************
+; IN	-	…’
+;
+; LOCAL	-	…’
+;
+; OUT	-	R2
+; *************************************************************
+; ŠŽ„ “.
+;    0	-	ˆ…Œ ˆ”ŽŒ€–ˆˆ Ž Š€€‹“ €
+;    1	-	ŠŽ’Ž‹œ ……„€’—ˆŠ€ 1 € Š€€‹ €
+;    4	-	ˆ…Œ ˆ”ŽŒ€–ˆˆ Ž Š€€‹“ B
+;    6	-	ŠŽ’Ž‹œ ……„€’—ˆŠ€ 2 € Š€€‹ B
+
+TST.KA:
+;	BIS	#B$FK,STATUS	;Ž„’‚…†„…ˆ… “ƒ‹.”Š
+	;;;CALL	TSTMIG
+	;;;CALL	TSTUPR
+
+	MOV	#1,SUCPP	;Ž‚…Š€ ……„€’—ˆŠ€ 1 € Š€€‹ €
+	MOV	SUCPP,R$UCPP
+	MOV	#26315,R0	;F = 1666,5 Šƒ–
+	CALL	OUT130		;‚›„€—€ —€‘’Ž’› ‚ “”…
+
+	CALL	TIOCPP
+	BEQ	3$
+	BMI	1$
+
+	MOV	#19.,R2		;Ž’Š€‡: 19 (Ž˜ˆŠ€ ˆ ŠŽ’Ž‹… Š€€‹€ €)
+	BR	2$
+1$:	MOV	#18.,R2		;Ž’Š€‡: 18 (…’ …›‚€ˆ‰ ˆ ŠŽ’Ž‹…
+2$:				;	    ……„€’—ˆŠ€ 1 € Š€€‹ €)
+	RETURN
+3$:	CLR	R2
+	RETURN
+
+TST.KB:
+;	BIS	#B$FK,STATUS	;Ž„’‚…†„…ˆ… “ƒ‹.”Š
+	;;;CALL	TSTMIG
+	;;;CALL	TSTUPR
+
+	MOV	#6,SUCPP	;Ž‚…Š€ ……„€’—ˆŠ€ 2 € Š€€‹ 
+	MOV	SUCPP,R$UCPP
+	MOV	#11462,R0	;F = 999 Šƒ–
+	CALL	OUT130		;‚›„€—€ —€‘’Ž’› ‚ “”…
+	CALL	TIOCPP
+	BEQ	3$
+	BPL	1$
+
+	MOV	#28.,R2		;Ž’Š€‡: 28 (…’ …›‚€ˆ‰ ˆ ŠŽ’Ž‹…
+	BR	2$		;	    ……„€’—ˆŠ€ 2 € Š€€‹ )
+1$:	MOV	#29.,R2		;Ž’Š€‡: 29 (Ž˜ˆŠ€ ˆ ŠŽ’Ž‹… Š€€‹€ )
+2$:				;	    ……„€’—ˆŠ€ 1 € Š€€‹ €)
+	RETURN
+3$:	CLR	R2
+	RETURN
+
+
+;*******************************
+TIOCPP:
+	MOV	INTPRI,-(SP)	;‘Ž•€ˆ’œ ‘—…’—ˆŠˆ …›‚€ˆ‰ “€‚‹…ˆŸ
+	MOV	INTUPR,-(SP)	;€ ‚…ŒŸ ŠŽ’Ž‹Ÿ ˆ…ŒˆŠ€ („‹Ÿ MDIN.MAC)
+	BIC	#B$ZINT,SRK0	;€‡…˜…ˆ… …›‚€ˆ‰
+	MOV	SRK0,RK0
+
+	MOV	INT100,R1	;‘—…’—ˆŠ €– 
+	CLR	R0		;Ž™…… —ˆ‘‹Ž …›‚€ˆ‰
+	CLR	R2
+	MOV	#123456,BF.HZ	;‘Ž‘ ‚•Ž„›• “”…Ž‚ ˆ…ŒˆŠ€
+	MOV	#54321,BF.HZ+2
+	MOV	#123456,KONKUR
+	MOV	#54321,KONKUR+2
+1$:	
+	CMP	R0,#B$3SEC/6	;®ª®«® 500 Œ‘
+	BGE	6$
+	WAIT
+	CMP	R1,INT100
+	BNE	3$
+	INC	R2
+	BLT	2$
+	CMP	R2,#4		;…„…‹œŽ… ‚…ŒŸ Ž’‘“’‘’‚ˆŸ
+	BLT	4$		;…›‚€ˆ‰ Ž’ €– 58,6 ¬á å 4 =234,4 ¬á
+2$:	MOV	#20.,R2		;Ž’Š€‡: …’ …›‚€ˆ‰ Ž’ €–
+	MOV	(SP)+,INTUPR	;‚Ž‘‘’€Ž‚ˆ’œ ‘—…’—ˆŠ …›‚€ˆ‰ “€‚‹…ˆŸ
+	MOV	(SP)+,INTPRI	;„‹Ÿ /-ë €€‹ˆ‡€ ‚•Ž„Ž‰ ˆ”Ž (MDIN.MAC)
+;;;	JMP	OTKVU
+	RETURN
+3$:	MOV	INT100,R1
+	CLR	R2
+4$:	CALL	SBROS
+	INC	R0		;Ž™…… —ˆ‘‹Ž …›‚€ˆ‰
+	CMP	@SP,INTUPR	;‚•Ž„Ž‰ “”… —€‘’Ž’ ŽŽ‚ˆ‹‘Ÿ?
+	BEQ	1$		;…’
+	CMP	2(SP),INTPRI	;‚•Ž„Ž‰ “”… ŠŽ’Ž‹œŽƒŽ Š“€ ŽŽ‚ˆ‹‘Ÿ?
+	BEQ	1$		;…’
+
+	CMP	BF.HZ,NEWFRQ
+	BNE	7$		;‘‹Ž‚Ž —€‘’Ž’› ˆŸ’Ž ‘ Ž˜ˆŠŽ‰
+	CMP	BF.HZ+2,NEWFRQ+2
+	BNE	7$		;…‚…Ž… ‘‹Ž‚Ž —€‘’Ž’›
+	CMP	KONKUR,NEWKUR
+	BNE	7$		;‘‹Ž‚Ž Š“€ ˆŸ’Ž ‘ Ž˜ˆŠŽ‰
+	CMP	KONKUR+2,NEWKUR+2
+	BNE	7$		;…‚…Ž… ‘‹Ž‚Ž Š“€
+	CLR	R2
+5$:	;;;CALL	LIN.AB
+	MOV	(SP)+,INTUPR	;‚Ž‘‘’€Ž‚ˆ’œ ‘—…’—ˆŠ …›‚€ˆ‰ “€‚‹…ˆŸ
+	MOV	(SP)+,INTPRI	;„‹Ÿ /-ë €€‹ˆ‡€ ‚•Ž„Ž‰ ˆ”Ž (MDIN.MAC)
+	RETURN
+6$:
+	MOV	#-777,R2	;…’ …›‚€ˆ‰ ˆ ŠŽ’Ž‹…
+	BR	5$			;Ž‚…Ÿ…ŒŽƒŽ ……„€’—ˆŠ€
+7$:	MOV	#777,R2		;Ž˜ˆŠ€ ‚•.ˆ”Ž ˆ ŠŽ’Ž‹… ……„€’—ˆŠ€
+	BR	5$
+
+
+
+;   / ”ŽŒˆŽ‚€ˆŸ 300-Œˆ‹ˆ‘…Š“„Ž‰ ‡€„…†Šˆ
+Z300MS:
+	MOV R4,-(SP)
+	MOV #30.,R4             ; ‘—…’—ˆŠ 10-Œˆ‹ˆ‘…Š“„›• –ˆŠ‹Ž‚
+Z.R4:	JSR PC,Z10MS            ; ‡€„…†Š€ 10 Œ‹‘
+	SOB R4,Z.R4
+	MOV (SP)+,R4
+	RETURN
+;
+;   / ”ŽŒˆŽ‚€ˆŸ 10-Œˆ‹ˆ‘…Š“„Ž‰ ‡€„…†Šˆ
+;
+Z10MS:
+	MOV R3,-(SP)
+	MOV #22.,R3
+	MOV	#1000.,R3
+Z.R3:	;;;WAIT
+	SOB R3,Z.R3             ; „‹ˆ’…‹œŽ‘’œ ‚›Ž‹…ˆŸ ŠŽŒ€„› ŽŸ„Š€ 10 ŒˆŠŽ‘…Š“„
+	MOV (SP)+,R3
+	RETURN
+
+;   *******************************************************************
+;   *    /  ‘Ž‘€  ‘•…Œ›  …‘’€’€  ‚›—ˆ‘‹ˆ’…‹œŽƒŽ “‘’Ž‰‘’‚€     *
+;   *******************************************************************
+SBROS:	BIS #B$SBRS,SRK0
+	MOV SRK0,RK0
+	BIC #B$SBRS,SRK0
+	MOV SRK0,RK0
+	RETURN
+
+; *************** / Ž€Ž’Šˆ …›‚€ˆŸ Ž’ ˆ…ŒˆŠ€ *******************
+;
+; IN	-	INTPRI, INTUPR, R$PRMM, R$PRMS, RST2
+;
+; LOCAL	-	RABPPO, IMPORT(2)
+;
+; OUT	-	BF.HZ(2), KONKUR(2), INTPRI, INTUPR
+;
+; COMMAND:	MAX=21 (ŠŽ„ "—€‘’Ž’€" ˆ ŽŒ…€ €Š ‘Ž‚€„€ž’)
+;		MIN=6 (‹Žƒˆ—…‘Šˆ‰ “Ž‚…œ ‘ˆƒ€‹€ …›‚€ˆŸ "0")
+; *************************************************************************
+;
+;INTPRI:	.WORD	0	;‘—…’—ˆŠ …›‚€ˆ‰ Ž’ ˆ…ŒˆŠ€
+;RABPPO:	.WORD	0	;€Ž—€Ÿ Ÿ—…‰Š€ /
+;IMPORT:	.BLKW	2	;“”… ‚…Œ…ŽƒŽ •€…ˆŸ ˆŸ’ŽƒŽ ‘‹Ž‚€
+;BF.HZ:		.BLKW	2	;“”… —€‘’Ž’
+;KONKUR:	.BLKW	2	;“”… Š“‘€ „‹Ÿ …†ˆŒ€ "ŠŽ’Ž‹œ"
+
+VPPO:
+	MOV	R0,-(SP)
+
+	MOV	R$PRMM,R0	;‡€‘›‹Š€ ‚Ž ‚…Œ…›‰ “”… Œ‹€„˜…‰ —€‘’ˆ
+	MOV	R$PRMS,IMPORT+2	;‡€‘›‹Š€ ‘’€˜…‰ —€‘’ˆ
+
+	MOV	R0,IMPORT
+
+	CMPB	R0,#130		;•€€Š’…ˆ‘’ˆŠ€ - "—€‘’Ž’€"?
+	BNE	4$		;…’
+	SWAB	R0
+	BIT	#B$NALL,R0	;ŽŒ… €Š - "„‹Ÿ ‚‘…•"?
+	BEQ	1$		;„€
+	MOV	RST2,RABPPO	;Ž„ƒŽ’Ž‚Š€ „‹Ÿ ‘€‚…ˆŸ ŽŒ…Ž‚ €Š
+	COM	R0
+	XOR	R0,RABPPO	
+	BIT	#3,RABPPO	;‘€‚…ˆ… 0 ˆ 1 €‡Ÿ„Ž‚
+	BNE	2$		;€‡‹ˆ—›? „€
+1$:
+	MOV	IMPORT,BF.HZ	;……‘›‹Š€ ˆŸ’ŽƒŽ ‘‹Ž‚€ ˆ‡ 
+	MOV	IMPORT+2,BF.HZ+2;‚…Œ…ŽƒŽ “”…€ ‚ “”… —€‘’Ž’
+	INC	INTUPR		;ˆ‡€Š Ž‚Ž‰ ‚•Ž„Ž‰ ˆ”ŽŒ€–ˆˆ
+2$:
+	INC	INTPRI		;Ž„‘—…’ —ˆ‘‹€ …›‚€ˆ‰ Ž’ ˆ…ŒˆŠ€;
+	MOV	(SP)+,R0
+	RTI
+4$:
+	CMPB	R0,#116		;•€€Š’…ˆ‘’ˆŠ€ - "Š“"?
+	BNE	5$		;…’
+
+	MOV	IMPORT,KONKUR	;……‘›‹Š€ ˆŸ’ŽƒŽ ‘‹Ž‚€ ˆ‡ ˆ…ŒˆŠ€
+	MOV IMPORT+2,KONKUR+2	;‚ “”… Š“€ „‹Ÿ -Œ€ ŠŽ’Ž‹œ
+5$:
+	INC	INTPRI		;Ž„‘—…’ —ˆ‘‹€ …›‚€ˆ‰ Ž’ ˆ…ŒˆŠ€
+	MOV	(SP)+,R0
+	RTI
+
+; ************* / Ž€Ž’Šˆ …›‚€ˆŸ Ž ‚…Š’Ž“ 100 *****************
+;
+; IN	-	INT100(2), R$ACP, EXPORT(2), BF.KUR(2)
+;
+; LOCAL	-	RABACP
+;
+; OUT	-	INT100(2), BFR(512), R$PRDM, R$PRDS
+;
+; COMMAND:	MAX= (‚›„€—€ —€‘’Ž’›)
+;		   = (‚›„€—€ Š“€, ‘ –ˆŠ‹ŽŒ ‚ 128 …›‚€ˆ‰)
+;		MIN= (…‡ ‚›„€—ˆ Š“€)
+;***********************************************************************
+;
+;INT100:	.WORD	;‘—…’—ˆŠ …›‚€ˆ‰ Ž ‚…Š’Ž“ 100
+;RABACP:	.WORD	;€Ž—€Ÿ Ÿ—…‰Š€ /
+;EXPORT:	.BLKW2	;“”… •€…ˆŸ Ž’ …„›„. …›‚€ˆŸ
+;BF.KUR:	.BLKW2	;“”… Š“ 
+
+VOUT:
+	MOV	R0,-(SP)
+	MOV	R$ACP,R0	;‘—ˆ’›‚€ˆ… „€›• ‘ -€ €–
+	MTPS	#0
+	INC	INT100		;Ž„‘—…’ —ˆ‘‹€ …›‚€ˆ‰
+	BEQ	1$
+4$:	MOV	R0,RABACP
+	BIC	#177600,RABACP	;‚›„…‹…ˆ… „€›• ˆ‡ 16 €‡Ÿ„Ž‚ ‚ 7
+	ASL	R0
+	BCS	10$
+	CLRB	R0
+	SWAB	R0
+	BPL	11$
+	ASL	R0
+	;;;MOV	RABACP,BFR(R0)	;……‘›‹Š€ „€›• ‚ “”… €–
+	BIT	#377,R0		;—ˆ‘‹Ž …›‚€ˆ‰ Š€’Ž 128?
+	BEQ	2$		;„€
+	CMP	#414,R0		;‚›„€—€ —€‘’Ž’›?
+	BEQ	3$		;„€
+	MOV	(SP)+,R0
+	RTI
+1$:
+	INC	INT100+2	;‚…ŒŸ €Ž’› €Š (1 = 450 ŒŠ‘) 
+	BR	4$		;…’
+11$:
+	ASL	R0
+	;;;MOV	RABACP,BFR(R0)	;……‘›‹Š€ „€›• ‚ “”… €–
+	BIT	#377,R0		;—ˆ‘‹Ž …›‚€ˆ‰ Š€’Ž 128?
+	BEQ	2$		;„€
+	MOV	(SP)+,R0
+	RTI
+10$:
+	CLRB	R0
+	SWAB	R0
+	BPL	12$
+	ASL	R0
+	;;;MOV	RABACP,BFR+512.(R0);……‘›‹Š€ „€›• ‚ “”… €–
+	BIT	#377,R0		;—ˆ‘‹Ž …›‚€ˆ‰ Š€’Ž 128?
+	BEQ	2$		;„€
+	CMP	#414,R0		;‚›„€—€ —€‘’Ž’›?
+	BEQ	3$		;„€
+	MOV	(SP)+,R0
+	RTI
+12$:
+	ASL	R0
+	;;;MOV	RABACP,BFR+512.(R0);……‘›‹Š€ „€›• ‚ “”… €–
+	BIT	#377,R0		;—ˆ‘‹Ž …›‚€ˆ‰ Š€’Ž 128?
+	BEQ	2$		;„€
+	MOV	(SP)+,R0
+	RTI
+2$:
+	ASL	REFKUR		;ŽŽ‚ˆ’œ Š“?
+	BCS	22$		;„€
+	MOV	BF.KUR,R$PRDM
+	MOV	BF.KUR+2,R$PRDS
+	MOV	(SP)+,R0
+	RTI
+22$:
+	MOV	NEWKUR,BF.KUR
+	MOV	NEWKUR+2,BF.KUR+2
+	MOV	BF.KUR,R$PRDM
+	MOV	BF.KUR+2,R$PRDS
+	MOV	(SP)+,R0
+	RTI
+3$:
+	ASL	REFFRQ		;ŽŽ‚ˆ’œ —€‘’Ž’“?
+	BCS	33$		;„€
+	MOV	EXPORT,R$PRDM	;……‘›‹Š€ ‘‹Ž‚€ ‚ ……„€’—ˆŠ
+	MOV	EXPORT+2,R$PRDS	;Ž’ / OUT130	
+	MOV	(SP)+,R0
+	RTI
+33$:
+	MOV	NEWFRQ,EXPORT
+	MOV	NEWFRQ+2,EXPORT+2
+	MOV	EXPORT,R$PRDM	;……‘›‹Š€ ‘‹Ž‚€ ‚ ……„€’—ˆŠ
+	MOV	EXPORT+2,R$PRDS	;Ž’ / OUT130	
+	MOV	(SP)+,R0
+	RTI
+
+;*************************************************************
+B$REFR	= 100000
+OUT130:
+	MOV	#130,R2		;•€€Š’…ˆ‘’ˆŠ€ —€‘’Ž’ë
+	CLR	R1
+	ASHC	#-3,R0		;—€‘’Ž’“ ‚ 32à ‘‹Ž‚Ž ˆ‡ R0 ˆ R1
+
+	MOV	RST2,R3		;‚›„…‹…ˆ… ŽŒ…€ €Š
+	COM	R3
+	SWAB	R3
+	BIC	#176377,R3
+	BIS	R3,R1		;ŽŒ… €Š ‚ R1
+	BISB	R2,R1		;•€€Š’…ˆ‘’ˆŠ“ ‚ R1
+	BIC	#160000,R0	;‘Ž‘ €ˆ’…’€, Œ€’ˆ–€ "Ž’Š€‡"
+
+	BIS	#20000,R0	;Œ€’ˆ–€ "…’ „€›•"
+	CALL	PARTET		;‚›—ˆ‘‹…ˆ… €ˆ’…’€
+	ASR	R2		;€ˆ’…’ 1? „€, ……•Ž„!
+	BCS	1$
+	BIS	#100000,R0	;“‘’€Ž‚Š€ €ˆ’…’€
+1$:
+	CLR	REFFRQ		;‡€…’ ŽŽ‚‹…ˆŸ —€‘’Ž’›
+	MOV	R1,NEWFRQ	;€ ‘‹“—€‰ …‘‹ˆ …’ …›‚€ˆ‰
+	MOV	R0,NEWFRQ+2
+	MOV	#B$REFR,REFFRQ	;ˆ‡€Š ‚›„€—ˆ ŽŽ‚‹…Ž‰ —€‘’Ž’›
+	RETURN
+
+; ***************** / ‚›—ˆ‘‹…ˆŸ €ˆ’…’€ (…—…’Ž‘’ˆ)*******************
+; 
+; IN	-	R0 ˆ R1 (Ž‹“—…Ž… ‹ˆŽ ‘”ŽŒˆŽ‚€Ž… 32 €‡. ‘‹Ž‚Ž)
+;
+; LOCAL	-	R3
+;
+; OUT	-	R2 (‚ Œ‹€„˜…Œ €‡Ÿ„… ˆ‡€Š €ˆ’…’€)
+;
+; ************************************************************************
+
+PARTET:
+	MOV	R0,R2		;……‘›‹Š€ Œ‹€„˜…‰ —€‘’ˆ ˆŸ’ŽƒŽ ‘‹Ž‚€
+	XOR	R1,R2		;‘†€’ˆ… 32 €‡Ÿ„ŽƒŽ ‘‹Ž‚€ ‚ 16 €‡Ÿ„Ž…
+	MOV	R2,R3
+	SWAB	R3
+	XOR	R3,R2		;‘†€’ˆ… ‘‹Ž‚€ „Ž €‰’€
+	MOV	R2,R3
+	ASH	#-4,R3
+	XOR	R3,R2		;‘†€’ˆ… Œ‹€„˜…ƒŽ €‰’€ ‚ ’…’€„“
+	MOV	R2,R3
+	ASH	#-2,R3
+	XOR	R3,R2		;‘†€’ˆ… Œ‹€„˜…‰ ’…’€„› „Ž „‚“• €‡Ÿ„Ž‚
+	MOV	R2,R3
+	ASR	R3
+	XOR	R3,R2		;”ŽŒˆŽ‚€ˆ… ‚ Œ‹€„˜…Œ €‡Ÿ„… €ˆ’…’€
+	RETURN
+;**************************************************************************
+
+;----------------------
+; Ÿ—…‰Šˆ /-€Œ ŽŒ…€
+;----------------------
+SUCPP:	.WORD
+
+FRQNCY: .WORD 0
+KUR:	.WORD 0
+STATUS: .WORD 0
+SRK0:	.WORD 0
+SRK2:	.WORD 0
+
+;-------------------------------
+;	Ÿ—…‰Šˆ / …›‚€ˆ‰
+;-------------------------------
+RABACP: .WORD		;€Ž—€Ÿ Ÿ—…‰Š€ / INT100 (MDINT.MAC)
+INT100: .BLKW	2	;‘—…’—ˆŠ …›‚€ˆ‰ Ž’ €–
+INTPRI: .WORD		;‘—…’—ˆŠ …›‚€ˆ‰ Ž’ ˆ…ŒˆŠ€
+INTUPR: .WORD		;‘—…’—ˆŠ ‹…ƒ€‹œ›• “€‚‹Ÿž™ˆ• ‘‹Ž‚
+RABPPO: .WORD		;€Ž—€Ÿ Ÿ—…‰Š€ / INTPRI (MDINT.MAC)
+IMPORT: .BLKW	2	;ˆŸ’€Ÿ ˆ”Ž ˆ‡ ˆ…ŒˆŠ€
+BF.HZ:	.BLKW	2
+KONKUR: .BLKW	2
+REFFRQ: .WORD
+NEWFRQ: .BLKW	2
+IFRQ:	.BLKW	2
+EXPORT: .BLKW	2
+REFKUR: .WORD
+NEWKUR: .BLKW	2
+BF.KUR: .BLKW	2
+
+
+;********************************
+$ENDAD:	NOP	;JSR	PC,@R0
+	NOP
+	NOP
+	NOP
+DOAGN:	CLR	$TESTN
+RETURN:	JMP	RESTRT
+
+	.=17400
+VEK0:	INC	@#V0
+	BR	.+6
+VEK4:	INC	@#V4
+	BR	.+6
+VEK10:	INC	@#V10
+	BR	.+6
+VEK14:	INC	@#V14
+	BR	.+6
+VEK20:	INC	@#V20
+	BR	.+6
+VEK24:	INC	@#V24
+	BR	.+6
+VEK30:	INC	@#V30
+	BR	.+6
+VEK34:	INC	@#V34
+	BR	.+6
+VEK100:INC	@#V100
+	BR	.+6
+VEK170:INC	@#V170
+	BR	SAVRON
+
+	.=17500
+SAVRON:	MOV	2(SP),@#MRS
+	MOV	@SP,@#MPC
+	MOV	SP,@#MSP
+	MOV	R5,@#MR5
+	MOV	R4,@#MR4
+	MOV	R3,@#MR3
+	MOV	R2,@#MR2
+	MOV	R1,@#MR1
+	MOV	R0,@#MR0 
+1$:	WAIT	
+	BR	1$
+VEK174:INC	@#V174
+	BR	SAVRON
+VEK250:INC	@#V250
+	BR	SAVRON
+VEK274:INC	@#V274
+	BR	SAVRON
+VEKXX:	INC	@#VXXX
+	BR	SAVRON
+	.=17722
+V0:	.WORD	0
+V4:	.WORD	0
+V10:	.WORD	0
+V14:	.WORD	0
+V20:	.WORD	0
+V24:	.WORD	0
+V30:	.WORD	0
+V34:	.WORD	0
+V100:	.WORD	0
+V170:	.WORD	0
+V174:	.WORD	0
+V250:	.WORD	0
+V274:	.WORD	0
+VXXX:	.WORD	0
+	.=17756
+MR0:	.WORD	0
+MR1:	.WORD	0
+MR2:	.WORD	0
+MR3:	.WORD	0
+MR4:	.WORD	0
+MR5:	.WORD	0
+MSP:	.WORD	0
+MPC:	.WORD	0
+MRS:	.WORD	0
+	.END	
+

@@ -1,0 +1,45 @@
+;***********************************************************
+;	 ’…‘’  ‚“’…ˆ•  …›‚€ˆ‰  Ž–…‘‘Ž€          *
+;***********************************************************
+T$TINT::
+	JSR	R5,SAVRG
+	MOVB	#7,STATS3
+;;;	.PRINT	#MSG310
+
+	MOV	#TS$INT,R0
+	CALL	TITLEPRINT
+
+	CALL	INTENABL
+
+INT1:	CLR	ERROR
+	CALL	CLRBUS		;Ž—ˆ‘’Š€ Š€€‹€
+;;;	BIC	#32000,STATUS	;‘Ÿ’œ ˆ’› PDP,ZPRT,PEREM
+	CALL	ZAPRET
+INT:    MOV	#3,CHCIKL 	;‘—…’—ˆŠ –ˆŠ‹Ž‚ Ž‚…Šˆ ’…‘’€
+1$:	.CSISPC	#FILCSI,#EXTCSI,#TINT
+	TST	(SP)+      ;Ž—ˆ‘’ˆ’œ ‘’…Š Ž‘‹… .CSISPC
+	CALL	S$LOAD 
+	CALL	PUSK2	;“‘Š Ž–…‘‘Ž€
+	CALL	TTINDB	;„‹Ÿ …†. DBG - ‚›•Ž„ ˆ‡ ‡€–ˆŠ‹. € „ˆ€‹Žƒ 
+	MOV	CHCIKL,R1
+	ASL	R1
+	MOV	T.ZAD-2(R1),R1
+	CALL	Z1S+4	;‡€„…†Š€ ……Œ…€Ÿ
+	CALL	FAST
+	CALL	ANLTST
+	CALL	TTINDB
+	TST	ERROR
+	BEQ	2$
+
+	MOV	#TS$INT,R0
+	CALL	TERROUT
+	BCC	10$
+
+	BR	INT1
+2$:	DEC	CHCIKL
+	BNE	1$
+10$:	RETURN
+T.ZAD:	.WORD 2500.,1250.,500.
+;;;MSG310: .ASCIZ <16>/   ’…‘’ ‚“’…ˆ• …›‚€ˆ‰ Ž–…‘‘Ž€/<17>
+	.EVEN
+

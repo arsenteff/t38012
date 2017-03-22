@@ -1,0 +1,87 @@
+	.TITLE FAMIL.MDL
+
+
+FMERR == 1
+FMOERR == 2
+FMLSTS::.WORD
+;*************************
+; R0  - ‘‘›‹Š€ € ‘…Œ…‰‘’‚Ž
+; @SP - “Š€‡€’…‹œ € /
+FMLLST::
+	MOV	R1,-(SP)
+	MOV	R3,-(SP)
+	MOV	R4,-(SP)
+	MOV	R5,-(SP)
+	MOV	R0,-(SP)
+	MOV	R0,R1		;‘‘›‹Š€ € ‘…Œ…‰‘’‚Ž
+	MOV	(R1)+,R5	;ŠŽ‹-‚Ž ‹…Œ…’Ž‚ (‘—…’—ˆŠ)
+	BLE	3$
+	TST	14(SP)		;ŒŽ„“‹œ ‡€“‘Š€ ‡€„€?
+	BNE	4$		;„€
+	MOV	@R1,R0
+	BEQ	10$
+	TYP.CMD R0,14(SP)	;“‘’€Ž‚ˆ’œ ŒŽ„“‹œ ‡€“‘Š€ Ž “ŒŽ‹—€ˆž
+	BEQ	10$
+4$:	TST	(R1)+		;“Š€‡€’…‹œ € 1-‰ ‹…Œ…’ ‘…Œ…‰‘’‚€
+	CLR	R4
+1$:	MOV	(R1)+,R0	;‘‘›‹Š€ € N-‰ ‹…Œ…’ ‘…Œ…‰‘’‚€
+
+	BIS 	#FMOERR,FMLSTS
+	CLC
+	CALL	@14(SP)
+	BCS	20$
+2$:	INC	R4
+	SOB	R5,1$
+3$:	MOV	(SP)+,R0
+	MOV	(SP)+,R5
+	MOV	(SP)+,R4
+	MOV	(SP)+,R3
+	MOV	(SP)+,R1
+	RETURN
+
+10$:	MSG.ERR #ER$MDL,@SP
+	BR	3$
+20$:
+	BIT 	#FMOERR,FMLSTS
+	BEQ	13$
+	ITM.PAR -(R1),R0
+	BEQ	11$
+	ITM.FML R0,R0
+	BEQ	11$
+	FML.TYP R0,R0
+	BEQ	11$
+	TYP.NAM R0,R3
+	BEQ	11$
+
+	MSG.ERR	(R1)
+	MOV	(R1),R0
+	CALL	@R3
+	.PRINT
+	STR.OUT
+	BR	12$
+11$:
+	MSG.ERR (R1)
+12$:	TST	(R1)+
+13$:	BIS 	#FMOERR,FMLSTS
+	BR	2$
+
+FMLCNT::
+	MOV	@R0,R0
+	RETURN
+
+	.BLKW 2
+FMLFIND::
+	.SAVRON
+	MOV	R0,R1
+	FML.CNT R0,R4
+	FML.FIRST R1,R1
+1$:	MOV	(R1)+,R0
+	CALL	@FMLFIND-2
+	CMP	R0,FMLFIND-4	;‘€‚ˆ’œ ‘ ˆ‘•Ž„›Œˆ „€›Œˆ.
+	BEQ	3$		;ˆ„…’ˆ—›? „€
+	SOB	R4,1$
+	SEC
+	RETURN
+3$:	MOV	-(R1),R0
+	CLC
+	RETURN

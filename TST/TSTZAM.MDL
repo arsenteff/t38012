@@ -1,0 +1,430 @@
+
+NDCURRENT:	.WORD	;€Š’ˆ‚€Ÿ –…œ ŠŽ’ŽŽ‰ “‘’€€‚‹ˆ‚€ž’ “Ž‚…œ ‘ˆƒ€‹€ „‹Ÿ Ž€“†…ˆŸ ‡€Œ›Š€ˆ‰ € ……
+NDREPEAT:	.WORD	;ˆ‡€Š Ž‚’Ž…ˆŸ Ž‚…Šˆ „‹Ÿ ˆ‘Š‹ž—…ˆŸ ‘‹“—€Ÿ Ž’Š‹ž—…ˆŸ ˆ’€ˆŸ ‚“
+
+.ITEM MS$ZAM,,,<.MSG <STRING>,NULL>,<‚Ž‡ŒŽ†Ž ‡€Œ›Š€ˆ… € –…œ ‚›„€“ž ˆ†…>
+.ITEM MS$RDY,,,<.MSG <STRING>,NODNAM>,<Ž‚……Ž:>
+.ITEM MS$TZM,,,<.MSG <STRING>,NODNAM>,<Ž‚…Ÿ…’‘Ÿ:>
+
+LSTNOD:
+	MOV	R0,NDCURRENT
+
+	CALL	LSTNS1			;“‘’€Ž‚Š€ ‘ˆƒ€‹Ž‚ € –…Ÿ•
+	BCS	5$			;’ˆ –…ˆ - …ˆ‡Œ…Ÿ…ŒŽ… ‘Ž‘’ŽŸˆ…
+
+	FML.LST #$NDNOD,#ZAMNOD
+	FML.LST #$NDJMP,#ZAMJMP
+	FML.LST #$NDLOG,#ZAMLOG
+
+	MSG.TXT	#MS$RDY,NDCURRENT
+5$:	CLC
+	RETURN
+
+
+;“‘’€Ž‚Š€ € ‚‘…• –…Ÿ• “Ž‚…œ "1" € Ž‚…Ÿ…ŒŽŒ "0"
+LSTNS1:
+	MOV	R1,-(SP)
+	MOV	NDCURRENT,R1
+
+	FML.LST #$NDNOD,#NDSET1
+	FML.LST #$NDJMP,#JPSET1
+	FML.LST #$NDLOG,#RGSET1
+
+	MOV	R1,R0
+	CMP	@R1,#NODJMP		;’ˆ –…ˆ ……Œ›—Š€?
+	BNE	3$			;…’
+	CALL	JPSET0
+	BR	2$
+3$:
+	CMP	@R1,#NODNOD		;’ˆ –…ˆ “‡…‹?
+	BNE	4$			;…’
+	CALL	NDSET0
+	BR	2$
+4$:
+	CMP	@R1,#NODLOG		;’ˆ –…ˆ …ƒˆ‘’ ‚‚Ž„€-‚›‚Ž„€?
+	BNE	5$			;…’
+	CALL	RGSET0
+2$:
+	CALL	NDZADR
+	CLC
+	BR	6$
+5$:
+	SEC
+6$:	MOV	(SP)+,R1
+	RETURN
+
+TZMNUM:	.WORD	40
+
+;********************************
+.ITEM TSTZAM,,,<>,<Ž‚…Š€ –……‰ € ‡€Œ›Š€ˆŸ Œ…†„“ ‘ŽŽ‰>
+;********************************
+	.SAVRON
+
+	STR.OUT 		;Ž‚€Ÿ ‘’ŽŠ€
+	MSG.TXT #TSTZAM		;€‡‚€ˆ… ’…‘’€
+	MSG.TXT #MS$TNUM,#TZMNUM;ŽŒ… ’…‘’€
+
+	CLR	STATUS
+	CALL	OSVOB
+	CALL	ZAHVAT
+
+	FML.LST #$NDX02,#LSTNOD
+	FML.LST #$NDX01,#LSTNOD
+	FML.LST #$NDX03,#LSTNOD
+	FML.LST #$NDX04,#LSTNOD
+	FML.LST #$NDX05,#LSTNOD
+	FML.LST #$NDX06,#LSTNOD
+
+	MSG.TXT #MS$TEND
+	RETURN
+
+;************************
+;“‘’€Ž‚Š€ ˆ‡ŠŽƒŽ “Ž‚Ÿ
+;************************
+NDSET0:
+	CMP	R0,#X0213A		;–…œ ‡Œ?
+	BEQ	3$			;„€
+	MOV	6.(R0),R0		;UPR
+	CALL	VURGS0
+3$:	RETURN
+
+;*************************
+;“‘’€Ž‚Š€ ‚›‘ŽŠŽƒŽ “Ž‚Ÿ
+;*************************
+NDSET1:
+	CMP	R0,#X0213A		;–…œ ‡Œ?
+	BEQ	3$			;„€
+	MOV	6.(R0),R0		;UPR
+	CALL	VURGS1
+3$:	CLC
+	RETURN
+
+;************************
+;“‘’€Ž‚Š€ ˆ‡ŠŽƒŽ “Ž‚Ÿ
+;************************
+JPSET0:
+	;Ž…„…‹…ˆ… –…ˆ SOST
+	TST	8.(R0)			;SOST?
+	BEQ	3$			;…’
+	MOV	16(R0),R0
+3$:
+	MOV	6.(R0),R0		;UPR
+	CALL	VURGS0
+	RETURN
+
+;*************************
+;“‘’€Ž‚Š€ ‚›‘ŽŠŽƒŽ “Ž‚Ÿ
+;*************************
+JPSET1:
+	;Ž…„…‹…ˆ… –…ˆ SOST
+	TST	8.(R0)			;SOST?
+	BEQ	3$			;…’
+	MOV	16(R0),R0
+3$:
+	MOV	6.(R0),R0		;UPR
+	CALL	VURGS1
+	CLC
+	RETURN
+
+
+
+;********************************
+;“‘’€Ž‚Š€ ‚›‘ŽŠŽƒŽ “Ž‚Ÿ ‚ …ƒˆ‘’…
+;********************************
+RGSET1:
+	.SAVRON
+	MOV	R0,R1
+
+	CMP	@R1,#NODLOG		;’ˆ –…ˆ ‹ŽƒˆŠ€?
+	BNE	3$			;…’
+
+	CMP	12(R1),#2		;…ƒˆ‘’ ‡€„€?
+	BNE	3$			;…’
+
+	MOV	14(R1),R2
+
+	CMP	@R2,#3			;…ƒˆ‘’ ‚‚Ž„€-‚›‚Ž„€?
+	BNE	6$			;…’
+	CLR	DANNY
+	MOV	2(R2),ADRES
+	CALL	OUTPUT
+	BR	8$
+6$:
+	CMP	@R2,#1			;…ƒˆ‘’ ‚‚Ž„€?
+	BNE	5$			;…’
+8$:
+	MOV	6.(R1),R3		;UPR?
+	BEQ	3$			;…’
+
+	MOV	R1,R0
+	CALL	NODS.1
+
+	BR	3$
+5$:
+	CMP	@R2,#2			;…ƒˆ‘’ ‚›‚Ž„€?
+	BNE	3$			;…’
+
+	MOV	8.(R1),R3		;SOST?
+	BEQ	3$			;…’
+
+	CLR	R5
+;	TSTB	17(R1)			;‘ˆƒ€‹ –…ˆ ˆ‚…‘›‰?
+;	BEQ	7$			;…’
+;	MOV	#1,R5
+;	MOVB	16(R0),R4
+;	ASH	R4,R5
+7$:
+;	CALL	ZAHVAT
+
+	CALL	RGSTOUT
+3$:
+	CLC
+	RETURN
+
+RGSTOUT:
+	MOV	R5,DANNY
+	MOV	2(R2),ADRES
+;;;	MOV	RG$RGG+2,-(SP)		;‘Ž•€…ˆ… ‘Ž‘’ŽŸˆŸ ˜ˆ› €„ ˆ “€‚‹…ˆŸ
+;;;	MOV	RG$RGD+2,-(SP)
+	CALL	OUTPUT
+;;;	MOV	(SP)+,RG$RGD+2		;‚Ž‘‘’€Ž‚‹…ˆ… ‘Ž‘’ŽŸˆŸ ˜ˆ› €„ ˆ “€‚‹…ˆŸ „Ž Ž…€–ˆˆ ‘ ˜ˆŽ‰ Q-BUS
+;;;	MOV	(SP)+,RG$RGG+2
+;;;	MOV	RG$RGG+2,@RG$RGG	
+;;;	MOV	RG$RGD+2,@RG$RGD
+	RETURN
+
+;********************************
+;“‘’€Ž‚Š€ ˆ‡ŠŽƒŽ “Ž‚Ÿ ‚ …ƒˆ‘’…
+;********************************
+RGSET0:
+	.SAVRON
+	MOV	R0,R1
+
+	CMP	@R1,#NODLOG		;’ˆ –…ˆ ‹ŽƒˆŠ€?
+	BNE	3$			;…’
+
+	CMP	12(R1),#2		;…ƒˆ‘’ ‡€„€?
+	BNE	3$			;…’
+
+	MOV	14(R1),R2
+
+	CMP	@R2,#3			;…ƒˆ‘’ ‚‚Ž„€-‚›‚Ž„€?
+	BEQ	6$			;„€
+	CMP	@R2,#1			;…ƒˆ‘’ ‚‚Ž„€?
+	BNE	5$			;…’
+6$:
+	MOV	6.(R1),R3		;UPR?
+	BEQ	3$			;…’
+
+	MOV	R1,R0
+	CALL	NODS.0
+
+	BR	3$
+5$:
+	CMP	@R2,#2			;…ƒˆ‘’ ‚›‚Ž„€?
+	BNE	3$			;…’
+
+	MOV	8.(R1),R3		;SOST?
+	BEQ	3$			;…’
+
+;	MOV	#177777,R5
+;	TSTB	17(R1)			;‘ˆƒ€‹ –…ˆ ˆ‚…‘›‰?
+;	BNE	7$			;„€
+
+	MOV	#1,R5
+	MOVB	16(R0),R4
+	ASH	R4,R5
+7$:
+;	CALL	ZAHVAT
+	CALL	RGSTOUT
+
+3$:
+	RETURN
+
+
+
+;***********************************
+;Ž‚…Š€ –…ˆ “‡…‹ € ‡€Œ›Š€ˆ…
+;***********************************
+ZAMNOD:
+	.SAVRON
+	MOV	R0,R1
+10$:
+	CMP	@R1,#NODNOD		;’ˆ –…ˆ ……Œ›—Š€?
+	BNE	3$			;…’
+
+	CMP	R1,NDCURRENT		;’…Š“™€Ÿ –…œ - €Š’ˆ‚€Ÿ?
+	BEQ	3$			;„€
+
+	;Ž…„…‹…ˆ… –…ˆ SOST
+	MOV	8.(R1),R2		;SOST?
+	BEQ	3$			;…’
+	CMP	R1,#X0213A		;–…œ ‡Œ?
+	BEQ	3$			;„€
+
+	MOV	R2,R0
+	CALL	VURGGET
+	TST	R0
+	BNE	3$
+
+	CALL	ERRORINC
+
+	;‘ŽŽ™…ˆ… Ž Ž˜ˆŠ…
+	CALL	ZAMOUT
+	BC‘	4$			;Ž‚’Žˆ’œ? …’
+	CALL	LSTNS1
+	BR	10$
+3$:
+	CLC
+4$:	RETURN
+
+
+;***********************************
+;Ž‚…Š€ ‘Š‚Ž‡Ž‰ –…ˆ € ‡€Œ›Š€ˆ…
+;***********************************
+ZAMJMP:
+	.SAVRON
+	MOV	R0,R1
+10$:
+	CMP	@R1,#NODJMP		;’ˆ –…ˆ ……Œ›—Š€?
+	BNE	3$			;…’
+
+	CMP	R1,NDCURRENT		;’…Š“™€Ÿ –…œ - €Š’ˆ‚€Ÿ?
+	BEQ	3$			;„€
+	CMP	16(R1),NDCURRENT	;‘‚Ÿ‡€€Ÿ –…œ - €Š’ˆ‚€Ÿ?
+	BEQ	3$			;„€
+
+	;Ž…„…‹…ˆ… –…ˆ SOST
+	MOV	8.(R1),R0		;SOST?
+	BNE	6$			;„€
+	MOV	16(R1),R0
+	MOV	8.(R0),R0		;UPR
+6$:
+	CALL	VURGGET
+	TST	R0
+	BNE	3$
+
+	CALL	ERRORINC
+
+	;‘ŽŽ™…ˆ… Ž Ž˜ˆŠ…
+	CALL	ZAMOUT
+	BCC	4$			;Ž‚’Žˆ’œ? …’
+	CALL	LSTNS1
+	BR	10$
+3$:
+	CLC
+4$:	RETURN
+
+;********************************
+; Ž‚…Š€ –……‰ Ž’Ž‚ ‚‚Ž„€-‚›‚Ž„€ € ‡€Œ›Š€ˆ…
+;********************************
+ZAMLOG:
+	.SAVRON
+	CMP	R0,NDCURRENT		;’…Š“™€Ÿ –…œ - €Š’ˆ‚€Ÿ?
+	BEQ	1$			;„€
+
+	MOV	R0,R1
+10$:
+	CMP	@R1,#NODLOG		;’ˆ –…ˆ ‹ŽƒˆŠ€?
+	BNE	3$			;…’
+
+	CMP	12(R1),#2		;…ƒˆ‘’ ‡€„€?
+	BNE	3$			;…’
+
+;	CALL	ZAHVAT
+
+	MOV	14(R1),R2
+
+	CMP	@R2,#3			;…ƒˆ‘’ ‚‚Ž„€-‚›‚Ž„€?
+	BEQ	8$			;„€
+	CMP	@R2,#1			;…ƒˆ‘’ ‚‚Ž„€?
+	BNE	5$			;…’
+8$:
+	MOV	6.(R1),R3		;UPR?
+	BEQ	3$			;…’
+
+	MOV	RG$RGG+2,-(SP)		;‘Ž•€…ˆ… ‘Ž‘’ŽŸˆŸ ˜ˆ› €„ ˆ “€‚‹…ˆŸ
+	MOV	RG$RGD+2,-(SP)
+	MOV	2(R2),ADRES
+	CALL	INPUT
+	MOV	(SP)+,RG$RGD+2		;‚Ž‘‘’€Ž‚‹…ˆ… ‘Ž‘’ŽŸˆŸ ˜ˆ› €„ ˆ “€‚‹…ˆŸ „Ž Ž…€–ˆˆ ‘ ˜ˆŽ‰ Q-BUS
+	MOV	(SP)+,RG$RGG+2
+	MOV	RG$RGG+2,@RG$RGG	
+	MOV	RG$RGD+2,@RG$RGD
+
+	MOV	#1,R0
+	MOVB	16(R1),R4
+	ASH	R4,R0
+
+	BIT	R0,DANNY
+	BNE	5$
+
+	CALL	ERRORINC
+
+	;‘ŽŽ™…ˆ… Ž Ž˜ˆŠ…
+	CALL	ZAMOUT
+	BCC	1$			;Ž‚’Žˆ’œ? …’
+	CALL	LSTNS1
+	BR	10$
+
+5$:
+	CMP	@R2,#2			;…ƒˆ‘’ ‚›‚Ž„€?
+	BNE	1$			;…’
+
+	MOV	8.(R1),R3		;SOST?
+	BEQ	3$			;…’
+
+	MOV	R3,R0
+	CALL	VURGGET
+
+	CMP	R1,#X0111		;ˆ‘Š‹ž—…ˆ… –…œ XP1˜:11 - ˆ‚…‘ˆŸ ‘ˆƒ€‹€ ‚ ‚-1096
+	BEQ	4$
+
+	TSTB	17(R1)			;‘ˆƒ€‹ –…ˆ ˆ‚…‘›‰?
+	BNE	4$			;„€
+	TST	R0
+	BNE	1$
+	BR	2$
+4$:
+	TST	R0
+	BEQ	1$
+	CALL	ZAMOU2
+	BCS	10$
+	BR	1$
+2$:
+	CALL	ERRORINC
+
+	;‘ŽŽ™…ˆ… Ž Ž˜ˆŠ…
+	CALL	ZAMOUT
+	BCC	1$			;Ž‚’Žˆ’œ? …’
+	CALL	LSTNS1
+	BR	10$
+1$:
+	CLC
+	RETURN
+3$:
+	SEC
+	RETURN
+
+
+ZAMOUT:
+	STR.OUT
+	MSG.TXT	#TSTZAM
+	MSG.TXT	#MS$TZM,NDCURRENT
+
+	MSG.ERR #ER$THIG
+	MSG.ERR	#MS$ZAM
+	MOV	R1,R0
+	CALL	ND$PR1			;‚›‚Ž„ „€›• Ž –…ˆ
+	RETURN
+
+ZAMOU2:
+	STR.OUT
+	MSG.TXT	#TSTZAM
+	MSG.TXT	#MS$TZM,NDCURRENT
+
+	MSG.ERR #ER$TLOW
+	MSG.ERR	#MS$ZAM
+	MOV	R1,R0
+	CALL	ND$PR1			;‚›‚Ž„ „€›• Ž –…ˆ
+	RETURN

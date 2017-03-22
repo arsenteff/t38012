@@ -1,0 +1,10 @@
+
+F$D:
+;;;	MOV	@#60,VEKTOR
+;;;	MOV	@#62,VEKTOR+2
+;;;	MOV	#VEK60D,@#60
+;;;	CLR	@#62
+	CALL	ZAHVAT
+	CALL	SPEECH
+	RETURN
+

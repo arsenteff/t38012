@@ -1,0 +1,102 @@
+;	‘ˆƒ€‹›  Q-˜ˆ›
+	B$AIP =   2000 	;‘ˆƒ€‹ €ˆ
+	B$ASP =   4000 	;‘ˆƒ€‹ €‘
+	B$SBR = 100000 	;‘ˆƒ€‹ ‘Ž‘
+	B$P   =  40000 	;‘ˆƒ€‹ ‚…Š’ŽŽƒŽ …›‚€ˆŸ
+	B$T   =  20000 	;‘ˆƒ€‹ ’€‰Œ…ŽƒŽ …›‚ˆŸ
+	B$PRM =  10000 	;‘ˆƒ€‹ ‘Œ…› €ŠŽ‚ Ž‡“/‡“
+	B$PZM =    400 	;‘ˆƒ€‹ ‡Œ
+	B$RZM =    200 	;‘ˆƒ€‹ ‡Œ
+	B$ZM  =    100 	;‘ˆƒ€‹ ‡Œ
+	B$BYT =     10 	;‘ˆƒ€‹ €‰’
+	B$OTV =      1 	;‘ˆƒ€‹ Ž’‚…’
+	B$VYV =      2 	;‘ˆƒ€‹ ‚›‚Ž„
+	B$VV  =      4 	;‘ˆƒ€‹ ‚‚Ž„
+	B$OBM =     20 	;‘ˆƒ€‹ ŽŒ…
+	B$PDPR=   1000 	;‘ˆƒ€‹ ‡€…’€ „/
+
+;   *************************************************************
+;   *	     Ž„Žƒ€ŒŒ€  €‘…—€’Šˆ  ‘Ž‘’ŽŸˆŸ  Q-˜ˆ›	*
+;   *************************************************************
+;
+F$KANL::
+	JSR	R5,SAVRG
+	.PRINT	#KANAL
+	CALL	F$K
+	BIT	#OTLAD,STATUS
+	BEQ	1$
+	JMP	DIALOG
+1$:	RETURN
+
+;
+;   *************************************************************
+;   *	     Ž„Žƒ€ŒŒ€  €‘…—€’Šˆ  ‘Ž‘’ŽŸˆŸ  ˆ  „€›•	*
+;   *************************************************************
+;
+F$K:	MOV	@RG$RGG,R1 	;Q-˜ˆ€
+	MOV	#M$AD,R2
+	CALL	OCTASC		;€‡Ÿ„› €„…‘€/„€›•
+	MOV	@RG$RGD,R2	;“€‚‹Ÿž™ˆ… ‘ˆƒ€‹›
+	MOV	#<T$BITQ-T$ADRQ>/2,R0	;‘—…’—ˆŠ —ˆ‘‹€ ˆ’ ˜ˆ›
+2$:	ASL	R0
+	MOVB	#'1,@T$ADRQ-2(R0)
+	BIT	T$BITQ-2(R0),R2
+	BNE	3$
+	MOVB	#'0,@T$ADRQ-2(R0)
+3$:	ASR	R0
+	SOB	R0,2$
+
+	MOV	#12.,R4
+4$:	CALL	Z10MS
+	SOB	R4,4$
+
+	.PRINT	#S$KNL
+	.TTINR
+	BCS	F$K		;‡€–ˆŠ‹ˆ‚€ˆ… …—€’ˆ
+	BIC	#10100,JSW	;Ž‘’Ž—›‰ ‚‚Ž„ ‘ ’…Œˆ€‹€
+	CALL	VKPS		;‘‹…„“ž™€Ÿ ‘’ŽŠ€ ’…Œˆ€‹€
+	RETURN
+T$ADRQ: .WORD	M$ASP,M$AIP,M$P,M$T,M$PRM1,M$ACP1
+	.WORD	M$PZM,M$RZM,M$ZM,M$BYT
+	.WORD	M$OTV,M$VYV,M$VV,M$OBM
+T$BITQ: .WORD	B$ASP,B$AIP,B$P,B$T,B$PRM,B$PDPR
+	.WORD	B$PZM,B$RZM,B$ZM,B$BYT
+	.WORD	B$OTV,B$VYV,B$VV,B$OBM
+
+
+KANAL:: .ASCII	<12><15><11>/******************************************/
+	.ASCII	/*****************/<12><15><16>
+	.ASCII	<11>/* €„…‘*ŽŒ…* ‚‚*‚›‚*Ž’‚…’* ’* ‡Œ*‡Œ*/
+	.ASCII	/‡Œ*Œ*‡*€ˆ*€‘/
+	.ASCIZ  <12><15>
+S$KNL:: .ASCII	/    /
+        .ASCII  /    */
+M$AD::	.BLKB	6
+	.ASCII	/*  /
+M$OBM:: .BLKB	1
+	.ASCII	/  * /
+M$VV::	.BLKB	1
+	.ASCII	/ * /
+M$VYV:: .BLKB	1
+	.ASCII	/ *  /
+M$OTV:: .BLKB	1
+	.ASCII	/  * /
+M$BYT:: .BLKB	1
+	.ASCII	/ * /
+M$ZM::	.BLKB	1
+	.ASCII	/ * /
+M$RZM:: .BLKB	1
+	.ASCII	/ * /
+M$PZM:: .BLKB	1
+	.ASCII	/ * /
+M$PRM1::.BLKB   1
+	.ASCII  / * /
+M$ACP1::.BLKB   1
+	.ASCII  / * /
+M$AIP:: .BLKB	1
+	.ASCII	/ * /
+M$ASP:: .BLKB	1
+	.ASCII	/ */<15><200>
+M$T::	.BLKB	1
+M$P::	.BLKB	1
+	.EVEN

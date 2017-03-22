@@ -1,0 +1,52 @@
+;*********************************
+;	  ’…‘’ €à¨­ª 429         *
+;*********************************
+T$TARN::
+	JSR	R5,SAVRG
+	MOVB #12.,STATS3
+;;;	.PRINT	#MG295.
+
+	MOV	#TS$ARN,R0
+	CALL	TITLEPRINT
+
+	CALL	INTENABL
+
+ARINC1:	CLR	ERROR
+	CALL	CLRBUS	;Ž—ˆ‘’Š€ Š€€‹€
+	CALL	ZAPRET
+ARINC:
+	MOV	#3,CHCIKL	;‘—…’—ˆŠ –ˆŠ‹Ž‚ Ž‚…Šˆ ’…‘’€
+1$:	.CSISPC	#FILCSI,#EXTCSI,#TARN
+	TST	(SP)+      ;Ž—ˆ‘’ˆ’œ á’…Š Ž‘‹… .CSISPC
+	CALL	S$LOAD
+
+	;;;CALL	ZAPRET
+	CALL	PUSK2	;“‘Š Ž–…‘‘Ž€
+	CALL	TTINDB	;„‹Ÿ …†. DBG - ‚›•Ž„ ˆ‡ ‡€–ˆŠ‹. € „ˆ€‹Žƒ 
+
+	MOV	CHCIKL,R1
+	ASL	R1
+	MOV	TZDARN-2(R1),R1
+	CALL	Z1S+4	;‡€„…†Š€ ……Œ…€Ÿ
+	CALL	FAST
+	CALL	ANLTST
+	CALL	TTINDB
+	TST	ERROR
+	BEQ	2$
+
+	MOV	#TS$ARN,R0
+	CALL	TERROUT
+	BCC	10$
+
+	BR	ARINC1
+2$:	DEC	CHCIKL
+	BNE	1$
+10$:
+	RETURN
+
+TZDARN:	.WORD 500.,500.,500.
+
+M24VOFF:.ASCIZ	<12><15><11><16>/‚›Š‹ž—ˆ’… ˆ‘’Ž—ˆŠ ˆ’€ˆŸ 24‚/<17>
+;;;MG295.:	.ASCIZ <16>/   ’…‘’ ‡“/<17>
+	.EVEN
+

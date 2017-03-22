@@ -1,0 +1,37 @@
+	.TITLE TSTALL.MDL
+
+;************************************
+.ITEM TSTALL,,,<>,<>
+;************************************
+	CLR	ERRINC
+
+	ITM.FML	#TS$TST,R0
+	FML.LST R0,#TSTALP
+
+	TST	ERRINC
+	BEQ	3$
+	MSG.TXT	#MSGER8,ERRINC
+	BR	4$
+3$:	MSG.TXT	#MSGER9
+4$:
+	RETURN
+TSTALP:
+	MOV	R1,-(SP)
+	MOV	R0,R1
+	ITM.FML	R1,R0
+	BNE	1$
+	CALL	@R1
+	BR	2$
+1$:
+	FML.LST R0
+2$:	MOV	(SP)+,R1
+	RETURN
+
+.ITEM MSGER8,,,<.MSG <NUMDEC>,STUB>,<Â ÏÐÎÖÅÑÑÅ ÏÐÎÂÅÐÊÈ ØÀÑÑÈ ÍÀÉÄÅÍÛ ÍÅÈÑÏÐÀÂÍÎÑÒÈ:>
+.ITEM MSGER9,,,<.MSG <STRING>,NULL>,<ÂÎ ÂÐÅÌß ÏÐÎÂÅÐÊÈ ØÀÑÑÈ ÍÅÈÑÏÐÀÂÍÎÑÒÅÉ ÍÅ ÍÀÉÄÅÍÎ>
+
+ERRORINC::
+	INC	ERRINC
+	RETURN
+
+ERRINC:	.WORD

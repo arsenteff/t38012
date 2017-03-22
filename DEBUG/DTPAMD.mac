@@ -1,0 +1,177 @@
+;***< SYSTEM >***
+;.LIBRARY /DK:SYS.MLB/
+;.MCALL .SYSINC,.TYPE
+;.SYSINC
+
+;.ITEM MSGPBR,,,<.MSG <NUMOCT>,STUB>,<„€›… P$BR: >
+
+;*******************************************************
+;         ’…‘’ Ž‡“ ›‘’›‰  „‹Ÿ …†ˆŒ€ DBG             *
+;*******************************************************
+;
+T$PAMD::
+;;;	.PRINT #MSG510
+
+	MOV	#TS$FAS,R0
+	CALL	TITLEPRINT
+
+	CALL CLRBUS		;Ž—ˆ‘’Š€ Š€€‹€
+;;;	BIC #32000,STATUS	;‘Ÿ’œ ˆ’› PDP,ZPRT,PEREM
+	CALL	ZAPRET
+	CALL	ZAHVAT
+
+	.CSISPC #FILCSI,#EXTCSI,#TPAM
+	TST (SP)+     		;Ž—ˆ‘’ˆ’œ ‘’…Š Ž‘‹… .CSISPC
+	CALL S$LOAD
+	CALL PUSK2
+       CALL  TTINDB	;***„‹Ÿ …†. DBG - ‚›•Ž„ ˆ‡ ‡€–ˆŠ‹. € „ˆ€‹Žƒ 
+	MOV #10.,@#KPR 		;—ˆ‘‹Ž Š-Ž•Ž„Ž‚ ’…‘’€ TPAM46
+	CLR @#ERROR
+10$:     CLR @#ERRZD
+12$:	MOV #300.,R1
+	CALL Z1S+4		;
+	CALL ANLPDP		; ZAHVAT
+	CALL R$INF
+
+	;MSG.TXT #MSGPBR,P$BR
+
+	CMP @#P$BR,#777		; BR?
+	BEQ 15$
+	CALL OSVOB
+       CALL  TTINDB	;***„‹Ÿ …†. DBG - ‚›•Ž„ ˆ‡ ‡€–ˆŠ‹. € „ˆ€‹Žƒ 
+	INC @#ERRZD
+	CMP @#ERRZD,#60.	; 1 ‘…Š
+	BLT 12$
+	.PRINT #MSG01
+	BR  20$
+15$:
+    	CALL R$MSG		;‘—ˆ’€’œ ‘ŽŽ™…ˆ… ˆ‡ ’…‘’€
+	CALL BG$USL		;“‘’. NOP B 7576
+	CALL OSVOB
+	CALL ANLBK
+	.PRINT #BUFMSG   
+	CMP @#CH406,@#KPR
+	BLE 10$
+	ADD #10.,KPR		;“‚…‹ˆ—ˆ’œ KPR € 10
+	CMP #99.,KPR
+	BLE T$PAMD
+20$:    CALL ANLTST	 	
+       CALL  TTINDB	;***„‹Ÿ …†. DBG - ‚›•Ž„ ˆ‡ ‡€–ˆŠ‹. € „ˆ€‹Žƒ 
+	BR  10$			;T$TPAM
+	RETURN
+
+;*******************************************************
+;                 ’…‘’ Ž‡“ ›‘’›‰                     *
+;*******************************************************
+;
+T$TPAM::
+	JSR	R5,SAVRG
+	MOVB  #15.,STATS3
+;;;	.PRINT #MSG510
+
+	MOV	#TS$FAS,R0
+	CALL	TITLEPRINT
+
+	CALL	INTENABL
+
+	CALL CLRBUS		;Ž—ˆ‘’Š€ Š€€‹€
+	BIC #32000,STATUS	;‘Ÿ’œ ˆ’› PDP,ZPRT,PEREM
+PAM:	MOV #3,@#CHCIKL		;—ˆ‘‹Ž ‡€“‘ŠŽ‚ ’…‘’€ TPAM46
+1$:	.CSISPC #FILCSI,#EXTCSI,#TPAM
+	TST (SP)+     		;Ž—ˆ‘’ˆ’œ ‘’…Š Ž‘‹… .CSISPC
+	CALL S$LOAD
+	CALL PUSK2
+       CALL  TTINDB	;***„‹Ÿ …†. DBG - ‚›•Ž„ ˆ‡ ‡€–ˆŠ‹. € „ˆ€‹Žƒ 
+2$:	MOV @#CHCIKL,R0
+	ASL R0
+	MOV TBPROH-2(R0),@#KPR   ;—ˆ‘‹Ž Š-Ž•Ž„Ž‚ ’…‘’€ TPAM46
+	CLR @#ERROR
+5$:     CLR @#ERRZD
+6$:	MOV #300.,R1
+	CALL Z1S+4		;
+7$:	CALL ANLPDP		; ZAHVAT
+	CALL R$INF
+	CMP @#P$BR,#777		; BR?
+	BEQ 15$
+9$:	CALL OSVOB
+       CALL  TTINDB	;***„‹Ÿ …†. DBG - ‚›•Ž„ ˆ‡ ‡€–ˆŠ‹. € „ˆ€‹Žƒ 
+	INC @#ERRZD
+	CMP @#ERRZD,#60.	; 1 ‘…Š
+	BLT 6$
+	.PRINT #MSG01
+	BR  30$
+15$:    CALL R$MSG		;‘—ˆ’€’œ ‘ŽŽ™…ˆ… ˆ‡ ’…‘’€
+	CALL BG$USL		;“‘’. NOP B 7576
+	CALL OSVOB
+	CALL ANLBK
+17$:	.PRINT #BUFMSG   
+;      MOV #200,R1    ;********
+;      CALL Z1S+4   ;********
+	TST @#ERROR	;›‹€ Ž˜ˆŠ€ €œ˜…?
+	BNE 5$		;…‘‹ˆ „€
+	CMP @#CH406,@#KPR
+	BLT 5$
+30$:    CALL ANLTST	 	
+       CALL  TTINDB	;***„‹Ÿ …†. DBG - ‚›•Ž„ ˆ‡ ‡€–ˆŠ‹. € „ˆ€‹Žƒ 
+	TST @#ERROR
+	BEQ 35$
+
+	MOV	#TS$FAS,R0
+	CALL	TERROUT
+	BCC	10$
+
+	BR  PAM 			;T$TPAM
+35$:    CALL FAST
+	DEC @#CHCIKL
+	CMP @#CHCIKL,#1	;;;;
+	BGT 1$
+10$:
+	RETURN
+;
+R$MSG:  MOV #80.,R3
+	MOV #BUFMSG,R4
+        MOV #11000,R5
+	CALL TEHBLK
+	RETURN
+;
+R$INF:  MOV #1,R3
+	MOV #P$MSG,R4
+	MOV #11000,R5
+	CALL TEHBLK		;‘—ˆ’€’œ Ÿ—. 11000
+	MOV #1,R3
+	MOV #P$BR,R4
+	MOV #7576,R5
+	CALL TEHBLK
+	MOV#1,R3
+	MOV #CH406,R4
+	MOV #406,R5
+	CALL TEHBLK
+	RETURN
+;
+BG$USL:
+	MOV #7576,ADRES
+	MOV #240,DANNY
+	CALL OUTPUT
+	RETURN
+;
+ANLBK:  MOV #BUFMSG,R0
+10$:	TSTB (R0)+
+	BNE 10$
+	MOVB #200,-(R0)
+	RETURN
+;
+TABZD1: .WORD 5.,3.,2.,1.
+TBPROH: .WORD 5,3,1
+
+ERRZD:  .WORD 0
+KPR:    .WORD 0		;ŠŽ‹. Š-Ž•Ž„Ž‚
+CH406:  .WORD 0    	;ŠŽ‹. ‡€‚…˜…›• K-Ž•Ž„Ž‚ TPAM46
+P$MSG:  .WORD 0
+P$BR::   .WORD 0
+BUFMSG: .BLKW 80.
+;;;MSG510: .ASCIZ <16>/   ’…‘’ Ž‡“  ›‘’›‰/<17>
+MSG01:  .ASCII <16><12><15>/**** ’…‘’ Ž‡“ … ‚›„€…’ „ˆ€ƒŽ‘’ˆ—…‘Šˆ• ‘ŽŽ™…ˆ‰ ***/
+	.ASCIZ <17><12><15>
+	.EVEN
+
+

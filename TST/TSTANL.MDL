@@ -1,0 +1,36 @@
+
+NDLSTANL:
+.WORD	X0136	;ANL01 ëàçìë
+.WORD 	X0128	;ANL02 äéëàçìë
+;.WORD	X0129	;ANL03 äìê 1
+;.WORD	X0137	;ANL04 äìê 3
+.WORD	X0409A	;ANL05 +24 Ç
+.WORD	X0609A	;ANL06 +24 Ç
+.WORD	X0606A	;ANL07 èàíÄçàÖ Äì (+24 Ç)
+.WORD	X0147	;ANL08 Äì
+.WORD	X0407A	;ANL09 +15 Ç
+.WORD	X0607A	;ANL10 +15 Ç
+.WORD	X0408A	;ANL11 -15 Ç
+.WORD	X0608A	;ANL12 -15 Ç
+
+.WORD	X0601B	;ANL125 139,2 ™ÉÊ
+
+
+.ITEM MS$AN0,,,<.MSG <STRING>>,<èÖêÖäãûóàíÖ èÖêÖäãûóÄíÖãú ëàÉçÄãéÇ çÄ èê-1096>
+.ITEM MS$AN1,,,<.MSG <STRING>>,<Ç ëééíÇÖíëíÇìûôÖÖ èéãéÜÖçàÖ ñÖèà à èêéÇÖêúíÖ ëàÉçÄã>
+
+.ITEM	TSTAN0,,,<>,<èêéÇÖêäÄ ÄçÄãéÉéÇõÖ ëàÉçÄãõ>
+	.SAVRON
+	MOV	#4.,R5
+	MOV	#NDLSTANL,R4
+1$:
+	MSG.TXT	#MS$AN0
+	MSG.TXT	#MS$AN1
+	MOV	(R4)+,R0
+	CALL	ND$PR1
+	SOB	R5,1$
+
+	CLC
+	RETURN
+
+	

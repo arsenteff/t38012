@@ -1,0 +1,430 @@
+	.TITLE DEV.MDL
+
+	.EVEN
+	.BYTE	'-,200
+	.BYTE	'0,200,'1,200
+	.BYTE	'(,200,'),200
+	.BYTE	'",200,40,200,':,200
+	.ASCIZ	/XP1/
+NDN:
+NODNAM: .SAVRON
+	MOV	R0,R1
+
+	CLR	R5
+1$:	CMP	2(R1),99$(R5)
+	BEQ	2$
+	ADD	#2,R5
+	CMP	R5,#12.
+	BLT	1$
+
+	MOV	#NODNAM-5,R2
+	BR	3$
+2$:	MOV	100$(R5),R2
+3$:
+	.R50ASC 4(R1),R3
+
+	;нопедекемхе жеох UPR хкх SOST
+	MOV	8.(R1),R0		;SOST?
+	BEQ	4$			;мер
+
+	CMP	@R0,#4			;жеоэ юмюкнцнбюъ?
+	BEQ	4$			;дю
+
+	CALL	VURGGET
+	MOV	#NODNAM-22,R4
+	TST	R0
+	BEQ	5$
+	MOV	#NODNAM-20,R4
+	BR	5$
+4$:	MOV	#NODNAM-24,R4
+5$:
+	MOV	6.(R1),R0		;UPR?
+	BEQ	6$			;мер
+	CALL	VURGSTATE
+	MOV	#NODNAM-22,R5
+	TST	R0
+	BEQ	7$
+	MOV	#NODNAM-20,R5
+	BR	7$
+6$:	MOV	#NODNAM-24,R5
+7$:
+	ITM.NAM R1,R0
+	
+	;дюммше н ябъгюммнл пецхярпе
+	CMP	12(R1),#2
+	BNE	8$
+	TST	14(R1)
+	BEQ	8$
+
+	TSTB	17(R1)			;яхцмюк жеох хмбепямши?
+	BEQ	10$			;мер
+	MOV	#120$,200$
+	BR	11$
+10$:	MOV	#NDN-5,200$
+11$:
+	MOV	R0,-(SP)
+
+	MOV	14(R1),R0		;юдпея б рейярнбнл тнплюре
+	.BINOCT 2(R0),R0
+	.MSGCOP R0,#BFSTR1
+
+	MOVB	16(R1),R0
+	.BINDEC R0
+	.NULCLR R0
+	MOV	R0,R1
+	MOV	(SP)+,R0
+	
+	.STRSPL <#NDN-10,#NDN-16,R5,#NDN-6,R4,#NDN-14,#NDN-10,R2,#NDN-6,R3,#NDN-10,#NDN-12,R0,#NDN-12,#NDN-10,#BFSTR1,#110$,R1,200$>,R0
+	BR	9$
+8$:
+	.STRSPL <#NDN-10,#NDN-16,R5,#NDN-6,R4,#NDN-14,#NDN-10,R2,#NDN-6,R3,#NDN-10,#NDN-12,R0,#NDN-12>,R0
+9$:
+	CLC
+	RETURN
+
+	.GLOBL PL$X01,PL$X02,PL$X03,PL$X04,PL$X05,PL$X06
+99$:	.WORD PL$X01,PL$X02,PL$X03,PL$X04,PL$X05,PL$X06
+100$:
+	.WORD 101$,102$,103$,104$,105$,106$
+200$:	.WORD
+101$:	.ASCIZ <17>/XP1/<16>/ь/<17>
+102$:	.ASCIZ <17>/XS1/
+103$:	.ASCIZ <17>/XP1/
+104$:	.ASCIZ <17>/XP2/
+105$:	.ASCIZ <17>/XP3/
+106$:	.ASCIZ <17>/XP4/
+110$:	.ASCIZ / ахр: /
+120$:	.ASCII / !хмбепямши!/<200>
+	.EVEN
+
+
+REGNAM: .SAVRON
+	MOV	R0,R1
+	
+	;якнбн "пецхярп"
+	ITM.TNAME R1,R2
+
+	;юдпея б рейярнбнл тнплюре
+	.BINOCT 2(R1),R3
+	.MSGCOP R3,#BFSTR1,R3
+
+	;дюммше я гюдюммнцн юдпеяю б рейярнбнл тнплюре
+
+	CMP	@R1,#3		;пецхярп ббндю-бшбндю?
+	BEQ	6$		;дю
+	CMP	@R1,#1		;пецхярп ббндю?
+	BNE	1$		;мер
+6$:
+	BIC	#QSTSOERROR,QBUSSTATUS
+	MOV	2(R1),ADRES
+	CALL	ZAHVAT
+	CALL	INPUT
+	BCC	3$			;ньхайю? мер
+	MOV	#MS$101,R4
+	BR	2$
+3$:
+	COM	DANNY
+	.BINOCT DANNY,R4
+	.MSGCOP R4,#BFSTR2,R4
+	BR	2$
+1$:
+	CMP	@R1,#2		;пецхярп бшбндю?
+	BNE	5$		;мер
+
+	MOV	#16.,R5
+4$:	MOV	#MS$102-1,R0		;гюонкмемхе астепю яхлбнкнл "-"
+	ADD	R5,R0
+	MOVB	#'-,@R0
+	SOB	R5,4$
+
+	ITM.FML	R1,R5
+	FML.LST	R5,#RGNSET
+	MOV	#MS$102,R4
+	BR	2$
+5$:
+	MOV	#NODNAM-24,R4
+
+2$:	ITM.NAM R1,R0
+	.STRSPL <#NODNAM-10,#NODNAM-16,R4,#MS$103,R2,#NODNAM-10,R3,#NODNAM-10,#NODNAM-12,R0,#NODNAM-12>,R0
+	CLC
+	RETURN
+
+MS$102:	.ASCIZ	/----------------/<16>
+MS$101:	.ASCIZ	<17>/ERROR./<16>
+MS$103:	.ASCIZ	/) /<16>
+
+BFSTR1:	.BLKB 7
+BFSTR2:	.BLKB 7
+BFSTR3:	.BLKB 7
+	.EVEN
+
+RGNSET:
+	MOV	R1,-(SP)
+	MOV	R0,R1
+
+	;нопедекемхе жеох UPR хкх SOST
+	MOV	8.(R1),R0		;SOST?
+	BEQ	1$			;мер
+
+	;дюммше н ябъгюммнл пецхярпе
+	CMP	12(R1),#2
+	BNE	1$
+	TST	14(R1)
+	BEQ	1$
+
+	MOVB	16(R1),R1
+	COM	R1
+	ADD	#MS$102+16.,R1
+
+	CALL	VURGGET
+	MOVB	#'0,@R1
+	TST	R0
+	BEQ	1$
+	MOVB	#'1,@R1
+1$:
+	CLC
+	MOV	(SP)+,R1
+	RETURN
+
+
+VURGNAM: .SAVRON
+	MOV	R0,R1
+	
+	;якнбн "пецхярп"
+	ITM.TNAME R1,R2
+
+	;явхрюммше дюммше б рейярнбнл тнплюре
+	MOV	TRPSTS,-(SP)
+	BIC	#TRPCALL!TRPOERROR,TRPSTS
+	MOV	@(R1),R0
+
+	BIT	#TRPCALL,TRPSTS
+	BNE	1$
+	.BINOCT R0,R4
+	.MSGCOP R4,#BFSTR1,R4
+	BR	2$
+1$:	MOV	#MS$101,R4
+2$:
+	;гюохяюммше дюммше б рейярнбнл тнплюре
+	BIC	#TRPCALL!TRPOERROR,TRPSTS
+	MOV	2(R1),@(R1)
+	BIT	#TRPCALL,TRPSTS
+	BNE	3$
+	.BINOCT 2(R1),R5
+	.MSGCOP R5,#BFSTR2,R5
+	BR	4$
+3$:	MOV	#MS$101,R5
+4$:
+	MOV	(SP)+,TRPSTS
+
+	.BINOCT (R1),R3
+	.MSGCOP R3,#BFSTR3,R3
+
+	ITM.NAM R1,R0
+	.STRSPL <#NODNAM-10,#NODNAM-16,R5,#NODNAM-6,R4,#MS$103,R2,#NODNAM-10,#NODNAM-12,R0,#NODNAM-12,#NODNAM-10,R3>,R0
+	CLC
+	RETURN
+
+VUNOUT = 1
+VUNIN  = 2
+VUNIO  = 3
+
+VUNODNAM: .SAVRON
+	MOV	R0,R1
+
+	CLR	R5
+1$:	CMP	2(R1),99$(R5)
+	BEQ	2$
+	ADD	#2,R5
+	CMP	R5,#4.
+	BLT	1$
+
+	MOV	#NODNAM-5,R2
+	BR	3$
+2$:	MOV	100$(R5),R2
+3$:
+	.R50ASC 4(R1),R3
+
+	;нопедекемхе жеох IN х IO
+	MOV	(R1),R0
+	CMP	R0,#VUNIN
+	BEQ	4$
+	CMP	R0,#VUNIO
+	BNE	5$
+4$:
+	MOV	R1,R0
+	CALL	VURGGET
+	MOV	#NODNAM-22,R4
+	TST	R0
+	BEQ	6$
+	MOV	#NODNAM-20,R4
+	BR	6$
+5$:	MOV	#NODNAM-24,R4
+6$:
+	;нопедекемхе жеох OUT х IO
+	MOV	(R1),R0
+	CMP	R0,#VUNOUT
+	BEQ	7$
+	CMP	R0,#VUNIO
+	BNE	8$
+7$:
+	MOV	R1,R0
+	CALL	VURGSTATE
+	MOV	#NODNAM-22,R5
+	TST	R0
+	BEQ	9$
+	MOV	#NODNAM-20,R5
+	BR	9$
+8$:	MOV	#NODNAM-24,R5
+9$:
+	ITM.NAM R1,R0
+	.STRSPL <#NODNAM-10,#NODNAM-16,R5,#NODNAM-6,R4,#NODNAM-14,#NODNAM-10,R2,#NODNAM-6,R3,#NODNAM-10,#NODNAM-12,R0,#NODNAM-12>,R0
+	CLC
+	RETURN
+
+	.GLOBL PL$X20,PL$X21
+99$:	.WORD PL$X20,PL$X21
+100$:
+	.WORD 110$,111$
+110$:	.ASCIZ <17>/XP1/<16>
+111$:	.ASCIZ <17>/XS2/<16>
+	.EVEN
+
+
+.ITEM MS$ND0,,,<.MSG <STRING>,STUB>,<рхо жеох:>
+.ITEM MS$PL0,,,<.MSG <STRING>,STUB>,<янедхмхрекэ:>
+.ITEM MS$ND1,,,<.MSG <STRING>,NODNAM>,<жеоэ ьюяях:>
+.ITEM MS$ND2,,,<.MSG <STRING>,VUNODNAM>,<жеоэ "ббндю" боп:>
+.ITEM MS$ND3,,,<.MSG <STRING>,VUNODNAM>,<жеоэ "бшбндю" боп:>
+.ITEM MS$RG0,,,<.MSG <STRING>,REGNAM>,<пецхярп:>
+.ITEM MS$BT0,,,<.MSG <NUMDEC>,STUB>,< мнлеп ахрю:>
+.ITEM MS$JM0,,,<.MSG <STRING>,NODNAM>,<янедхмъеряъ я:>
+
+BITDAT:	RETURN
+
+;******************************
+.ITEM ND$PR1,DV$NDS,,<>,<хмтнплюжхъ н жеох>
+;******************************
+	.SAVRON
+	MOV	R0,R2
+	STR.OUT
+
+	;жеоэ ьюяях
+	STR.OUT #MS$ND1,R2
+	STR.OUT
+
+	MOV	@R2,R1
+	ASL	R1
+	STR.OUT #MS$ND0
+	STR.OUT TBNDTYP-2(R1)
+	STR.OUT
+
+	;янедхмхрекэ
+	STR.OUT #MS$PL0
+	STR.OUT 2(R2)
+	STR.OUT
+
+	;дюммше н ябъгюммнл пецхярпе
+	CMP	12(R2),#2
+	BNE	3$
+	TST	14(R2)
+	BEQ	3$
+	STR.OUT #MS$RG0,14(R2)
+	MOVB	16(R2),R3
+	STR.OUT #MS$BT0,R3
+	STR.OUT
+3$:
+	;дюммше н оепелшвйе
+	CMP	12(R2),#1
+	BNE	4$
+	STR.OUT #MS$JM0,16(R2)
+	STR.OUT
+4$:
+
+	;нопедекемхе жеох UPR хкх SOST
+	MOV	8.(R2),R1		;SOST?
+	BEQ	1$			;мер
+	STR.OUT #MS$ND2,R1
+	STR.OUT
+1$:
+	MOV	6.(R2),R1		;UPR?
+	BEQ	2$			;мер
+	STR.OUT #MS$ND3,R1
+	STR.OUT
+2$:	.PAUSE
+	RETURN
+
+TBNDTYP:.WORD ND$GND,ND$PWR,ND$JMP,ND$LOG,ND$NOD,ND$ANL,ND$UNK
+
+.ITEM MS$NOGET,,,<.MSG <STRING>,NODNAM>,<мебнглнфмн онксвхрэ дюммше он спнбмч с жеох:>
+.ITEM MS$ANYKEY,,,<.MSG <STRING>,NULL>,<дкъ опепшбюмхъ опнжедспш мюфлхре кчасч йкюбхьс>
+
+;******************************
+.ITEM ND$PR2,DV$NDS,,<>,<янярнъмхе жеох>
+;******************************
+	.SAVRON
+	MOV	R0,R2
+	;нопедекемхе жеох UPR хкх SOST
+	MOV	8.(R2),R1		;SOST?
+	BEQ	4$			;мер
+	MSG.TXT	#MS$ANYKEY
+1$:	CLR	R5
+	STR.OUT
+2$:
+	CMP	R5,#80.
+	BGE	1$
+	INC	R5
+	MOV	R1,R0
+	CALL	VURGGET
+	TST	R0
+	BEQ	3$
+
+	.PRINT	#100$+2			;явхрюмю 1
+	.KEYIN
+	BCS	2$
+	RETURN
+3$:
+	.PRINT	#100$			;явхрюм 0
+	.KEYIN
+	BCS	2$
+	RETURN
+4$:
+	MSG.TXT	#MS$NOGET,R2
+	.PAUSE
+	RETURN
+
+100$:	.BYTE	'0,200,'1,200
+
+.ITEM MS$K01,,,<.MSG <STRING>,NULL>,<дкъ хглемемхъ жеох мю мхгйхи спнбемэ мюфлхре "0" хкх мю бшянйхи "1">
+.ITEM MS$LHIG,,,<.MSG <STRING>,NULL>,<мю жеох гюдюм бшянйхи спнбемэ>
+.ITEM MS$LLOW,,,<.MSG <STRING>,NULL>,<мю жеох гюдюм мхгйхи спнбемэ>
+.ITEM MS$NOSET,,,<.MSG <STRING>,NODNAM>,<мебнглнфмн хглемхрэ спнбемэ с жеох:>
+
+;******************************
+.ITEM ND$PR3,DV$NDS,,<>,<хглемхрэ янярнъмхе>
+;******************************
+	.SAVRON
+	MOV	R0,R2
+	MOV	6.(R2),R1		;UPR?
+	BEQ	4$			;мер
+1$:
+	MSG.TXT	#MS$K01
+	.KEYOUT <#'0,#'1>
+	TST	R0
+	BEQ	1$
+	CMP	R0,#1
+	BNE	2$
+	MOV	R1,R0
+	CALL	VURGS0
+	MSG.TXT	#MS$LLOW
+	RETURN
+2$:
+	MOV	R1,R0
+	CALL	VURGS1
+	MSG.TXT	#MS$LHIG
+	RETURN
+4$:
+	MSG.TXT	#MS$NOSET,R2
+	.PAUSE
+	RETURN
+

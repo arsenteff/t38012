@@ -1,0 +1,63 @@
+	.TITLE DVECTD
+;
+;*******************************************************
+;      Ž€Ž’Š€ …›‚€ˆ‰ Ž’ Š‹€‚ˆ€’“› ŠŽ‘Ž‹ˆ      *
+;            „‹Ÿ / TEHOZD ‚ …†ˆŒ… DBG               *
+;*******************************************************
+VEK60D:	CMPB RDKL,#20	;‘€‚…ˆ… ‘	^P (Ž„Ž‹†…ˆ…)
+	BNE 10$
+5$:	MOVB STATS3,R0  ;‚›„…‹…ˆ… ŽŒ…€ ’…‘’€
+	BIC #177400,R0
+	ASL R0
+	BIT #D$OZU,STATS2
+	BEQ 7$
+	JMP @TB$TS1-20(R0)
+7$:	JMP @TBTSTD-20(R0)	;……•Ž„ Š ‘‹…„“ž™…Œ“ ’…‘’“
+;
+10$:	CMPB RDKL,#3	;‘€‚…ˆ… ‘  ^C (‡€‚…˜…ˆ…)
+	BNE 20$
+	MOV #17,SCREEN	;‹€’ˆ‘Šˆ‰ …ƒˆ‘’
+	MOV OZU$SP,SP
+	MOV @#VEKTOR,@#60
+	MOV @#VEKTOR+2,@#62
+	BIT #D$OZU,STATS2
+	BEQ 15$
+	JMP T10
+15$:	JMP DBGBGN 	;‚›•Ž„ ‚ Ž’‹€„Š“  
+;
+20$:	CMPB RDKL,#22	;‘€‚…ˆ… ‘  ^R (Ž‚’Ž…ˆ…)
+	BNE 40$
+	MOVB STATS3,R0
+	BIC #177400,R0
+	ASL R0
+	MOV OZU$SP,SP
+	BIT #D$OZU,STATS2	;TSTOZU  ˆ‹ˆ TEHOZD ?
+	BEQ 25$			;…‘‹ˆ TEHOZD
+	JMP @TB$TS1-22(R0)
+25$:	JMP @TBTSTD-22(R0)
+;
+40$:	CMPB RDKL,#7	;‘€‚…ˆ… ‘  ^G (…‘’€’)
+	BNE 50$
+	MOV OZU$SP,SP
+	MOV VEKTOR,@#60		;******* ??????? *******
+	MOV VEKTOR+2,@#62
+	BIT #D$OZU,STATS2
+	BEQ 45$
+	JMP TSTOZU
+45$:	JMP TEHOZD		;€ €—€‹Ž 
+;
+50$:	CMPB RDKL,#4	;‘€‚…ˆ… ‘  ^D („ˆ€‹Žƒ)
+	BNE 60$
+	CALL SPEECH
+	RTI
+;
+60$:	CMPB RDKL,#23	;‘€‚…ˆ… ‘  ^S (Ž‘’€Ž‚)
+	BNE 65$
+	CLR RSSC
+	WAIT
+	MOV #100,RSSC
+65$:	RTI
+
+TB$TS1: .WORD 0 ;**********????????***********
+
+

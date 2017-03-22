@@ -1,0 +1,72 @@
+	.TITLE TSTRG.MDL
+
+.ITEM MSGRGI,,,<.MSG <STRING>,NULL>,<…‚Ž‡ŒŽ†Ž ‘—ˆ’€’œ „€›…!>
+.ITEM MSGRGO,,,<.MSG <STRING>,NULL>,<…‚Ž‡ŒŽ†Ž ‡€ˆ‘€’œ „€›…!>
+.ITEM MSGRGA,,,<.MSG <NUMOCT>,STUB>,<€„…‘ …ƒˆ‘’€: >
+
+;********************************
+.ITEM TRGINP,,$NDLOG,<>,<Ž‚…Š€ Ž’Ž‚ ‚‚Ž„€ € —’…ˆ…>
+;********************************
+	.SAVRON
+	CALL	ZAHVAT
+
+	MOV	R0,R2
+
+	CMP	@R2,#3			;…ƒˆ‘’ ‚‚Ž„€-‚›‚Ž„€?
+	BEQ	10$			;…’
+
+	CMP	@R2,#1			;…ƒˆ‘’ ‚‚Ž„€?
+	BNE	1$			;…’
+10$:
+	MOV	2(R2),ADRES
+	CALL	INPUT
+
+	BIT	#QSTSERROR,QBUSSTATUS
+	BEQ	1$
+
+	CALL	ERRORINC
+
+	;‘ŽŽ™…ˆ… Ž Ž˜ˆŠ…
+	MSG.TXT	#TRGINP
+	MSG.ERR #MSGRGI
+	MSG.TXT #MSGRGA,2(R2)
+	.PAUSE
+	BCS	10$
+1$:
+	CLC
+	RETURN
+
+
+;********************************
+.ITEM TRGOUT,,$NDLOG,<>,<Ž‚…Š€ Ž’Ž‚ ‚›‚Ž„€ € ‡€ˆ‘œ>
+;********************************
+	.SAVRON
+	CALL	ZAHVAT
+
+	MOV	R0,R2
+
+	CMP	@R2,#3			;…ƒˆ‘’ ‚‚Ž„€-‚›‚Ž„€?
+	BEQ	10$			;…’
+
+	CMP	@R2,#2			;…ƒˆ‘’ ‚›‚Ž„€?
+	BNE	1$			;…’
+10$:
+	CLR	DANNY
+	MOV	2(R2),ADRES
+	CALL	OUTPUT
+
+	BIT	#QSTSERROR,QBUSSTATUS
+	BEQ	1$
+
+	CALL	ERRORINC
+
+	;‘ŽŽ™…ˆ… Ž Ž˜ˆŠ…
+	MSG.TXT	#TRGOUT
+	MSG.ERR #MSGRGO
+	MSG.TXT #MSGRGA,2(R2)
+	.PAUSE
+	BCS	10$
+1$:
+	CLC
+	RETURN
+

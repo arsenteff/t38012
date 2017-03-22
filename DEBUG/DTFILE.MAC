@@ -1,0 +1,286 @@
+	.TITLE DTFILE
+
+	.MCALL .READW,.ENTER,.WRITW,.LOOKUP
+
+ERRPGM: .ASCII <16>/ Ž˜ˆŠ€ /
+	.ASCIZ <17>/LOAD /<40>
+
+MSG3:	.ASCIZ	<11><16>/“‘’Ž‰‘’‚Ž Ž’‘“’‘’‚“…’/<17>
+MSG4:	.ASCIZ	<11><16>/Š€€‹ ‡€Ÿ’/<17>
+MSG5:	.ASCIZ	<11><16>/”€‰‹ … €‰„…/<17>
+MSG6:	.ASCIZ	<11><16>/“‹…‚€Ÿ „‹ˆ€ ”€‰‹€/<17>
+MSG7:	.ASCIZ	<11><16>/Ž˜ˆŠ€ ‘—ˆ’›‚€ˆŸ ”€‰‹€/<17>
+MSG8:	.ASCIZ	<11><16>/…’ Œ…‘’€ € „ˆ‘Š…/<17>
+MSG9:	.ASCIZ	<11><16>/‘Ž•€Ÿ…’‘Ÿ Œ‹€„˜€Ÿ —€‘’œ €ŒŸ’ˆ/<17>
+MSG10:	.ASCIZ	<11><16>/Ž˜ˆŠ€ ‡€ˆ‘ˆ Ž‘‹… ŠŽ–€ ”€‰‹€/<17>
+MSG11:	.ASCIZ	<11><16>/€€€’€Ÿ Ž˜ˆŠ€/<17>
+MSG12:	.ASCIZ	<11><16>/Š€€‹ … Ž’Š›’/<17>
+MSG13:	.ASCIZ	<11><16>/”€‰‹ … ‡€„€/
+
+MSGLDT:	.ASCII	<11><16>/‡€ƒ“‡Š€ ”€‰‹€ ‚ €ŒŸ’œ/<15><17><200>
+MSGCDT:	.ASCII	<11><16>/‘€‚…ˆ… ”€‰‹€ ˆ €ŒŸ’ˆ/<15><17><200>
+	.EVEN
+
+;   *************************************************************
+;   *		   /	‡€ƒ“‡Šˆ  ”€‰‹€  ‚  €ŒŸ’œ		*
+;   *************************************************************
+;
+S$LOAD:
+	MOV	R0,-(SP)
+	MOV	#MSGLDT,R0
+	CALL	STEPPRINT
+;;;	CALL	ASCFIL
+;;;	.PRINT	#F$NAM
+	MOV	(SP)+,R0
+
+	BIC	#PGM,STATUS		;”€‰‹ … ‡€ƒ“†…
+	BIC	#ERRQ,STATS2
+        CALL	S$FILE                  ;Ž’Š›’ˆ… ”€‰‹€
+	BCS	F$C
+	CALL	ZPRPZU                  ;“‘’€.‘ˆƒ€‹ "……Œ…™…ˆ…"
+	CALL	ANLPDP                  ;‡€•‚€’ Q-˜ˆ›
+1$:
+        .TTINR
+        BCS     5$
+	JMP	PRGRETURN
+5$:
+	CALL	S$BL
+	CALL	L$BLK			; / ……ƒ“‡Šˆ ‹ŽŠ€ ‚ Ž’‹€„Ž—“ž €ŒŸ’œ
+	INC	N
+
+	CALL	PRCPRINT
+
+	CMP	N,DLNFIL
+	BLT	1$
+	BIS	#PGM,STATUS		;”€‰‹ ‡€ƒ“†…
+	BIC	#MODPGM,STATUS
+	BIT	#ERRQ,STATS2
+	BNE	2$
+	CALL	ASCFIL			;‘Ž•€…ˆ… ˆŒ…ˆ ”€‰‹€
+	MOVB	#17,F$NAM-1		;‹€’ˆ‘Šˆ‰ …ƒˆ‘’
+	BR	3$
+2$:	MOV	#ERRPGM,R3		;Ž˜ˆŠ€ LOAD
+	MOV	#F$NAM-1,R5
+	CALL	COPMSG
+3$:	.CLOSE	#0
+;
+;   *************************************************************
+;   *		 /   ‘€‚…ˆŸ  ”€‰‹€  ˆ  €ŒŸ’ˆ		*
+;   *************************************************************
+;
+S$VRFY:
+	MOV	R0,-(SP)
+	MOV	#MSGCDT,R0
+	CALL	STEPPRINT
+	MOV	(SP)+,R0
+
+	CALL	S$FILE
+	BCS	F$C
+	CALL	ANLPDP
+1$:	CALL	S$BL
+	CALL	V$BLK		;/ ‘€‚…ˆŸ ‹ŽŠ€ ˆ Ž’‹€„Ž—Ž‰ €ŒŸ’ˆ
+	INC	N
+
+	CALL	PRCPRINT
+
+	CMP	N,DLNFIL
+	BLT	1$
+F$C::   .CLOSE	#0
+	CLC
+	RETURN
+;
+
+;
+;   *************************************************************
+;   *		   /	Ž’Š›’ˆŸ  ”€‰‹€ 			*
+;   *************************************************************
+;
+S$FILE:
+	TST	@#FILINP
+	BNE	1$
+	.PRINT  #MSG13			;”€‰‹ … ‡€„€
+	SEC
+	RETURN
+1$:	CALL	ANLFIL
+	BCS	B$SYS
+	MOV	R0,DLNFIL		;‘Ž•€…ˆ… „‹ˆ› ”€‰‹€
+	BNE	2$
+	.PRINT	#MSG6
+	BR	B$SYS
+2$:	CLR	N
+	RETURN
+;
+;   *************************************************************
+;   *		   /	‘—ˆ’›‚€ˆŸ  ‹ŽŠ€ ”€‰‹€ 		*
+;   *************************************************************
+;   <R5>  - €„…‘ “”…€ „‹Ÿ ‡€ˆ‘ˆ ‘—ˆ’€ŽƒŽ ‹ŽŠ€	
+S$BL:	MOV	#10.,NERR
+5$:	CLR @#177560		;‡€…’ …›‚€ˆŸ Ž’ Š‹€‚ˆ€’“›
+	.READW	#AREA1,#0,#BLOCK,#256.,N
+	BCC	B$Z
+	MOV #100,@#177560
+	DEC	NERR
+	BGT	5$
+	.PRINT	#MSG7
+B$SYS:	BIC	#PGM,STATUS		;”€‰‹ … ‡€ƒ“†…
+	CLR	FILINP
+CLOFIL: .CLOSE	#0
+;;;	JMP	SYSVV
+	SEC
+	BIT     #OTLAD,STATUS
+	BEQ	1$
+	JMP	DIALOG
+1$:	RETURN
+B$Z:    MOV #100,@#177560
+	RETURN
+
+;
+;   *************************************************************
+;   *	 /  …Ž€‡Ž‚€ˆŸ  ˆŒ…ˆ  ”€‰‹€  ‚  ASCII  ŠŽ„›	*
+;   *************************************************************
+;
+ASCFIL: MOV	#14.,R0
+	MOV	#F$NAM,R1
+1$:	MOVB	#40,(R1)+		;‡€Ž‹…ˆ… Ž…‹€Œˆ
+	SOB	R0,1$
+	MOV	#F$NAM,R0
+	MOV	FILINP,R1
+	CALL	R50A3			;ˆŒŸ „ˆ‘Š€
+	MOVB	#':,(R0)+		;€‡„…‹ˆ’…‹œ
+	MOV	FILINP+2,R1
+	CALL	R50A3			;ˆŒŸ ”€‰‹€
+	MOV	FILINP+4,R1
+	CALL	R50A3			;ˆŒŸ ”€‰‹€
+	MOVB	#'.,(R0)+		;€‡„…‹ˆ’…‹œ
+	MOV	FILINP+6,R1
+	CALL	R50A3			;€‘˜ˆ…ˆ… ˆŒ…ˆ ”€‰‹€
+	MOVB	#17,F$NAM-1
+	RETURN
+
+;
+;   ******************;*******************************************
+;   *		    /   €€‹ˆ‡€  Ž’Š›’ˆŸ  ”€‰‹€		*
+;   *************************************************************
+;
+ANLFIL: .LOOKUP #AREA,#0,#FILINP
+;;;	MFPS  R3
+	MOV #77777,R2
+5$:	SOB R2,5$
+;;;	BIT	#1,R3
+;;;	BEQ	3$
+	BCC	3$
+;	TST	R0
+;	BNE	1$
+;	.PRINT	#MSG4
+;	BR	2$
+1$:	.PRINT	#MSG5
+2$:	SEC
+3$:
+	RETURN
+
+
+;   *************************************************************
+;   *       Ž„Žƒ€ŒŒ€  ‡€ˆ‘ˆ  ‹ŽŠ€  ”€‰‹€  ‚  €ŒŸ’œ       *
+;   *************************************************************
+;
+L$BLK:	JSR     R5,SAVRG
+        MOV     #BLOCK,R0
+        MOV     N,R1            ;ŽŒ… ‹ŽŠ€
+        ASH     #9.,R1          ;€‡Ž‚Ž… ‘Œ…™…ˆ… ‹ŽŠ€ ‚ €ŒŸ’ˆ
+;1$:    CMP     R1,#10
+;       BGT     3$
+;       MOV     #100000,R3     ;******* „‹Ÿ Ž’‹€„Šˆ *******
+;       ADD     R1,R3
+;       MOV     R3,@#ADRES
+;       BR      4$
+1$:
+3$:     MOV     R1,@#ADRES
+4$:     MOV     (R0)+,DANNY
+        CALL    OUTPUT
+        ADD     #2,R1
+        CMP     R0,#BLOCK+512.  ;€€‹ˆ‡ ŠŽ–€ ‹ŽŠ€
+        BLT     1$
+        RETURN
+;
+;   *************************************************************
+;   *          Ž„Žƒ€ŒŒ€  ‘—ˆ’›‚€ˆŸ  ‹ŽŠ€  €ŒŸ’ˆ          *
+;   *************************************************************
+;
+S$BLK:	JSR     R5,SAVRG
+        MOV     #BLOCK,R0
+        MOV     N,R1            ;ŽŒ… ‹ŽŠ€
+        ASH     #9.,R1          ;€‡Ž‚Ž… ‘Œ…™…ˆ… ‹ŽŠ€ ‚ €ŒŸ’ˆ
+1$:     MOV     R1,ADRES
+        CALL    INPUT
+        MOV     DANNY,(R0)+
+        ADD     #2,R1
+        CMP     R0,#BLOCK+512.  ;€€‹ˆ‡ ŠŽ–€ ‹ŽŠ€
+        BLT     1$
+        RETURN
+;
+;   *************************************************************
+;   *          Ž„Žƒ€ŒŒ€  ‘€‚…ˆŸ  ‹ŽŠ€  €ŒŸ’ˆ           *
+;   *************************************************************
+;
+V$BLK:	CLR     R3              ;„‹Ÿ ˆ‡Œ……ˆŸ €—€‹œŽƒŽ €„…‘€
+                                ;ˆ ……Œ…™…ˆˆ
+V$BLK1:	CLR     R0              ;‚•Ž„ „‹Ÿ ’…‘’€ TPZU, B R3 100000
+        MOV     N,R1            ;ŽŒ… ‹ŽŠ€
+        ASH     #9.,R1          ;€‡Ž‚Ž… ‘Œ…™…ˆ… ‹ŽŠ€ ‚ €ŒŸ’ˆ
+        ADD     R3,R1           ;
+1$:     MOV     R1,@#ADRES
+        CALL    INPUT
+        CMP     DANNY,BLOCK(R0)
+        BEQ     2$
+
+	INC	@#ERROR
+
+;       MOV     R5,R4           ;‘Ž•€…ˆ… €„…‘€ ‚Ž‡‚€’€
+        CALL    CLRSTR          ;Ž—ˆ‘’Š€ ‘’ŽŠˆ …—€’ˆ
+        MOV     #ADR.,R3         ;’€‘€€’ "€„:"
+        MOV     #STROKA+8.,R5
+        CALL    COPMSG
+        MOV     #PAM.,R3         ;’€‘€€’ "€Œ:"
+        MOV     #STROKA+24.,R5
+        CALL    COPMSG
+        MOV     #FILE,R3        ;’€‘€€’ "”€‰‹:"
+        MOV     #STROKA+40.,R5
+        CALL    COPMSG
+        MOV     #STROKA+14.,R2
+        CALL    OCTASC          ;€„…‘ …‘€‚…ˆŸ
+        MOV     DANNY,R1        ;„€›… ‚ €ŒŸ’ˆ
+        MOV     #STROKA+30.,R2
+        CALL    OCTASC
+        MOV     BLOCK(R0),R1    ;„€›… ”€‰‹€
+        MOV     #STROKA+47.,R2
+        CALL    OCTASC
+        MOV     R0,R3
+        .PRINT  #STROKA
+        MOV     R3,R0
+        MOV     ADRES,R1        ;‚Ž‘‘’€Ž‚‹…ˆ… €„…‘€
+;       MOV     R4,R5           ;‚Ž‘‘’€Ž‚‹…ˆ… €„…‘€ ‚Ž‡‚€’€
+2$:     ADD     #2,R0
+        ADD     #2,R1
+        .TTINR
+        BCS     5$
+        ADD     #2,SP
+        BIT     #10,STATS4
+        BEQ     PRGRETURN
+        JMP     ZAPR$P          ;…†ˆŒ Žƒ€ŒŒˆŽ‚€ˆŸ ‡“
+
+5$:     CMP     R0,#512.        ;€€‹ˆ‡ ŠŽ–€ ‹ŽŠ€
+        BLT     1$
+        RETURN
+
+PRGRETURN:
+	.CLOSE  #0
+        BIT     #OTLAD,STATUS
+        BEQ     1$
+        JMP     DIALOG
+1$:	JMP     VU
+
+ADR.:    .ASCIZ  <16>/€„:/<17>
+PAM.:    .ASCIZ  <16>/€Œ:/<17>
+FILE:   .ASCIZ  <16>/”€‰‹:/<17>
+        .EVEN
+

@@ -1,0 +1,68 @@
+
+
+;******************************************************** 
+;                      ’…‘’ ‡“				*
+;******************************************************** 
+;
+T$PZU::	MOVB	#16.,STATS3
+
+	CALL	INTENABL
+
+	CALL	CLRPZU		;‘Ÿ’œ ……Œ…™…ˆ…
+	.PRINT	#MSGPZ1		;…‡ ……Œ…™…ˆŸ
+	.CSISPC	#FILCSI,#EXTCSI,#FILEPROG	;„‹Ÿ / V$BLK
+	TST	(SP)+		;Ž—ˆ‘’ˆ’œ ‘’…Š Ž‘‹… .CSISPC
+	CALL	PZUCMP
+;
+	CALL	ZPRPZU		;“‘’€Ž‚ˆ’œ ……Œ…™…ˆ…
+	.PRINT	#MSGPZ2		;‘ ……Œ…™…ˆ…Œ
+	CALL	PZUCM2		;€—. €„. ‡“  100000
+	RETURN
+;
+MSGPZ1:	.ASCII <16>/   ’…‘’ ‡“/<12><15>
+	.ASCIZ     <11>/Ž‚…Š€ …‡ ……Œ…™…ˆŸ/<17>
+MSGPZ2:	.ASCIZ <16><11>/Ž‚…Š€ ‘ ……Œ…™…ˆ…Œ/<17>
+	.EVEN
+
+;   *************************************************************
+;   *		 /   ‘€‚…ˆŸ  ”€‰‹€  ˆ  €ŒŸ’ˆ		*
+;   *************************************************************
+;
+PZUCMP:
+	CALL	S$FILE
+	BCS	F$CP
+	CALL	ANLPDP
+	MOV	#32.,DLNFIL
+1$:
+	CALL	S$BL
+	CALL	V$BLK		;/ ‘€‚…ˆŸ ‹ŽŠ€ ˆ Ž’‹€„Ž—Ž‰ €ŒŸ’ˆ
+	INC	N
+
+	CALL	PRCPRINT
+
+	CMP	N,DLNFIL
+	BLT	1$
+	BR	F$CP
+
+;   *************************************************************
+;   *     / ‘€‚…ˆŸ ”€‰‹€ ˆ €ŒŸ’ˆ „‹Ÿ Ž‚…Šˆ ‡“ 	*
+;   *************************************************************
+;
+PZUCM2:	CALL	S$FILE
+	BCS	F$CP
+	CALL	ANLPDP
+	MOV	#32.,DLNFIL
+1$:
+	CALL	S$BL
+	MOV     #100000,R3	;€—. €„. ‡“ ˆ ……Œ…™…ˆˆ
+	CALL	V$BLK1	   	;/ ‘€‚…ˆŸ ‹ŽŠ€ ˆ ‡“
+	INC	N
+
+	CALL	PRCPRINT
+
+	CMP	N,DLNFIL
+	BLT	1$
+F$CP:	.CLOSE	#0
+	CLC
+	RETURN
+

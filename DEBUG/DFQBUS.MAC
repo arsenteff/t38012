@@ -1,0 +1,486 @@
+	.TITLE DFQBUS.MAC
+
+	.MCALL	.GTLIN
+	.GLOBL	INPUT,OUTPUT,ZAHVAT
+
+ADRES::	.WORD	0		;€„…‘ Q-˜ˆ›
+DANNY::	.WORD	0		;„€›…
+
+VOPROS: .ASCII  /?/<200>
+
+;   *************************************************************
+;   *   Ž„Žƒ€ŒŒ€  “‘’€Ž‚Šˆ  ˜ˆ›  ‚  ˆ‘•Ž„Ž…  ‘Ž‘’ŽŸˆ…   *
+;   *************************************************************
+;
+CLRBUS:
+	;;;MOV     #177777,DANNY
+	MOV     R0,-(SP)
+	MOV	#QBCLEAR,R0
+	CALL	QBUSPROC
+	BIT	#QSTSERROR,QBUSSTATUS
+	BEQ	1$
+	.PRINT  #ERRMGS
+1$:
+        BIC     #ZPRT!PEREM!PDP,STATUS
+	MOV     (SP)+,R0
+        RETURN
+
+
+;   *************************************************************
+;   *           Ž„Žƒ€ŒŒ€  –ˆŠ‹€  "‚‚Ž„"                     *
+;   *************************************************************
+;
+INPUT:
+	MOVB	#D$VVOD,STATS2  ;ŠŽ„ Ž…€–ˆˆ
+
+	MOV     R0,-(SP)
+	MOV	ADRES,QADRESS
+	COM	QADRESS
+2$:
+	MOV	#QBINP,R0
+	CALL	QBUSPROC
+
+	MOV	QDATINP,DANNY
+	COM	DANNY
+	BIT	#QSTSERROR,QBUSSTATUS
+	BEQ	1$
+
+	INC	ERROR
+
+	BIT     #OTLAD,STATUS
+	BEQ	3$
+
+        .PRINT  #VOPROS
+	CALL    INOUTS
+	CALL    CKLINP
+	BCS	2$
+1$:
+	CLC
+3$:	MOV	(SP)+,R0
+	RETURN
+
+;   *************************************************************
+;   *           Ž„Žƒ€ŒŒ€  –ˆŠ‹€  "‚›‚Ž„ €‰’Ž‚›‰"           *
+;   *************************************************************
+;
+OUTBYT:
+	MOVB	#D$VYVB,STATS2
+	MOV     R0,-(SP)
+	MOV	#QBOUTB,R0
+	BR	OUTPU2
+
+
+;   *************************************************************
+;   *           Ž„Žƒ€ŒŒ€  –ˆŠ‹€  "‚›‚Ž„"                    *
+;   *************************************************************
+;
+OUTPUT:
+	MOVB	#D$VYV,STATS2
+
+	MOV	R0,-(SP)
+	MOV	#QBOUT,R0
+OUTPU2:
+	MOV	ADRES,QADRESS
+	COM	QADRESS
+	MOV	DANNY,QDATOUT
+	COM	QDATOUT
+2$:
+	CALL	QBUSPROC
+	BCC	1$
+
+	INC	ERROR
+
+	BIT     #OTLAD,STATUS
+	BEQ	1$
+
+	MOV	R0,-(SP)
+	.PRINT  #VOPROS
+	CALL    INOUTS
+	CALL    CKLINP
+	MOV	(SP)+,R0
+	BCS	2$
+1$:
+	MOV	(SP)+,R0
+	RETURN
+
+
+;   ***************************************************************
+;   *  Ž„Žƒ€ŒŒ€  –ˆŠ‹€  "‚›‚Ž„"  „‹Ÿ …†ˆŒ€ Žƒ€ŒŒˆŽ‚€ˆŸ  *
+;   ***************************************************************
+;
+OUTPR:
+	MOVB	#D$VYVP,STATS2
+
+	MOV     R0,-(SP)
+2$:	MOV	#QBPOUT,R0
+	MOV	ADRES,QADRESS
+	COM	QADRESS
+	MOV	DANNY,QDATOUT
+	COM	QDATOUT
+
+	CALL	QBUSPROC
+
+	BIT	#QSTSERROR,QBUSSTATUS
+	BNE	3$
+1$:
+        MOV     (SP)+,R0
+        RETURN
+
+3$:     .PRINT  #COUT11
+	BIT     #OTLAD,STATUS
+	BNE	4$
+	JMP	ZAPR$P
+4$:	JMP	DIALOG
+COUT11: .ASCIZ /PR-?/<11><16>/Ž‚…œ’… –ˆŠ‹ "‚›‚Ž„"/<17>
+        .EVEN
+;
+;   *************************************************************
+;   *      Ž„Žƒ€ŒŒ€  –ˆŠ‹€  "‚‚Ž„-€“‡€-‚›‚Ž„ €‰’Ž‚›‰"     *
+;   *************************************************************
+;
+IOBYTE:
+        MOVB    #D$VPVB,STATS2
+	MOV     R0,-(SP)
+	MOV	#QBIOB,R0
+	BR	INOUT2
+
+;   *************************************************************
+;   *           Ž„Žƒ€ŒŒ€  –ˆŠ‹€  "‚‚Ž„-€“‡€-‚›‚Ž„"         *
+;   *************************************************************
+;
+INOUT:
+        MOVB	#D$VPV,STATS2
+	MOV     R0,-(SP)
+	MOV	#QBIO,R0
+INOUT2:
+	MOV	ADRES,QADRESS
+	COM	QADRESS
+	MOV	DANNY,QDATOUT
+	COM	QDATOUT
+
+	CALL	QBUSPROC
+	MOV	QDATINP,DANNY
+	COM	DANNY
+
+	BIT	#QSTSERROR,QBUSSTATUS
+	BEQ	1$
+	BIT     #OTLAD,STATUS
+	BEQ	1$
+        .PRINT  #VOPROS
+1$:
+        MOV     (SP)+,R0
+	RETURN
+
+;   *************************************************************
+;   *   Ž„Žƒ€ŒŒ€  ”ŽŒˆŽ‚€ˆŸ  ˆŒ“‹œ‘€ “‘Š€  Ž–…‘‘Ž€  *
+;   *************************************************************
+;
+PUSK:
+	MOV     R0,-(SP)
+
+	CALL	ZAHVAT
+
+	MOV	#177777,DANNY   ;„€›… € Q-˜ˆ…
+	BIT	#ZPRT,STATUS
+	BNE	2$
+	CALL	ZAPRET
+
+	MOV	#QBPUSK,R0
+	CALL	QBUSPROC
+
+	CALL	OSVOB
+	CALL	CLRZPR
+1$:	MOV     (SP)+,R0
+	RETURN
+2$:
+	MOV	#QBPUSK,R0
+	CALL	QBUSPROC
+
+	CALL	OSVOB
+	BR	1$
+PUSK2:
+	MOV     R0,-(SP)
+	MOV	#MSG.PUSK,R0
+	CALL	STEPPRINT
+	CALL	PUSK
+	MOV     (SP)+,R0
+	RETURN
+
+MSG.PUSK:	.ASCII	<11><16>/“‘Š Ž–…‘‘Ž€. Ž†ˆ„€‰’… …‡“‹œ’€’.../<15><17><200>
+		.EVEN
+
+;   *************************************************************
+;   *           Ž„Žƒ€ŒŒ€  ‡€•‚€’€  Q-˜ˆ›  Ž  „          *
+;   *************************************************************
+;
+ZAHVAT:
+	BIT     #PDP,STATUS	;€€‹ˆ‡ ‡€•‚€’€ Q-˜ˆ›
+	BNE     3$
+	MOV     R0,-(SP)
+	MOV	#QBZAHV,R0
+	CALL	QBUSPROC
+	BIT	#QSTSERROR,QBUSSTATUS
+	BEQ	1$
+	BIC     #PRC,STATUS
+	.PRINT  #ERRMGS
+	.PRINT  #ERRPZM
+	BR      2$
+1$:
+        BIS     #PRC,STATUS     ;“‘’€Ž‚Š€ ˆ‡€Š€ €‹ˆ—ˆŸ Ž–…‘‘Ž€
+2$:	BIS     #PDP,STATUS     ;Š€€‹ ‡€Ÿ’
+	MOV     (SP)+,R0
+3$:	RETURN
+
+ERRMGS:	.ASCIZ <16><15><12><11>/Ž˜ˆŠ€ Ž…€–ˆˆ Œ€ƒˆ‘’€‹ˆ/<17>
+ERRPZM:	.ASCIZ <11><16>/ˆ“„ˆ’…‹œŽ  ‚›„€  ‘ˆƒ€‹ "‡Œ"/<17><15><12>
+	.EVEN
+
+
+;   *************************************************************
+;   *        Ž„Žƒ€ŒŒ€  Ž‘‚ŽŽ†„…ˆŸ  Q-˜ˆ›  Ž’  „        *
+;   *************************************************************
+;
+OSVOB::
+	MOV     R0,-(SP)
+	MOV	#QBOSVB,R0
+	CALL	QBUSPROC
+	BIT	#QSTSERROR,QBUSSTATUS
+	BEQ	1$
+	.PRINT  #ERRMGS
+1$:
+        BIC     #PDP,STATUS     ;Š€€‹ Ž‘‚ŽŽ†„…
+	MOV     (SP)+,R0
+        RETURN
+
+
+;   *************************************************************
+;   *        Ž„Žƒ€ŒŒ€  “‘’€Ž‚Šˆ  "……Œ…™…ˆŸ ‡“"         *
+;   *************************************************************
+;
+ZPRPZU:
+	MOV     R0,-(SP)
+	MOV	#QBPZUNO,R0
+	CALL	QBUSPROC
+	BIT	#QSTSERROR,QBUSSTATUS
+	BEQ	1$
+	.PRINT  #ERRMGS
+1$:
+	BIS     #PEREM,STATUS
+	MOV     (SP)+,R0
+        RETURN
+
+
+;   *************************************************************
+;   *         Ž„Žƒ€ŒŒ€  ‘Ÿ’ˆŸ  "……Œ…™…ˆŸ  ‡“"          *
+;   *************************************************************
+;
+CLRPZU:
+	MOV     R0,-(SP)
+	MOV	#QBPZUYES,R0
+	CALL	QBUSPROC
+	BIT	#QSTSERROR,QBUSSTATUS
+	BEQ	1$
+	.PRINT  #ERRMGS
+1$:
+        BIC     #PEREM,STATUS
+	MOV     (SP)+,R0
+        RETURN
+
+
+;   *************************************************************
+;   *          Ž„Žƒ€ŒŒ€  “‘’€Ž‚Šˆ  "‡€…’€ „/"        *
+;   *************************************************************
+;
+ZAPRET:
+	MOV     R0,-(SP)
+	MOV	#QBZAPYES,R0
+	CALL	QBUSPROC
+	BIT	#QSTSERROR,QBUSSTATUS
+	BEQ	1$
+	.PRINT  #ERRMGS
+1$:
+        BIS     #ZPRT,STATUS
+	MOV     (SP)+,R0
+        RETURN
+
+;   *************************************************************
+;   *           Ž„Žƒ€ŒŒ€  ‘Ÿ’ˆŸ  "‡€…’€ „/"          *
+;   *************************************************************
+;
+.GLOBL CLRZPR
+
+CLRZPR:
+	MOV     R0,-(SP)
+	MOV	#QBZAPNO,R0
+	CALL	QBUSPROC
+	BIT	#QSTSERROR,QBUSSTATUS
+	BEQ	1$
+	.PRINT  #ERRMGS
+1$:
+        BIC     #ZPRT,STATUS
+	MOV     (SP)+,R0
+        RETURN
+
+;   *************************************************************
+;   *          Ž„Žƒ€ŒŒ€  €€‹ˆ‡€  ˆ  ‡€•‚€’€  „           *
+;   *************************************************************
+;
+ANLPDP:	BIT     #PDP,STATUS	;€€‹ˆ‡ ‡€•‚€’€ Q-˜ˆ›
+	BNE     1$
+	CALL    ZAHVAT
+1$:	RETURN
+
+;   *************************************************************
+;   *      Ž„Žƒ€ŒŒ€  €€‹ˆ‡€  ‡€–ˆŠ‹ˆ‚€ˆŸ  Ž  Ž˜ˆŠ…      *
+;   *************************************************************
+;
+CKLINP:
+        CALL    TTIN
+	BIT     #ERRCKL,STATUS
+        BEQ     1$
+	SEC
+        RETURN
+1$:	CLC
+        RETURN                  ;‚›•Ž„ …‡ ‡€–ˆŠ‹ˆ‚€ˆŸ
+
+;   *************************************************************
+;   *        Ž„Žƒ€ŒŒ€  ‚›„€—ˆ  ‘ŽŽ™…ˆŸ  Ž  Ž˜ˆŠ…        *
+;   *************************************************************
+;
+INOUTS:
+	BIT     #BUSDLG,STATUS
+	BEQ	2$
+	MOV     R0,-(SP)
+        .PRINT  #INOUSO         ;…—€’œ ‘ŽŽ™…ˆŸ Ž Ž˜ˆŠ…
+        BIT     #ERRCKL,STATUS
+        BNE     1$
+        CALL    ANOPER
+        .PRINT  #INOUS1
+        CALL    MENU
+1$:	MOV     (SP)+,R0        ;‚ –ˆŠ‹€• €„…‘ŽƒŽ ŽŒ…€
+2$:	RETURN
+
+T$OPER: VVOD,VYV,VPV,VPVB,VYVB,VYVP
+
+VVOD:	.ASCIZ	<16>/‚‚Ž„/<17>
+VYV:	.ASCIZ	<16>/‚›‚ /<17>
+VYVP:	.ASCIZ	<16>/‚›‚/<17>
+VYVB:	.ASCIZ	<16>/‚›‚/<17>
+VPV:	.ASCIZ	<16>/‚‚ /<17>
+VPVB:	.ASCIZ	<16>/‚‚/<17>
+
+INOUSO: .ASCII  <12><15><11><16>/Ž˜ˆŠ€ ‚ –ˆŠ‹… ŽŒ…€ Ž /<17>
+        .ASCIZ  /Q-/<16>/˜ˆ…/<17><12>
+INOUS1: .ASCII  <11><16>/€„…‘    „€›…    Ž…€–ˆŸ/<17><12><15>
+        .ASCII  <11>
+D$ADR:  .BLKB   6
+        .ASCII  /   /
+D$DAN:  .BLKB   6
+        .ASCII  /      /
+D$OPER: .BLKB   6
+        .ASCIZ  <12><15><12>
+        .EVEN
+
+;   *************************************************************
+;   *      Ž„Žƒ€ŒŒ€  €€‹ˆ‡€  Ž…€–ˆˆ  Ž  Q-˜ˆ…          *
+;   *************************************************************
+;
+ANOPER:
+	JSR	R5,SAVRG
+	MOV     ADRES,R1
+        MOV     #D$ADR,R2
+        CALL    OCTASC          ;Ž…„…‹…ˆ… €„…‘€
+        MOV     DANNY,R1
+        MOV     #D$DAN,R2
+        CALL    OCTASC          ;Ž…„…‹…ˆ… „€›•
+        MOV     STATS2,R1
+        BIC     #177760,R1      ; B R1 ŠŽ„ Ž…€–ˆˆ
+        MOV     T$OPER-2(R1),R3 ;€„…‘ ’…Š‘’€
+        MOV     #D$OPER,R5
+        CALL    COPMSG
+        RETURN
+;
+;   *************************************************************
+;   *      Ž„Žƒ€ŒŒ€ „ˆ€‹Žƒ€ ˆ Ž˜ˆŠ… Ž Q-˜ˆ…            *
+;   *************************************************************
+;
+MENU:
+;;;	BIT     #D$TSOZ,@#STATS2   ; S$TEST ?
+;;;        BEQ     1$
+;;;        MOV     VEKTOR+2,@#62
+;;;        MOV     VEKTOR,@#60
+1$:     .GTLIN  #STROKA,#D$MENU
+        TSTB    STROKA
+        BEQ     10$             ;Ž„Ž‹†ˆ’œ
+        CALL    ANLTRM
+        TSTB    STROKA+1
+        BNE     7$              ;Ž˜ˆŠ€ ‚‚Ž„€
+        CMPB    STROKA,#'1
+        BEQ     8$              ;‡€–ˆŠ‹ˆ’œ
+        CMPB    STROKA,#'2      ;‚›•Ž„ € „ˆ€‹Žƒ
+        BNE     7$
+
+	.CLOSE  #0
+	CLR     FILINP          ;ˆŒŸ ”€‰‹€
+;;;        BIT     #D$TEST!D$TSOZ,@#STATS2 ;ˆ’ ‡€ƒ“†€…ŒŽƒŽ ’…‘’€
+;;;                                        ;ˆ ˆ‡€Š ’…‘’€ S$TEST
+;;;        BNE     2$
+;;;        BIC     #D$TSOZ,STATS2
+;;;        JMP     SYSVV           ; ž-46
+;;;2$:     BIC     #D$TSOZ,STATS2
+;;;	JMP	DBG
+	JMP	DBGBGN
+
+7$:     .PRINT  #ERRSTR         ;Ž˜ˆŠ€ ‚‚Ž„€
+        BR      MENU
+8$:     BIS     #ERRCKL,@#STATUS
+        RETURN
+10$:
+;;;        BIT #D$TSOZ,@#STATS2
+;;;        BEQ 11$
+;;;        MOV #VEKT60,@#60
+;;;        CLR @#62
+	RETURN
+
+ERRSTR::.ASCIZ	<11><16>/Ž˜ˆŠ€ ‚‚Ž„€/<17>
+D$MENU: .ASCII  <16>/   Ž„Ž‹†ˆ’œ (‚Š), ‡€–ˆŠ‹ˆ’œ 1(‚Š), /
+        .ASCII  /‚›•Ž„ 2(‚Š) ==>/<17><200>
+        .EVEN
+
+;   *************************************************************
+;   *         Ž„Žƒ€ŒŒ€  €€‹ˆ‡€  Ž„ˆŽ—ŽƒŽ  ‚‚Ž„€          *
+;   *************************************************************
+;
+TTIN:   MOV     JSW,-(SP)
+        BIS     #10100,JSW      ;Ž‘ˆŒ‚Ž‹œ›‰ ‚‚Ž„
+        MOV     R0,-(SP)
+        .TTINR
+        BCC     1$
+        MOV     (SP)+,R0
+        MOV     (SP)+,JSW       ;‚Ž‘‘’€Ž‚‹…ˆ… ’ˆ€ ‚‚Ž„€
+        RETURN                  ;‡€–ˆŠ‹ˆ‚€ˆ… Ž Ž˜ˆŠ…
+1$:
+	BIC     #ERRCKL,STATUS
+        .CLOSE  #0
+	JMP     DIALOG
+
+;;;	CMPB    R0,#5           ;‘€‚…ˆ… ‘ ‘ˆŒ‚Ž‹ŽŒ ‘“/E
+;;;        BNE     3$
+;;;        .CLOSE  #0
+;;;        MOV     2(SP),JSW       ;‚Ž‘‘’€Ž‚‹…ˆ… ’ˆ€ ‚‚Ž„€
+;;;        BIC     #ERRCKL,STATUS  ;‘Ÿ’œ ˆ’ ‡€–ˆŠ‹ˆ‚€ˆŸ
+;;;        BIT     #D$TEST,STATS2
+;;;        BNE     2$
+;;;        JMP     SYSVV
+;;;2$:	JMP     DIALOG
+;;;3$:     MOV     (SP)+,R0
+;;;        MOV     (SP)+,JSW       ;‚Ž‘‘’€Ž‚‹…ˆ… ’ˆ€ ‚‚Ž„€
+;;;        BIC     #ERRCKL,STATUS
+;;;        ADD     #4,SP
+;;;        BIT     #D$TSOZ,STATS2
+;;;        BEQ     5$
+;;;        MOV     #VEKT60,@#60
+;;;        CLR     @#62
+;;;5$:     RETURN                  ;‚›•Ž„ ˆ‡ ‡€–ˆŠ‹ˆ‚€ˆŸ
+
+

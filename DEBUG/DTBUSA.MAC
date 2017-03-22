@@ -1,0 +1,112 @@
+	.TITLE DTBUSA
+
+PROCH:	.WORD	100	;—ˆ‘‹Ž Ž•Ž„Ž‚ €€‹ˆ‡€ Š€€‹€ € ‡€Œ›Š€ˆ…
+
+SOOAD:	.ASCII	<16>/Ž˜ˆŠ€ ‚ ˜ˆ… "€„". /<17><200>
+RAZR:	.ASCII	<16>/€‡Ÿ„ "/<200>
+SAD:	.ASCIZ	<12><15><11><16>/Ž‚…Š€ –……‰ € Š‡/<17>
+	.EVEN
+
+SOAD:	.WORD	0,RD17,RD16,RD15,RD14,RD13,RD12,RD11,RD10
+SOIO:	.WORD	RD7,RD6,RD5,RD4,RD3,RD2,RD1,RD0
+RD0:	.ASCIZ	/0"/
+RD1:	.ASCIZ	/1"/
+RD2:	.ASCIZ	/2"/
+RD3:	.ASCIZ	/3"/
+RD4:	.ASCIZ	/4"/
+RD5:	.ASCIZ	/5"/
+RD6:	.ASCIZ	/6"/
+RD7:	.ASCIZ	/7"/
+RD10:	.ASCIZ	/8"/
+RD11:	.ASCIZ	/9"/
+RD12:	.ASCIZ	/10"/
+RD13:	.ASCIZ	/11"/
+RD14:	.ASCIZ	/12"/
+RD15:	.ASCIZ	/13"/
+RD16:	.ASCIZ	/14"/
+RD17:	.ASCIZ	/15"/
+	.EVEN
+
+;--------------------------------------------------
+;           / Ž‚…Šˆ Ž™…‰ ™ˆ› Ÿ—…‰Šˆ
+;--------------------------------------------------
+
+AD$::
+	JSR	R5,SAVRG
+	MOVB	#1,STATS3
+	.PRINT	#SAD
+	CALL	CLRBUS
+;;;	BIC	#32000,STATUS	;‘Ÿ’œ ˆ’› PDP,ZPRT,PEREM
+	CALL	ZAPRET
+	CALL	PUSK
+	CALL	ZAHVAT
+AD2:
+	MOV	@#PROCH,R3
+	CLR	@#FLER
+;     ‡€ˆ‘œ € ˜ˆ“ ‚‘…• …„ˆˆ–
+AD0:	MOV	#177777,R1
+1$:
+	MOV	R1,RG$RGG+2
+	MOV	R1,@RG$RGG
+	MOV	@RG$RGG,R4
+
+	CMP	R1,R4
+	BEQ	2$
+	CALL	ADERR
+	MOV	#100200,@#FLER
+	CALL TTINDB
+	BCC	AD1
+	BR	1$
+;     ‡€ˆ‘œ € ˜ˆ“ ŠŽ„Ž‚ Ž’ 0 „Ž 177777
+2$:	CLR	R1		;
+3$:	MOV	#2,R5		;
+4$:	CLRB	@#FLER		;
+5$:
+	MOV	R1,RG$RGG+2
+	MOV	R1,@RG$RGG
+	MOV	@RG$RGG,R4
+
+	CMP	R1,R4
+	BEQ	6$
+	CALL	ADERR
+	CALL	TTINDB		;
+	BCC	AD1
+	MOV	#100200,@#FLER	;
+	BR	5$		;
+6$:	SWAB	R1		;
+	SOB	R5,4$		;
+	INC	R1		
+	CMP	R1,#377		;
+	BLE	3$		;
+	SOB	R3,AD0
+	TST	@#FLER
+	BMI	AD2	
+AD1:
+	RETURN
+
+;    / Ž€Ž’Šˆ Ž˜ˆŽŠ Ž™…‰ ˜ˆ›
+;    Ž„ƒŽ’Ž‚Š€ …ƒˆ‘’Ž‚
+ADERR:	JSR	R5,SAVRG
+
+	CALL	ERRORINC
+
+	MOV	#20,R3
+	XOR	R1,R4		;“‘’€Ž‚Š€ €‡Ÿ„Ž‚ ‘ Ž˜ˆŠŽ‰
+1$:	CLC
+	ROR	R4
+	BCS	3$
+2$:	SOB	R3,1$
+	.PRINT	#CIKL
+	RETURN
+3$:
+	TSTB	@#FLER
+	BMI	AD1
+	.PRINT	#SOOAD
+	.PRINT	#RAZR
+	ASL	R3
+	MOV	SOAD(R3),R0
+	ASR	R3
+	.PRINT  R0
+	BR	2$
+
+

@@ -1,0 +1,24 @@
+	.TITLE ITEM.MDL
+
+ITMNAM::
+	MOV -4(R0),R0
+	CLC
+	RETURN
+
+ITMTYNAME::
+	MOV	R1,-(SP)
+	MOV	R0,R1
+	
+	;якнбн "пецхярп"
+	ITM.PAR R1,R1
+	ITM.FML R1,R1
+	BEQ	1$
+	FML.TYP R1,R1
+	ITM.NAM R1,R0
+	BR	2$
+1$:	MOV	#100$,R0	
+2$:
+	MOV	(SP)+,R1
+	RETURN
+100$:	.ASCII <200>
+	.EVEN

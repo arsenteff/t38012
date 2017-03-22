@@ -1,0 +1,28 @@
+	.TITLE TSTDAC.MDL
+
+;;;.ITEM MSGDAC,,,<.MSG <STRING>,STUB>,<‡€ˆ‘€› „€›… 0 ‚ …ƒˆ‘’:>
+.ITEM MSGDCN,,,<>,<€‘’Ž‰’… Ž„‘’Ž…—›Œ …‡ˆ‘’ŽŽŒ €‚›… €Ÿ†…ˆŸ>
+
+.ITEM T$DAC,,,<>,<>
+	.SAVRON
+
+	MOV	#RG$SIN,R1
+	MOV	#RG$COS,R2
+
+	CALL	ZAHVAT
+
+	CLR	DANNY
+	MOV	2(R1),ADRES
+	CALL	OUTPUT
+;;;	MSG.TXT	#MSGDAC
+;;;	MSG.TXT	R1
+
+	MOV	2(R2),ADRES
+	CALL	OUTPUT
+;;;	MSG.TXT	#MSGDAC
+;;;	MSG.TXT	R2
+
+	MSG.TXT	#MSGDCN
+	.PAUSE
+	CLC
+	RETURN

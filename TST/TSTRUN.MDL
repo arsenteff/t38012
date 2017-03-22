@@ -1,0 +1,42 @@
+	.TITLE TSTRUN.MDL
+
+TNUM::	.WORD
+
+;************************************
+.ITEM TSTRUN,,,<>,<‡€“‘Š ’…‘’€>
+;************************************
+	MOV	R1,-(SP)
+	MOV	R2,-(SP)
+	MOV	R5,-(SP)
+	MOV	R0,-(SP)
+	STR.OUT 		;Ž‚€Ÿ ‘’ŽŠ€
+	MSG.TXT @SP		;€‡‚€ˆ… ’…‘’€
+	MSG.TXT #MS$TNUM,@SP	;ŽŒ… ’…‘’€
+;;;	MSG.TXT #TSTRUN 	;‡€“‘Š ’…‘’€!
+	MOV	@SP,R0
+	MOV	(R0)+,TNUM	;ŽŒ… ’…Š“™…ƒŽ ’…‘’€
+	MOV	(R0)+,R2	;‘ˆ‘ŽŠ “‘’Ž‰‘’‚ “‘’?
+	BEQ	2$		;„€
+	ITM.FML @SP,R0
+	MOV	R0,R1		;“Š€‡€’…‹œ € ‘…Œ…‰‘’‚Ž
+	FML.CNT R0,R5		;ŠŽ‹-‚Ž ŒŽ„“‹…‰ ’…‘’€ > 0?
+	BLE	1$		;…’
+	FML.FIR R1,R1
+10$:
+	TST	(R1)		;“Š€‡€’…‹œ € ŒŽ„“‹œ
+	BEQ	3$
+	MSG.TXT @R1		;€‡‚€ˆ… ŒŽ„“‹Ÿ ’…‘’€
+	FML.LST R2,(R1)+	;‡€“‘Š –ˆŠ‹€ ’…‘’
+	SOB	R5,10$
+	MSG.TXT #MS$TEND
+	CLC
+	BR	4$
+1$:	MSG.ERR #ER$TMDL
+	BR	3$
+2$:	MSG.ERR #ER$TDAT
+3$:	CLC
+4$:	MOV	(SP)+,R0
+	MOV	(SP)+,R5
+	MOV	(SP)+,R2
+	MOV	(SP)+,R1
+	RETURN

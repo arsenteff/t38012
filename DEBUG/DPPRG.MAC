@@ -1,0 +1,103 @@
+
+ERRPAUSE:
+	BIT	#OTLAD,STATUS
+	BNE	1$
+	CMP	ERROR,#16.
+	BLT	1$
+	MOV	#1,ERROR
+	.PAUSE
+1$:	RETURN
+
+
+;-----------------------------------------------------
+;    / “‘’€Ž‚Šˆ …†ˆŒ€ ›‘’ŽƒŽ ’…‘’ˆŽ‚€ˆŸ      !
+;-----------------------------------------------------
+FAST:	BIT #10000,STATS2
+	BEQ 1$
+	MOV #1,@#CHCIKL
+1$:	RETURN
+
+;   *************************************************************
+;   *       /  €€‹ˆ‡€  Ž„ˆŽ—ŽƒŽ  ‚‚Ž„€ „‹Ÿ …†. DBG        *
+;   *************************************************************
+;         „‹Ÿ ‚›•Ž„€ ˆ‡ ‡€–ˆŠ‹…ŽƒŽ ’…‘’€ € „ˆ€‹Žƒ
+TTINDB:	.TTINR
+	BCS	2$
+	.CLOSE	#0
+	CALL	CLRBUS
+	BIT	#OTLAD,STATUS
+	BEQ	1$
+	JMP	DIALOG
+1$:	JMP	VU
+2$:	RETURN
+
+
+;   *************************************************************
+;   *	   Ž„Žƒ€ŒŒ€  ŠŽˆŽ‚€ˆŸ  ‘ŽŽ™…ˆ‰  ‚  “”…	*
+;   *************************************************************
+;
+COPMSG::TSTB	@R3
+	BEQ	1$
+	MOVB	(R3)+,(R5)+
+	BR	COPMSG
+1$:	RETURN
+
+;   *************************************************************
+;   *	      Ž„Žƒ€ŒŒ€  Ž—ˆ‘’Šˆ  …—€’A…ŒŽ‰  ‘’ŽŠˆ 	*
+;   *************************************************************
+;
+CLRSTR:	JSR	R5,SAVRG
+	MOV	#DLINA,R0
+1$:	MOVB	#40,STROKA-1(R0)
+	SOB	R0,1$
+	RETURN
+
+;   *************************************************************
+;   *		 /  €€‹ˆ‡€  ˆ  “‘…—…ˆŸ  ‘’ŽŠˆ		*
+;   *************************************************************
+;
+ANLTRM:	CALL DLNSTR		;„‹ˆ€ ‘’ŽŠˆ
+	TST  R0
+	BGT  TRIM
+	RETURN
+	.BYTE	15,12
+TABTRM: .BYTE	32,0,14,11,40,54,'=,'/
+	.EVEN
+TRIM:	MOV #5,R5		;“‘…—…ˆ… ‘’ŽŠˆ ‘€‚€
+1$:	CMPB STROKA-1(R0),TABTRM-1(R5)
+	BEQ 2$
+	SOB R5,1$
+	BR  SDVIG
+2$:	CLRB STROKA-1(R0)
+	SOB R0,TRIM
+PUSTO:	MOV #-2,R0		;“‘’€Ÿ ‘’ŽŠ€
+	RETURN
+SDVIG:	MOV #3,R5		;“‘…—…ˆ… ‘’ŽŠˆ ‘‹…‚€
+1$:	CMPB STROKA,TABTRM+1(R5)
+	BEQ 2$
+	SOB R5,1$
+	RETURN
+2$:	MOV #STROKA,R4
+3$:	MOVB 1(R4),(R4)+
+	BNE 3$
+	DEC R0
+	BGT SDVIG
+	BR  PUSTO
+
+;   *************************************************************
+;   *		   /	€€‹ˆ‡€  „‹ˆ›	‘’ŽŠˆ			*
+;   *************************************************************
+;
+DLNSTR: MOV #STROKA,R0		;Žˆ‘Š ŠŽ–€ ‘’ŽŠˆ
+	MOV #DLINA,R1
+1$:	TSTB (R0)+
+	BEQ 2$
+	SOB R1,1$
+	MOV #-1,R0		;‘’ŽŠ€ … ˆŒ……’ ˆ‡€Š€ ŠŽ–€
+	RETURN
+2$:	SUB #STROKA+1,R0	;€€‹ˆ‡ € “‘’“ž ‘’ŽŠ“
+	BNE 3$
+	MOV #-2,R0		;“‘’€Ÿ ‘’ŽŠ€
+3$:	RETURN
+
+
